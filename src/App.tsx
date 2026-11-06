@@ -354,17 +354,17 @@ export function App() {
       </Suspense>
 
       {/* Executive Clean Footer with Security & Privacy Guarantee */}
-      <footer className="mt-auto py-8 border-t border-line text-center text-xs text-muted bg-white">
+      <footer className="mt-auto py-6 border-t border-line text-center text-xs text-muted bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
-            <ShieldCheck className="w-4 h-4 text-emerald-600" />
-            <span className="font-semibold text-black">Vsmat 本地加密金库</span>
-            <span className="text-subtle">· 100% 纯前端离线架构 · 无后端服务器 · 零云端数据库</span>
+          <div className="flex items-center gap-2 whitespace-nowrap">
+            <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+            <span className="font-semibold text-ink">Vsmat 本地加密金库</span>
+            <span className="text-subtle hidden md:inline">· 100% 纯前端离线架构 · 无后端服务器 · 零云端数据库</span>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 whitespace-nowrap">
             <button
               onClick={() => setIsSecurityModalOpen(true)}
-              className="text-black hover:text-ink-soft underline decoration-line-strong hover:decoration-black transition font-medium"
+              className="text-ink hover:text-ink-soft underline decoration-line-strong hover:decoration-black transition font-medium"
             >
               数据安全与隐私白皮书
             </button>

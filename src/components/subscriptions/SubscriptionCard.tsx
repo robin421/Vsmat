@@ -96,7 +96,7 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
     other: '订阅服务',
   };
 
-  const rail = isOverdue ? 'bg-rose-600' : isToday ? 'bg-black' : isExpiringSoon ? 'bg-amber-500' : '';
+  const rail = isOverdue ? 'bg-rose-600' : isToday ? 'bg-ink' : isExpiringSoon ? 'bg-amber-500' : '';
 
   return (
     <div
@@ -112,39 +112,40 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
           <div className="flex items-center gap-3 min-w-0 flex-1">
             <BrandBadge serviceKey={subscription.serviceKey} name={subscription.name} size="md" />
             <div className="min-w-0 flex-1">
-              <h3 className="text-base font-semibold text-black tracking-tight leading-snug break-words" title={subscription.name}>
+              <h3 className="text-base font-semibold text-ink tracking-tight leading-snug truncate" title={subscription.name}>
                 {subscription.name}
               </h3>
-              <span className="block text-xs text-muted mt-0.5">
-                {categoryLabelMap[subscription.category] || '订阅服务'}
-              </span>
+              <div className="flex items-center gap-2 mt-1">
+                <span
+                  className={`text-xs px-1.5 h-5 inline-flex items-center rounded-md font-semibold whitespace-nowrap font-mono ${
+                    isOverdue
+                      ? 'bg-rose-600 text-white'
+                      : isToday
+                      ? 'bg-ink text-white'
+                      : isExpiringSoon
+                      ? 'bg-amber-100 text-amber-800'
+                      : 'bg-inset text-ink-soft'
+                  }`}
+                >
+                  {isOverdue
+                    ? `已逾期 ${Math.abs(days)} 天`
+                    : isToday
+                    ? '今日到期'
+                    : `还剩 ${days} 天`}
+                </span>
+                <span className="text-xs text-muted truncate">
+                  {categoryLabelMap[subscription.category] || '订阅服务'}
+                </span>
+              </div>
             </div>
           </div>
 
           {/* Countdown & actions */}
           <div className="flex items-center gap-1 shrink-0" onClick={(e) => e.stopPropagation()}>
-            <span
-              className={`text-xs px-2 h-6 inline-flex items-center rounded-md font-semibold whitespace-nowrap font-mono mr-1 ${
-                isOverdue
-                  ? 'bg-rose-600 text-white'
-                  : isToday
-                  ? 'bg-black text-white'
-                  : isExpiringSoon
-                  ? 'bg-amber-100 text-amber-800'
-                  : 'bg-inset text-ink-soft'
-              }`}
-            >
-              {isOverdue
-                ? `已逾期 ${Math.abs(days)} 天`
-                : isToday
-                ? '今日到期'
-                : `还剩 ${days} 天`}
-            </span>
-
             <button
               type="button"
               onClick={() => onEdit(subscription)}
-              className="w-8 h-8 rounded-lg text-muted hover:text-black hover:bg-inset flex items-center justify-center transition-colors"
+              className="w-8 h-8 rounded-lg text-muted hover:text-ink hover:bg-inset flex items-center justify-center transition-colors"
               title="编辑订阅"
               aria-label="编辑订阅"
             >
@@ -155,7 +156,7 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
               <button
                 type="button"
                 onClick={() => setShowMenu(!showMenu)}
-                className="w-8 h-8 rounded-lg text-muted hover:text-black hover:bg-inset flex items-center justify-center transition-colors"
+                className="w-8 h-8 rounded-lg text-muted hover:text-ink hover:bg-inset flex items-center justify-center transition-colors"
                 title="更多操作"
                 aria-label="更多操作"
                 aria-expanded={showMenu}
@@ -232,7 +233,7 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
               <button
                 type="button"
                 onClick={handleCopyEmail}
-                className="h-7 px-2 rounded-md hover:bg-inset text-muted hover:text-black text-xs font-medium flex items-center gap-1 transition-colors shrink-0"
+                className="h-7 px-2 rounded-md hover:bg-inset text-muted hover:text-ink text-xs font-medium flex items-center gap-1 transition-colors shrink-0"
                 title="一键复制完整账号"
               >
                 {copiedEmail ? (
@@ -260,7 +261,7 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
 
             <div className="text-right">
               <div className="flex items-baseline justify-end gap-1">
-                <span className="text-lg font-semibold text-black font-mono leading-none">
+                <span className="text-lg font-semibold text-ink font-mono leading-none">
                   {subscription.currency} {subscription.price}
                 </span>
                 <span className="text-xs text-muted">/{cycleTextMap[subscription.cycle] || '期'}</span>
@@ -301,7 +302,7 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="w-7 h-7 rounded-md text-muted hover:text-black hover:bg-inset flex items-center justify-center transition-colors"
+                  className="w-7 h-7 rounded-md text-muted hover:text-ink hover:bg-inset flex items-center justify-center transition-colors"
                   title={showPassword ? '隐藏密码' : '显示密码'}
                   aria-label={showPassword ? '隐藏密码' : '显示密码'}
                 >
@@ -310,7 +311,7 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
                 <button
                   type="button"
                   onClick={handleCopyPassword}
-                  className="h-7 px-2 rounded-md hover:bg-inset text-muted hover:text-black flex items-center gap-1 text-xs font-medium transition-colors"
+                  className="h-7 px-2 rounded-md hover:bg-inset text-muted hover:text-ink flex items-center gap-1 text-xs font-medium transition-colors"
                 >
                   {copiedPassword ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
                   <span className={copiedPassword ? 'text-emerald-700 font-semibold' : ''}>{copiedPassword ? '已复制' : '复制'}</span>
@@ -335,7 +336,7 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
         <button
           type="button"
           onClick={handleRenew}
-          className="h-10 px-3 rounded-lg bg-white hover:bg-inset border border-line-strong hover:border-ink text-black font-semibold text-sm transition-colors flex items-center justify-center gap-1.5 active:scale-[0.985]"
+          className="h-10 px-3 rounded-lg bg-white hover:bg-inset border border-line-strong hover:border-ink text-ink font-semibold text-sm transition-colors flex items-center justify-center gap-1.5 active:scale-[0.985]"
         >
           <RefreshCw className="w-4 h-4 text-ink-soft" />
           <span>我已续费</span>

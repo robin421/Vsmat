@@ -37,7 +37,7 @@ export const UrgentReminderBanner: React.FC<UrgentReminderBannerProps> = ({
       <div className="flex flex-col sm:flex-row items-center justify-between p-5 rounded-2xl bg-white border border-line text-xs text-muted gap-3 surface-card">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-[999px] bg-inset border border-line text-ink flex items-center justify-center">
-            <ShieldCheck className="w-4 h-4 text-black" />
+            <ShieldCheck className="w-4 h-4 text-ink" />
           </div>
           <span className="font-medium text-ink">AirCover 智能守护中：未来 7 天内无临期待续费项目，所有服务运转良好。</span>
         </div>
@@ -47,7 +47,7 @@ export const UrgentReminderBanner: React.FC<UrgentReminderBannerProps> = ({
             className="h-9 px-3.5 rounded-lg bg-white hover:bg-inset active:scale-[0.985] text-ink border border-line-strong hover:border-ink transition-colors flex items-center gap-1.5 font-semibold text-sm"
             title="一键将全部订阅生成系统日历事件，导入 Mac / iPhone 闹钟"
           >
-            <Calendar className="w-3.5 h-3.5 text-black" />
+            <Calendar className="w-3.5 h-3.5 text-ink" />
             <span>导出到系统日历 (.ics)</span>
           </button>
         </div>
@@ -77,17 +77,17 @@ export const UrgentReminderBanner: React.FC<UrgentReminderBannerProps> = ({
   };
 
   return (
-    <div className="rounded-2xl bg-white border border-line p-5 sm:p-6 surface-card relative">
+    <div className="rounded-2xl bg-amber-50 border border-amber-200 p-5 sm:p-6 shadow-card relative">
       {/* Top Header Row (Airbnb AirCover Style) */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-line">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-amber-200">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-lg bg-amber-50 border border-amber-200 text-amber-700 flex items-center justify-center shrink-0">
             <ShieldAlert className="w-5 h-5" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="text-lg font-semibold text-black tracking-tight">充值与续费提醒</h3>
-              <span className="text-xs px-2 py-0.5 rounded-md bg-amber-100 text-amber-800 font-semibold">
+              <h3 className="text-lg font-semibold text-ink tracking-tight">充值与续费提醒</h3>
+              <span className="text-xs px-2 py-0.5 rounded-md bg-amber-600 text-white font-semibold whitespace-nowrap">
                 {urgentSubs.length} 项待处理
               </span>
             </div>
@@ -104,7 +104,7 @@ export const UrgentReminderBanner: React.FC<UrgentReminderBannerProps> = ({
             className="h-9 px-3.5 rounded-lg bg-white hover:bg-inset active:scale-[0.985] text-ink border border-line-strong hover:border-ink transition-colors flex items-center gap-1.5 font-semibold text-sm"
             title="把所有续费日程导入 Mac / iPhone 日历，提前1天和3天响铃提醒"
           >
-            <Calendar className="w-3.5 h-3.5 text-black" />
+            <Calendar className="w-3.5 h-3.5 text-ink" />
             <span>一键同步日历 (.ics)</span>
           </button>
 
@@ -113,7 +113,7 @@ export const UrgentReminderBanner: React.FC<UrgentReminderBannerProps> = ({
             className="h-9 px-3.5 rounded-lg bg-white hover:bg-inset active:scale-[0.985] text-ink border border-line-strong hover:border-ink transition-colors flex items-center gap-1.5 font-semibold text-sm"
             title="开启网页桌面系统通知"
           >
-            <Bell className="w-3.5 h-3.5 text-black" />
+            <Bell className="w-3.5 h-3.5 text-ink" />
             <span>桌面通知</span>
           </button>
         </div>
@@ -134,52 +134,49 @@ export const UrgentReminderBanner: React.FC<UrgentReminderBannerProps> = ({
           return (
             <div
               key={sub.id}
-              className={`rounded-xl bg-white border border-line border-l-[3px] hover:border-line-strong p-3.5 transition-colors flex flex-wrap items-center justify-between gap-x-3 gap-y-2.5 ${
-                isOverdue ? 'border-l-rose-600' : isToday ? 'border-l-black' : 'border-l-amber-500'
+              className={`rounded-xl bg-white border border-amber-200 border-l-[3px] p-3.5 flex flex-col gap-3 ${
+                isOverdue ? 'border-l-rose-600' : isToday ? 'border-l-ink' : 'border-l-amber-500'
               }`}
             >
-              <div className="flex items-center gap-2.5 min-w-0 flex-1 basis-40">
+              <div className="flex items-center gap-2.5 min-w-0">
                 <BrandBadge serviceKey={sub.serviceKey} name={sub.name} size="sm" />
-                <div className="min-w-0">
-                  <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1">
-                    <span className="text-sm font-semibold text-ink">{sub.name}</span>
-                    <span
-                      className={`text-xs font-mono px-1.5 py-px rounded-md font-semibold shrink-0 whitespace-nowrap ${
-                        isOverdue
-                          ? 'bg-rose-600 text-white'
-                          : isToday
-                          ? 'bg-black text-white'
-                          : 'bg-amber-100 text-amber-800'
-                      }`}
-                    >
-                      {isOverdue ? `已逾期 ${Math.abs(days)}d` : isToday ? '今日到期' : `还剩 ${days}d`}
-                    </span>
-                  </div>
-                  <p className="text-xs font-mono text-muted mt-0.5">
-                    {sub.currency} {sub.price} · {sub.nextBillingDate}
-                  </p>
-                </div>
+                <span className="text-sm font-semibold text-ink truncate flex-1 min-w-0" title={sub.name}>{sub.name}</span>
+                <span
+                  className={`text-xs font-mono px-1.5 h-5 inline-flex items-center rounded-md font-semibold shrink-0 whitespace-nowrap ${
+                    isOverdue
+                      ? 'bg-rose-600 text-white'
+                      : isToday
+                      ? 'bg-ink text-white'
+                      : 'bg-amber-100 text-amber-800'
+                  }`}
+                >
+                  {isOverdue ? `已逾期 ${Math.abs(days)}d` : isToday ? '今日到期' : `还剩 ${days}d`}
+                </span>
               </div>
 
-              {/* Action Buttons */}
-              <div className="flex items-center gap-1.5 shrink-0">
-                <button
-                  type="button"
-                  onClick={() => onOpenRechargeWithService(sub.serviceKey, sub)}
-                  className="h-8 px-2.5 rounded-lg bg-white hover:bg-inset active:scale-95 text-ink text-xs font-semibold border border-line-strong transition-colors flex items-center gap-1"
-                >
-                  <ArrowUpRight className="w-3 h-3 text-muted" />
-                  <span>去充值</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleRenewClick(sub.id)}
-                  className="h-8 px-2.5 rounded-lg btn-primary text-xs font-semibold flex items-center gap-1"
-                  title="顺延续费一个周期"
-                >
-                  <RefreshCw className="w-3 h-3" />
-                  <span>已续费</span>
-                </button>
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5 sm:gap-3">
+                <p className="text-xs font-mono text-muted whitespace-nowrap">
+                  {sub.currency} {sub.price} · {sub.nextBillingDate}
+                </p>
+                <div className="grid grid-cols-2 sm:flex items-center gap-1.5 shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => onOpenRechargeWithService(sub.serviceKey, sub)}
+                    className="h-8 px-2.5 rounded-lg bg-white hover:bg-inset active:scale-95 text-ink text-xs font-semibold border border-line-strong transition-colors flex items-center justify-center gap-1 whitespace-nowrap"
+                  >
+                    <ArrowUpRight className="w-3 h-3 text-muted" />
+                    <span>去充值</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleRenewClick(sub.id)}
+                    className="h-8 px-2.5 rounded-lg btn-primary text-xs font-semibold flex items-center justify-center gap-1 whitespace-nowrap"
+                    title="顺延续费一个周期"
+                  >
+                    <RefreshCw className="w-3 h-3" />
+                    <span>已续费</span>
+                  </button>
+                </div>
               </div>
             </div>
           );

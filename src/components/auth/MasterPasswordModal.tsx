@@ -74,10 +74,10 @@ export const MasterPasswordModal: React.FC<MasterPasswordModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-fadeIn">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-brand-950/40 backdrop-blur-sm animate-fadeIn">
       <div className="w-full max-w-md rounded-3xl bg-white border border-line p-7 surface-card text-ink">
         <div className="text-center mb-6">
-          <div className="w-12 h-12 rounded-2xl bg-black text-white border border-black/10 flex items-center justify-center mx-auto mb-3">
+          <div className="w-12 h-12 rounded-2xl bg-brand-700 text-white border border-ink/10 flex items-center justify-center mx-auto mb-3">
             <Lock className="w-6 h-6" />
           </div>
           <h2 className="text-lg font-semibold text-ink">
@@ -149,7 +149,7 @@ export const MasterPasswordModal: React.FC<MasterPasswordModalProps> = ({
           <button
             type="submit"
             disabled={loading}
-            className="w-full h-11 rounded-lg bg-black hover:bg-ink text-white font-semibold text-sm transition flex items-center justify-center gap-2 mt-2 active:scale-95 disabled:opacity-40"
+            className="w-full h-11 rounded-lg bg-brand-700 hover:bg-brand-800 text-white font-semibold text-sm transition flex items-center justify-center gap-2 mt-2 active:scale-95 disabled:opacity-40"
           >
             <KeyRound className="w-4 h-4" />
             <span>{loading ? '处理中...' : isInitialSetup ? '完成设置并开启保险箱' : '立即解锁'}</span>

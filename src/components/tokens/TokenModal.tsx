@@ -95,11 +95,11 @@ export const TokenModal: React.FC<TokenModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-fadeIn">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-brand-950/40 backdrop-blur-sm animate-fadeIn">
       <div className="w-full max-w-lg rounded-3xl bg-white border border-line p-6 sm:p-7 surface-card overflow-y-auto max-h-[92vh] text-ink">
         <div className="flex items-center justify-between pb-4 border-b border-line">
           <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-2xl bg-black text-white border border-black/10 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-2xl bg-brand-700 text-white border border-ink/10 flex items-center justify-center">
               <Key className="w-5 h-5" />
             </div>
             <div>

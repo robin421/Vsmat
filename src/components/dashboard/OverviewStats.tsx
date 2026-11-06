@@ -51,7 +51,7 @@ export const OverviewStats: React.FC<OverviewStatsProps> = ({
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
       {/* Monthly Expense Card */}
-      <div className="p-5 rounded-2xl bg-black text-white border border-black flex flex-col justify-between gap-5">
+      <div className="p-5 rounded-2xl bg-brand-900 text-white flex flex-col justify-between gap-5">
         <div className="flex items-center justify-between text-sm">
           <span className="font-medium text-white/80">预估月度总支出</span>
           <div className="w-8 h-8 rounded-lg bg-white/10 text-white flex items-center justify-center">
@@ -77,7 +77,7 @@ export const OverviewStats: React.FC<OverviewStatsProps> = ({
           </div>
         </div>
         <div>
-          <div className="text-3xl font-semibold text-black font-mono tracking-tight leading-none">
+          <div className="text-3xl font-semibold text-ink font-mono tracking-tight leading-none">
             {preferredCurrency === 'CNY' ? `¥ ${annualTotalCNY.toFixed(0)}` : `$ ${annualTotalUSD.toFixed(0)}`}
           </div>
           <div className="text-xs font-mono text-muted mt-2">
@@ -95,7 +95,7 @@ export const OverviewStats: React.FC<OverviewStatsProps> = ({
           </div>
         </div>
         <div>
-          <div className="text-3xl font-semibold text-black font-mono tracking-tight leading-none flex items-baseline gap-1.5">
+          <div className="text-3xl font-semibold text-ink font-mono tracking-tight leading-none flex items-baseline gap-1.5">
             <span>{tokens.length}</span>
             <span className="text-sm font-normal text-muted font-sans">个 API Key</span>
           </div>
@@ -115,7 +115,7 @@ export const OverviewStats: React.FC<OverviewStatsProps> = ({
           </div>
         </div>
         <div>
-          <div className="text-3xl font-semibold text-black font-mono tracking-tight leading-none flex items-baseline gap-1.5">
+          <div className="text-3xl font-semibold text-ink font-mono tracking-tight leading-none flex items-baseline gap-1.5">
             <span>{unredeemedVouchers.length}</span>
             <span className="text-sm font-normal text-muted font-sans">张待使用</span>
           </div>

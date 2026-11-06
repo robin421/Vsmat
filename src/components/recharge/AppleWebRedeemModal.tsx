@@ -92,12 +92,12 @@ export const AppleWebRedeemModal: React.FC<AppleWebRedeemModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-fadeIn">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-brand-950/40 backdrop-blur-sm animate-fadeIn">
       <div className="w-full max-w-lg rounded-3xl bg-white border border-line p-6 sm:p-7 surface-card text-ink">
         {/* Header */}
         <div className="flex items-start justify-between pb-4 border-b border-line">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-black border border-black/10 flex items-center justify-center text-white">
+            <div className="w-10 h-10 rounded-2xl bg-brand-700 border border-ink/10 flex items-center justify-center text-white">
               <ShieldCheck className="w-6 h-6" />
             </div>
             <div>
@@ -105,7 +105,7 @@ export const AppleWebRedeemModal: React.FC<AppleWebRedeemModalProps> = ({
                 <h3 className="text-base font-semibold text-ink">
                   Apple 礼品卡网页充值助手
                 </h3>
-                <span className="text-xs px-2.5 py-0.5 rounded-full bg-inset text-black font-semibold border border-line-strong">
+                <span className="text-xs px-2.5 py-0.5 rounded-full bg-inset text-ink font-semibold border border-line-strong">
                   免退系统号
                 </span>
               </div>
@@ -239,7 +239,7 @@ export const AppleWebRedeemModal: React.FC<AppleWebRedeemModalProps> = ({
           <button
             type="button"
             onClick={handleComplete}
-            className="h-9 px-3.5 rounded-lg bg-black hover:bg-ink text-white font-semibold transition flex items-center gap-1.5 active:scale-95"
+            className="h-9 px-3.5 rounded-lg bg-brand-700 hover:bg-brand-800 text-white font-semibold transition flex items-center gap-1.5 active:scale-95"
           >
             <CheckCircle2 className="w-3.5 h-3.5 text-white" />
             <span>我已完成充值 (自动顺延下期续费)</span>

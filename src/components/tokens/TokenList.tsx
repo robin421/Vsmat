@@ -62,10 +62,10 @@ export const TokenList: React.FC<TokenListProps> = ({
         </div>
       ) : (
         <div className="text-center py-16 px-4 rounded-2xl border border-dashed border-line-strong bg-white">
-          <div className="w-12 h-12 rounded-lg bg-black text-white flex items-center justify-center mx-auto mb-4">
+          <div className="w-12 h-12 rounded-lg bg-brand-700 text-white flex items-center justify-center mx-auto mb-4">
             <Key className="w-6 h-6" />
           </div>
-          <h4 className="text-base font-semibold text-black mb-1">
+          <h4 className="text-base font-semibold text-ink mb-1">
             {searchTerm ? '未找到匹配的 API Token' : '暂无 API 密钥'}
           </h4>
           <p className="text-sm text-muted max-w-sm mx-auto mb-5">

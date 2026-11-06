@@ -74,8 +74,8 @@ export const SubscriptionList: React.FC<SubscriptionListProps> = ({
               onClick={() => setSelectedCategory('all')}
               className={`px-3.5 h-8 rounded-md transition-colors font-medium select-none whitespace-nowrap ${
                 selectedCategory === 'all'
-                  ? 'bg-white text-black font-semibold'
-                  : 'text-muted hover:text-black'
+                  ? 'bg-white text-ink font-semibold'
+                  : 'text-muted hover:text-ink'
               }`}
             >
               全部 ({subscriptions.length})
@@ -84,8 +84,8 @@ export const SubscriptionList: React.FC<SubscriptionListProps> = ({
               onClick={() => setSelectedCategory('ai')}
               className={`px-3.5 h-8 rounded-md transition-colors font-medium select-none whitespace-nowrap ${
                 selectedCategory === 'ai'
-                  ? 'bg-white text-black font-semibold'
-                  : 'text-muted hover:text-black'
+                  ? 'bg-white text-ink font-semibold'
+                  : 'text-muted hover:text-ink'
               }`}
             >
               AI 智能
@@ -94,8 +94,8 @@ export const SubscriptionList: React.FC<SubscriptionListProps> = ({
               onClick={() => setSelectedCategory('developer')}
               className={`px-3.5 h-8 rounded-md transition-colors font-medium select-none whitespace-nowrap ${
                 selectedCategory === 'developer'
-                  ? 'bg-white text-black font-semibold'
-                  : 'text-muted hover:text-black'
+                  ? 'bg-white text-ink font-semibold'
+                  : 'text-muted hover:text-ink'
               }`}
             >
               开发与工具
@@ -104,8 +104,8 @@ export const SubscriptionList: React.FC<SubscriptionListProps> = ({
               onClick={() => setSelectedCategory('server')}
               className={`px-3.5 h-8 rounded-md transition-colors font-medium select-none whitespace-nowrap ${
                 selectedCategory === 'server'
-                  ? 'bg-white text-black font-semibold'
-                  : 'text-muted hover:text-black'
+                  ? 'bg-white text-ink font-semibold'
+                  : 'text-muted hover:text-ink'
               }`}
             >
               服务器网络
@@ -117,7 +117,7 @@ export const SubscriptionList: React.FC<SubscriptionListProps> = ({
             onClick={() => setFilterUrgentOnly(!filterUrgentOnly)}
             className={`px-3.5 h-9 rounded-lg text-sm font-medium border transition-colors active:scale-[0.985] ${
               filterUrgentOnly
-                ? 'bg-black text-white border-black'
+                ? 'bg-brand-700 text-white border-ink'
                 : 'bg-white text-ink hover:bg-inset border-line-strong hover:border-ink'
             }`}
           >
@@ -175,10 +175,10 @@ export const SubscriptionList: React.FC<SubscriptionListProps> = ({
         </div>
       ) : (
         <div className="text-center py-16 px-4 rounded-2xl border border-dashed border-line-strong bg-white">
-          <div className="w-12 h-12 rounded-lg bg-black text-white flex items-center justify-center mx-auto mb-4">
+          <div className="w-12 h-12 rounded-lg bg-brand-700 text-white flex items-center justify-center mx-auto mb-4">
             <CreditCard className="w-6 h-6" />
           </div>
-          <h4 className="text-base font-semibold text-black mb-1">
+          <h4 className="text-base font-semibold text-ink mb-1">
             {effectiveSearch || filterUrgentOnly ? '没有符合条件的订阅记录' : '暂无订阅记录'}
           </h4>
           <p className="text-sm text-muted max-w-sm mx-auto mb-5">

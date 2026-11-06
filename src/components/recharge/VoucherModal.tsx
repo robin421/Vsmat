@@ -80,7 +80,7 @@ export const VoucherModal: React.FC<VoucherModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-fadeIn">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-brand-950/40 backdrop-blur-sm animate-fadeIn">
       <div className="w-full max-w-md rounded-3xl bg-white border border-line p-6 sm:p-7 surface-card overflow-y-auto max-h-[90vh] text-ink">
         <div className="flex items-center justify-between pb-4 border-b border-line">
           <div className="flex items-center gap-2.5">
@@ -220,7 +220,7 @@ export const VoucherModal: React.FC<VoucherModalProps> = ({
             </button>
             <button
               type="submit"
-              className="h-10 px-5 rounded-lg bg-black hover:bg-ink text-white font-semibold text-xs flex items-center gap-1.5 transition active:scale-95"
+              className="h-10 px-5 rounded-lg bg-brand-700 hover:bg-brand-800 text-white font-semibold text-xs flex items-center gap-1.5 transition active:scale-95"
             >
               <span>存入券包</span>
             </button>

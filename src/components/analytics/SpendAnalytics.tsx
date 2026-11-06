@@ -63,17 +63,17 @@ export const SpendAnalytics: React.FC<SpendAnalyticsProps> = ({
       <div className="p-5 sm:p-7 rounded-2xl bg-white surface-card">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3.5">
-            <div className="w-10 h-10 rounded-lg bg-black text-white flex items-center justify-center">
+            <div className="w-10 h-10 rounded-lg bg-brand-700 text-white flex items-center justify-center">
               <PieChart className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-black tracking-tight">按业务类别支出分布</h3>
+              <h3 className="text-lg font-semibold text-ink tracking-tight">按业务类别支出分布</h3>
               <p className="text-sm text-muted mt-0.5">各模块均摊月度支出占比与财务汇总</p>
             </div>
           </div>
           <div className="text-right">
             <div className="text-sm text-muted">总月均支出</div>
-            <div className="text-2xl font-semibold font-mono text-black tracking-tight">
+            <div className="text-2xl font-semibold font-mono text-ink tracking-tight">
               {symbol} {grandTotal.toFixed(1)}
             </div>
           </div>
@@ -116,7 +116,7 @@ export const SpendAnalytics: React.FC<SpendAnalyticsProps> = ({
                   </div>
                 </div>
                 <div className="text-right font-mono">
-                  <div className="text-sm font-semibold text-black">
+                  <div className="text-sm font-semibold text-ink">
                     {symbol} {amount.toFixed(1)}
                   </div>
                   <div className="text-xs text-muted font-sans">/月</div>

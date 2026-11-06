@@ -75,12 +75,12 @@ export const QuickRechargeBar: React.FC<QuickRechargeBarProps> = ({
     <div className="relative overflow-hidden rounded-3xl bg-white border border-line p-6 sm:p-7 surface-card">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-5">
         <div className="flex items-center gap-3.5">
-          <div className="w-11 h-11 rounded-lg bg-black text-white flex items-center justify-center shrink-0">
+          <div className="w-11 h-11 rounded-lg bg-brand-700 text-white flex items-center justify-center shrink-0">
             <Zap className="w-5 h-5 fill-white" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-lg font-semibold text-black tracking-tight">
+              <h2 className="text-lg font-semibold text-ink tracking-tight">
                 粘贴礼品券一键充值
               </h2>
               <span className="text-xs px-2 py-0.5 rounded-md bg-inset text-ink-soft font-medium border border-line">
@@ -190,7 +190,7 @@ export const QuickRechargeBar: React.FC<QuickRechargeBarProps> = ({
       {/* Feedback alert toast */}
       {toastMessage && (
         <div className="mt-4 p-3.5 rounded-xl bg-inset border border-line text-sm text-ink flex items-start gap-2.5 animate-fadeIn">
-          <ExternalLink className="w-4 h-4 text-black shrink-0 mt-0.5" />
+          <ExternalLink className="w-4 h-4 text-ink shrink-0 mt-0.5" />
           <div className="flex-1 leading-relaxed">{toastMessage}</div>
           <button
             onClick={() => setToastMessage(null)}

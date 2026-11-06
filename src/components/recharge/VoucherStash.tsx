@@ -71,8 +71,8 @@ export const VoucherStash: React.FC<VoucherStashProps> = ({
               onClick={() => setFilter('unredeemed')}
               className={`px-3.5 h-8 rounded-md transition-colors select-none font-medium whitespace-nowrap ${
                 filter === 'unredeemed'
-                  ? 'bg-white text-black font-semibold'
-                  : 'text-muted hover:text-black'
+                  ? 'bg-white text-ink font-semibold'
+                  : 'text-muted hover:text-ink'
               }`}
             >
               待使用 ({vouchers.filter(v => v.status === 'unredeemed').length})
@@ -81,8 +81,8 @@ export const VoucherStash: React.FC<VoucherStashProps> = ({
               onClick={() => setFilter('redeemed')}
               className={`px-3.5 h-8 rounded-md transition-colors select-none font-medium whitespace-nowrap ${
                 filter === 'redeemed'
-                  ? 'bg-white text-black font-semibold'
-                  : 'text-muted hover:text-black'
+                  ? 'bg-white text-ink font-semibold'
+                  : 'text-muted hover:text-ink'
               }`}
             >
               已核销 ({vouchers.filter(v => v.status === 'redeemed').length})
@@ -91,8 +91,8 @@ export const VoucherStash: React.FC<VoucherStashProps> = ({
               onClick={() => setFilter('all')}
               className={`px-3.5 h-8 rounded-md transition-colors select-none font-medium whitespace-nowrap ${
                 filter === 'all'
-                  ? 'bg-white text-black font-semibold'
-                  : 'text-muted hover:text-black'
+                  ? 'bg-white text-ink font-semibold'
+                  : 'text-muted hover:text-ink'
               }`}
             >
               全部 ({vouchers.length})
@@ -127,7 +127,7 @@ export const VoucherStash: React.FC<VoucherStashProps> = ({
                     <div className="flex items-center gap-3">
                       <BrandBadge serviceKey={voucher.serviceKey} name={voucher.serviceName} size="sm" />
                       <div>
-                        <h4 className="text-sm font-semibold text-black leading-snug">
+                        <h4 className="text-sm font-semibold text-ink leading-snug">
                           {voucher.serviceName}
                         </h4>
                         <span className="text-xs font-mono text-muted">
@@ -152,7 +152,7 @@ export const VoucherStash: React.FC<VoucherStashProps> = ({
                     <button
                       type="button"
                       onClick={() => handleCopy(voucher.id, voucher.code)}
-                      className="hover:text-black text-muted ml-2 w-7 h-7 -mr-1.5 rounded-md hover:bg-inset text-xs flex items-center justify-center shrink-0 transition-colors"
+                      className="hover:text-ink text-muted ml-2 w-7 h-7 -mr-1.5 rounded-md hover:bg-inset text-xs flex items-center justify-center shrink-0 transition-colors"
                       title="复制卡密"
                     >
                       {copiedId === voucher.id ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
@@ -206,10 +206,10 @@ export const VoucherStash: React.FC<VoucherStashProps> = ({
         </div>
       ) : (
         <div className="text-center py-16 px-4 rounded-2xl border border-dashed border-line-strong bg-white">
-          <div className="w-12 h-12 rounded-lg bg-black text-white flex items-center justify-center mx-auto mb-4">
+          <div className="w-12 h-12 rounded-lg bg-brand-700 text-white flex items-center justify-center mx-auto mb-4">
             <Gift className="w-6 h-6" />
           </div>
-          <h4 className="text-base font-semibold text-black mb-1">
+          <h4 className="text-base font-semibold text-ink mb-1">
             {filter === 'redeemed' ? '暂无已核销的卡券' : '卡券包暂为空'}
           </h4>
           <p className="text-sm text-muted max-w-sm mx-auto mb-5">

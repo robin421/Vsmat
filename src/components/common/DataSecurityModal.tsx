@@ -15,18 +15,18 @@ export const DataSecurityModal: React.FC<DataSecurityModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fadeIn">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-brand-950/50 backdrop-blur-sm animate-fadeIn">
       <div className="w-full max-w-2xl rounded-3xl bg-white border border-line p-6 sm:p-8 surface-card max-h-[90vh] overflow-y-auto text-ink shadow-pop">
         
         {/* Header */}
         <div className="flex items-start justify-between pb-5 border-b border-line">
           <div className="flex items-center gap-3.5">
-            <div className="w-12 h-12 rounded-2xl bg-black text-white flex items-center justify-center shrink-0">
+            <div className="w-12 h-12 rounded-2xl bg-brand-700 text-white flex items-center justify-center shrink-0">
               <ShieldCheck className="w-6 h-6 stroke-[2.2]" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-lg font-semibold text-black tracking-tight">
+                <h2 className="text-lg font-semibold text-ink tracking-tight">
                   数据安全与纯本地架构说明
                 </h2>
                 <span className="text-xs px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 font-semibold border border-emerald-200">
@@ -47,7 +47,7 @@ export const DataSecurityModal: React.FC<DataSecurityModalProps> = ({
         </div>
 
         {/* Core Guarantee Banner */}
-        <div className="my-5 p-4 rounded-2xl bg-black text-white space-y-1.5">
+        <div className="my-5 p-4 rounded-2xl bg-brand-700 text-white space-y-1.5">
           <div className="flex items-center gap-2 font-semibold text-sm">
             <Lock className="w-4 h-4 text-emerald-400" />
             <span>核心承诺：没有后端服务器，没有云端数据库</span>
@@ -60,18 +60,18 @@ export const DataSecurityModal: React.FC<DataSecurityModalProps> = ({
         {/* 4 Security Pillars */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 mb-6">
           <div className="p-4 rounded-2xl bg-inset border border-line space-y-1.5">
-            <div className="flex items-center gap-2 text-xs font-semibold text-black">
-              <HardDrive className="w-4 h-4 text-black" />
+            <div className="flex items-center gap-2 text-xs font-semibold text-ink">
+              <HardDrive className="w-4 h-4 text-ink" />
               <span>1. 本地存储 (LocalStorage)</span>
             </div>
             <p className="text-xs text-muted leading-relaxed">
-              数据保存在浏览器的 <code className="text-black font-mono bg-white px-1 py-0.5 rounded border border-line-strong">vsmat_vault_storage_v1</code> 隔离沙箱中，物理上完全归属于您的设备。
+              数据保存在浏览器的 <code className="text-ink font-mono bg-white px-1 py-0.5 rounded border border-line-strong">vsmat_vault_storage_v1</code> 隔离沙箱中，物理上完全归属于您的设备。
             </p>
           </div>
 
           <div className="p-4 rounded-2xl bg-inset border border-line space-y-1.5">
-            <div className="flex items-center gap-2 text-xs font-semibold text-black">
-              <Lock className="w-4 h-4 text-black" />
+            <div className="flex items-center gap-2 text-xs font-semibold text-ink">
+              <Lock className="w-4 h-4 text-ink" />
               <span>2. 硬件级 AES-256-GCM 加密</span>
             </div>
             <p className="text-xs text-muted leading-relaxed">
@@ -80,8 +80,8 @@ export const DataSecurityModal: React.FC<DataSecurityModalProps> = ({
           </div>
 
           <div className="p-4 rounded-2xl bg-inset border border-line space-y-1.5">
-            <div className="flex items-center gap-2 text-xs font-semibold text-black">
-              <Cpu className="w-4 h-4 text-black" />
+            <div className="flex items-center gap-2 text-xs font-semibold text-ink">
+              <Cpu className="w-4 h-4 text-ink" />
               <span>3. WebAssembly 本地离线 OCR</span>
             </div>
             <p className="text-xs text-muted leading-relaxed">
@@ -90,8 +90,8 @@ export const DataSecurityModal: React.FC<DataSecurityModalProps> = ({
           </div>
 
           <div className="p-4 rounded-2xl bg-inset border border-line space-y-1.5">
-            <div className="flex items-center gap-2 text-xs font-semibold text-black">
-              <EyeOff className="w-4 h-4 text-black" />
+            <div className="flex items-center gap-2 text-xs font-semibold text-ink">
+              <EyeOff className="w-4 h-4 text-ink" />
               <span>4. 零追踪与零遥测</span>
             </div>
             <p className="text-xs text-muted leading-relaxed">
@@ -102,19 +102,19 @@ export const DataSecurityModal: React.FC<DataSecurityModalProps> = ({
 
         {/* How to verify section (Self-Auditable) */}
         <div className="p-4 rounded-2xl bg-inset border border-line space-y-3 mb-6">
-          <div className="flex items-center gap-2 text-xs font-semibold text-black">
-            <Terminal className="w-4 h-4 text-black" />
+          <div className="flex items-center gap-2 text-xs font-semibold text-ink">
+            <Terminal className="w-4 h-4 text-ink" />
             <span>您可以随时通过以下 2 种方式自行验证：</span>
           </div>
           <div className="space-y-2 text-xs text-ink-soft">
             <div className="flex items-start gap-2">
-              <span className="w-4 h-4 rounded-full bg-black text-white flex items-center justify-center text-[11px] shrink-0 font-semibold mt-0.5">1</span>
+              <span className="w-4 h-4 rounded-full bg-brand-700 text-white flex items-center justify-center text-[11px] shrink-0 font-semibold mt-0.5">1</span>
               <div>
                 <strong>查看网络请求（Network 监控）</strong>：在键盘按 <kbd className="font-mono bg-white px-1.5 py-0.5 rounded border border-line-strong text-xs">F12</kbd> 打开开发者工具，切到 <em>Network (网络)</em> 标签页。录入任何账号或上传截图，没有任何带有您个人信息的请求发往任何服务器。
               </div>
             </div>
             <div className="flex items-start gap-2">
-              <span className="w-4 h-4 rounded-full bg-black text-white flex items-center justify-center text-[11px] shrink-0 font-semibold mt-0.5">2</span>
+              <span className="w-4 h-4 rounded-full bg-brand-700 text-white flex items-center justify-center text-[11px] shrink-0 font-semibold mt-0.5">2</span>
               <div>
                 <strong>拔掉网线 / 断网测试</strong>：将电脑切换为飞行模式或关闭 Wi-Fi，Vsmat 的所有查询、录入、解密、汇率换算依然完全正常可用。
               </div>
@@ -146,7 +146,7 @@ export const DataSecurityModal: React.FC<DataSecurityModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 sm:flex-none h-9 px-4 rounded-lg bg-black hover:bg-ink text-white text-xs font-semibold transition"
+              className="flex-1 sm:flex-none h-9 px-4 rounded-lg bg-brand-700 hover:bg-brand-800 text-white text-xs font-semibold transition"
             >
               我知道了
             </button>

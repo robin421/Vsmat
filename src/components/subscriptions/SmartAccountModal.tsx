@@ -161,12 +161,12 @@ export const SmartAccountModal: React.FC<SmartAccountModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-fadeIn">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-brand-950/40 backdrop-blur-sm animate-fadeIn">
       <div className="w-full max-w-xl rounded-3xl bg-white border border-line p-6 sm:p-7 surface-card overflow-y-auto max-h-[92vh] text-ink">
         {/* Header */}
         <div className="flex items-center justify-between pb-4 border-b border-line">
           <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-2xl bg-black text-white border border-black/10 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-2xl bg-brand-700 text-white border border-ink/10 flex items-center justify-center">
               <Sparkles className="w-5 h-5" />
             </div>
             <div>
@@ -196,7 +196,7 @@ export const SmartAccountModal: React.FC<SmartAccountModalProps> = ({
                 : 'text-muted hover:text-ink'
             }`}
           >
-            <ImageIcon className={`w-3.5 h-3.5 ${activeTab === 'image' ? 'text-black' : 'text-muted'}`} />
+            <ImageIcon className={`w-3.5 h-3.5 ${activeTab === 'image' ? 'text-ink' : 'text-muted'}`} />
             <span>📸 截图识别 (按 Cmd+V 直接粘贴)</span>
           </button>
 
@@ -264,16 +264,16 @@ export const SmartAccountModal: React.FC<SmartAccountModalProps> = ({
             {/* OCR Progress Indicator */}
             {ocrLoading && (
               <div className="p-3.5 rounded-2xl bg-inset border border-line-strong space-y-1.5 text-xs animate-fadeIn">
-                <div className="flex items-center justify-between text-black font-semibold">
+                <div className="flex items-center justify-between text-ink font-semibold">
                   <div className="flex items-center gap-2">
-                    <Loader2 className="w-4 h-4 text-black animate-spin" />
+                    <Loader2 className="w-4 h-4 text-ink animate-spin" />
                     <span>{ocrStatus}</span>
                   </div>
                   <span className="font-mono">{ocrProgress}%</span>
                 </div>
                 <div className="w-full h-1.5 bg-line rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-black transition-all duration-300"
+                    className="h-full bg-brand-700 transition-all duration-300"
                     style={{ width: `${ocrProgress}%` }}
                   />
                 </div>

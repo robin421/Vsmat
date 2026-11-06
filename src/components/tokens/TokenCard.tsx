@@ -42,7 +42,7 @@ export const TokenCard: React.FC<TokenCardProps> = ({ token, onEdit, onDelete })
           <div className="flex items-center gap-3 min-w-0">
             <BrandBadge serviceKey={token.serviceKey} name={token.name} size="md" />
             <div className="min-w-0">
-              <h3 className="text-base font-semibold text-black tracking-tight truncate leading-snug">
+              <h3 className="text-base font-semibold text-ink tracking-tight truncate leading-snug">
                 {token.name}
               </h3>
               <p className="text-xs text-muted font-mono mt-1 break-all select-all" title={token.accountEmail || preset.name}>
@@ -57,7 +57,7 @@ export const TokenCard: React.FC<TokenCardProps> = ({ token, onEdit, onDelete })
                 href={safeHttpUrl(token.consoleUrl)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-8 h-8 rounded-lg text-muted hover:text-black hover:bg-inset flex items-center justify-center transition-colors"
+                className="w-8 h-8 rounded-lg text-muted hover:text-ink hover:bg-inset flex items-center justify-center transition-colors"
                 title="打开官方控制台"
               >
                 <ExternalLink className="w-3.5 h-3.5" />
@@ -67,7 +67,7 @@ export const TokenCard: React.FC<TokenCardProps> = ({ token, onEdit, onDelete })
             <button
               type="button"
               onClick={() => onEdit(token)}
-              className="w-8 h-8 rounded-lg text-muted hover:text-black hover:bg-inset flex items-center justify-center transition-colors"
+              className="w-8 h-8 rounded-lg text-muted hover:text-ink hover:bg-inset flex items-center justify-center transition-colors"
               title="编辑密钥"
             >
               <Edit2 className="w-3.5 h-3.5" />
@@ -78,7 +78,7 @@ export const TokenCard: React.FC<TokenCardProps> = ({ token, onEdit, onDelete })
               <button
                 type="button"
                 onClick={() => setShowMenu(!showMenu)}
-                className="w-8 h-8 rounded-lg text-muted hover:text-black hover:bg-inset flex items-center justify-center transition-colors"
+                className="w-8 h-8 rounded-lg text-muted hover:text-ink hover:bg-inset flex items-center justify-center transition-colors"
                 title="更多操作"
               >
                 <MoreHorizontal className="w-4 h-4" />
@@ -124,7 +124,7 @@ export const TokenCard: React.FC<TokenCardProps> = ({ token, onEdit, onDelete })
             <button
               type="button"
               onClick={() => setShowKey(!showKey)}
-              className="text-muted hover:text-black transition-colors flex items-center gap-1 text-xs"
+              className="text-muted hover:text-ink transition-colors flex items-center gap-1 text-xs"
             >
               {showKey ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
               <span>{showKey ? '隐藏' : '显示'}</span>
