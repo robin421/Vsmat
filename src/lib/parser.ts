@@ -1,5 +1,6 @@
 import { PRESET_SERVICES } from '../types/presets';
 import { BillingCycle, ServiceCategory, CurrencyCode } from '../types';
+import { getCurrencyDef } from './currencies';
 
 export interface ParsedSmartInput {
   serviceKey?: string;
@@ -127,11 +128,14 @@ export function parseSmartText(text: string): ParsedSmartInput {
       continue;
     }
 
-    // Amount & Currency (Handles ₺499,99, ¥3,000, $20, €15, £19.99, etc.)
+    // Amount & Currency (Handles ₺, ₱, Rs, ₦, E£, R$, ₹, Rp, RM, ₫, ฿, $, ¥, €, £, etc.)
+    const allCurrencySymbols = '[$¥€£₺₱₦₹₫฿₴₩]';
+    const allCurrencyCodes = '\\b(?:TRY|TL|PHP|PKR|NGN|EGP|ARS|BRL|INR|IDR|MYR|VND|THB|UAH|PLN|ZAR|MXN|USD|EUR|GBP|JPY|HKD|TWD|SGD|CAD|AUD|KRW|DKK|Rs|Rp|RM|NT\\$|HK\\$|CA\\$|AU\\$|S\\$)\\b';
+
     const priceMatch =
-      line.match(/([$¥€£₺]|\b(?:TRY|TL|USD|EUR|GBP|JPY|HKD|CNY|SGD)\b)\s*([\d,.]+)/i) ||
-      line.match(/([\d,.]+)\s*(?:円|元|USD|CNY|JPY|TRY|TL|EUR|GBP|SGD|美元|\$|₺)/i) ||
-      line.match(/(?:金额|价格|费用|price|cost|amount)\s*[:：=]\s*([$¥€£₺]?\s*[\d,.]+)/i);
+      line.match(new RegExp(`(${allCurrencySymbols}|${allCurrencyCodes})\\s*([\\d,.]+)`, 'i')) ||
+      line.match(new RegExp(`([\\d,.]+)\\s*(?:${allCurrencySymbols}|${allCurrencyCodes}|円|元|美元)`, 'i')) ||
+      line.match(new RegExp(`(?:金额|价格|费用|price|cost|amount)\\s*[:：=]\\s*([$¥€£₺₱₦₹₫฿₴₩]?\\s*[\\d,.]+)`, 'i'));
 
     if (priceMatch) {
       const fullMatch = priceMatch[0];
@@ -155,27 +159,65 @@ export function parseSmartText(text: string): ParsedSmartInput {
 
         result.price = parsedPrice;
 
-        // Detect currency
-        if (fullMatch.includes('₺') || /try|tl|turk|₺/i.test(fullMatch) || /₺|turkish|turkey/i.test(text) || (parsedPrice === 499.99 && /chatgpt/i.test(text))) {
+        // Detect currency with aisubdeal priority mapping
+        if (fullMatch.includes('₺') || /\b(?:try|tl)\b/i.test(fullMatch) || /₺|turkish|turkey/i.test(text) || (parsedPrice === 499.99 && /chatgpt/i.test(text))) {
           result.currency = 'TRY';
-        } else if (fullMatch.includes('$') || /usd|美元/i.test(fullMatch)) {
-          result.currency = 'USD';
-        } else if (fullMatch.includes('¥') || fullMatch.includes('円')) {
+        } else if (fullMatch.includes('₱') || /\bphp\b/i.test(fullMatch) || /philippines|manila/i.test(text)) {
+          result.currency = 'PHP';
+        } else if (/\bpkr\b|\brs\b/i.test(fullMatch) || /pakistan/i.test(text)) {
+          result.currency = 'PKR';
+        } else if (fullMatch.includes('₦') || /\bngn\b/i.test(fullMatch) || /nigeria/i.test(text)) {
+          result.currency = 'NGN';
+        } else if (/\begp\b|e£/i.test(fullMatch) || /egypt/i.test(text)) {
+          result.currency = 'EGP';
+        } else if (/\br\$\b|\bbrl\b/i.test(fullMatch) || /brazil|brasil/i.test(text)) {
+          result.currency = 'BRL';
+        } else if (fullMatch.includes('₹') || /\binr\b/i.test(fullMatch) || /india/i.test(text)) {
+          result.currency = 'INR';
+        } else if (/\brp\b|\bidr\b/i.test(fullMatch) || /indonesia/i.test(text)) {
+          result.currency = 'IDR';
+        } else if (/\brm\b|\bmyr\b/i.test(fullMatch) || /malaysia/i.test(text)) {
+          result.currency = 'MYR';
+        } else if (fullMatch.includes('₫') || /\bvnd\b/i.test(fullMatch) || /vietnam/i.test(text)) {
+          result.currency = 'VND';
+        } else if (fullMatch.includes('฿') || /\bthb\b/i.test(fullMatch) || /thailand/i.test(text)) {
+          result.currency = 'THB';
+        } else if (fullMatch.includes('₴') || /\buah\b/i.test(fullMatch) || /ukraine/i.test(text)) {
+          result.currency = 'UAH';
+        } else if (/zł|\bpln\b/i.test(fullMatch) || /poland/i.test(text)) {
+          result.currency = 'PLN';
+        } else if (fullMatch.includes('₩') || /\bkrw\b/i.test(fullMatch) || /korea/i.test(text)) {
+          result.currency = 'KRW';
+        } else if (/\bnt\$\b|\btwd\b/i.test(fullMatch) || /taiwan|新台币/i.test(text)) {
+          result.currency = 'TWD';
+        } else if (/\bhk\$\b|\bhkd\b/i.test(fullMatch) || /hong kong|港币/i.test(text)) {
+          result.currency = 'HKD';
+        } else if (/\bs\$\b|\bsgd\b/i.test(fullMatch) || /singapore|新币/i.test(text)) {
+          result.currency = 'SGD';
+        } else if (/\bca\$\b|\bcad\b/i.test(fullMatch) || /canada|加元/i.test(text)) {
+          result.currency = 'CAD';
+        } else if (/\bau\$\b|\baud\b/i.test(fullMatch) || /australia|澳元/i.test(text)) {
+          result.currency = 'AUD';
+        } else if (fullMatch.includes('¥') || fullMatch.includes('円') || /\bjpy\b/i.test(fullMatch)) {
           result.currency = hasJapanese ? 'JPY' : 'CNY';
-        } else if (fullMatch.includes('€') || /eur/i.test(fullMatch)) {
+        } else if (fullMatch.includes('€') || /\beur\b/i.test(fullMatch)) {
           result.currency = 'EUR';
-        } else if (fullMatch.includes('£') || /gbp|英镑/i.test(fullMatch)) {
+        } else if (fullMatch.includes('£') || /\bgbp\b|英镑/i.test(fullMatch)) {
           if (parsedPrice === 499.99 || /₺|turk/i.test(text)) {
             result.currency = 'TRY';
           } else {
             result.currency = 'GBP';
           }
-        } else if (/cny|元|人民币/i.test(fullMatch)) {
+        } else if (/\bars\b/i.test(fullMatch) || /argentina/i.test(text)) {
+          result.currency = 'ARS';
+        } else if (/\bmxn\b/i.test(fullMatch) || /mexico/i.test(text)) {
+          result.currency = 'MXN';
+        } else if (/\bzar\b/i.test(fullMatch) || /south africa/i.test(text)) {
+          result.currency = 'ZAR';
+        } else if (/\bcny\b|元|人民币/i.test(fullMatch)) {
           result.currency = 'CNY';
-        } else if (/hkd|港币/i.test(fullMatch)) {
-          result.currency = 'HKD';
-        } else if (/sgd|新币|新加坡/i.test(fullMatch)) {
-          result.currency = 'SGD';
+        } else if (fullMatch.includes('$') || /usd|美元/i.test(fullMatch)) {
+          result.currency = 'USD';
         }
       }
     }
@@ -286,10 +328,21 @@ export function parseSmartText(text: string): ParsedSmartInput {
   // Payment method inference (Apple subscription if mentions sub/apple)
   if (hasJapanese || /apple\s*one|サブスクリプション/i.test(text)) {
     result.paymentMethod = 'Apple 订阅 (日区)';
+  } else if (/subscriptions|apple|renewal receipt|in-app/i.test(text)) {
+    const curDef = getCurrencyDef(result.currency || '');
+    if (curDef && curDef.appStoreRegionName) {
+      result.paymentMethod = curDef.appStoreRegionName;
+    } else {
+      result.paymentMethod = 'Apple 订阅 (外区)';
+    }
   } else if (result.currency === 'TRY' || /₺|turkish|turkey|\btl\b/i.test(text)) {
     result.paymentMethod = 'Apple 订阅 (土区)';
-  } else if (/subscriptions|renewal receipt/i.test(text)) {
-    result.paymentMethod = 'Apple 订阅 (外区)';
+  } else if (result.currency === 'PHP') {
+    result.paymentMethod = 'Apple 订阅 (菲区)';
+  } else if (result.currency === 'PKR') {
+    result.paymentMethod = 'Apple 订阅 (巴区)';
+  } else if (result.currency === 'NGN') {
+    result.paymentMethod = 'Apple 订阅 (尼区)';
   }
 
   if (remainingNotes.length > 0 && !result.notes) {

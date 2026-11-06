@@ -1,6 +1,7 @@
 import React from 'react';
 import { DollarSign, Key, Gift, TrendingUp, ShieldCheck } from 'lucide-react';
 import { SubscriptionItem, TokenItem, VoucherItem } from '../../types';
+import { convertToUSD } from '../../lib/currencies';
 
 interface OverviewStatsProps {
   subscriptions: SubscriptionItem[];
@@ -20,14 +21,7 @@ export const OverviewStats: React.FC<OverviewStatsProps> = ({
   let monthlyTotalUSD = 0;
   for (const sub of subscriptions) {
     if (!sub.autoRenew && sub.cycle === 'lifetime') continue;
-    let priceInUSD = sub.price;
-    if (sub.currency === 'CNY') priceInUSD = sub.price / usdToCnyRate;
-    else if (sub.currency === 'TRY') priceInUSD = sub.price / 34.5;
-    else if (sub.currency === 'EUR') priceInUSD = sub.price * 1.08;
-    else if (sub.currency === 'GBP') priceInUSD = sub.price * 1.30;
-    else if (sub.currency === 'HKD') priceInUSD = sub.price / 7.8;
-    else if (sub.currency === 'JPY') priceInUSD = sub.price / 155;
-    else if (sub.currency === 'SGD') priceInUSD = sub.price * 0.76;
+    const priceInUSD = convertToUSD(sub.price, sub.currency, usdToCnyRate);
 
     switch (sub.cycle) {
       case 'monthly':

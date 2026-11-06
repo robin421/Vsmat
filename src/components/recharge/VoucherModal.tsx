@@ -3,6 +3,7 @@ import { X, Gift } from 'lucide-react';
 import { VoucherItem } from '../../types';
 import { PRESET_SERVICES, getPresetByKey } from '../../types/presets';
 import { detectVoucherService } from '../../lib/rechargeEngines';
+import { SUPPORTED_CURRENCIES } from '../../lib/currencies';
 
 interface VoucherModalProps {
   isOpen: boolean;
@@ -174,16 +175,22 @@ export const VoucherModal: React.FC<VoucherModalProps> = ({
               <select
                 value={currency}
                 onChange={(e) => setCurrency(e.target.value)}
-                className="w-full h-10 bg-[#F7F7F7] border border-[#DDDDDD] rounded-xl px-3 text-xs text-[#222222] outline-none focus:bg-white focus:border-[#222222] shadow-2xs font-medium"
+                className="w-full h-10 bg-[#F7F7F7] border border-[#DDDDDD] rounded-xl px-2 text-xs text-[#222222] outline-none focus:bg-white focus:border-[#222222] shadow-2xs font-medium"
               >
-                <option value="TRY">TRY (₺ 土耳其里拉)</option>
-                <option value="USD">USD ($ 美元)</option>
-                <option value="CNY">CNY (¥ 人民币)</option>
-                <option value="EUR">EUR (€ 欧元)</option>
-                <option value="GBP">GBP (£ 英镑)</option>
-                <option value="JPY">JPY (¥ 日元)</option>
-                <option value="HKD">HKD ($ 港币)</option>
-                <option value="SGD">SGD (S$ 新加坡元)</option>
+                <optgroup label="🔥 热门低价与跨区充值 (aisubdeal 榜单)">
+                  {SUPPORTED_CURRENCIES.filter(c => c.popularRank < 20).map(c => (
+                    <option key={c.code} value={c.code}>
+                      {c.flag} {c.code} ({c.symbol} {c.nameZh})
+                    </option>
+                  ))}
+                </optgroup>
+                <optgroup label="🌐 全球主流货币">
+                  {SUPPORTED_CURRENCIES.filter(c => c.popularRank >= 20).map(c => (
+                    <option key={c.code} value={c.code}>
+                      {c.flag} {c.code} ({c.symbol} {c.nameZh})
+                    </option>
+                  ))}
+                </optgroup>
               </select>
             </div>
           </div>

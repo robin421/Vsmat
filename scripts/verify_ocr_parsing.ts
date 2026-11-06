@@ -70,6 +70,33 @@ Renewal Receipt Emails
   if (!parsedTurkey.nextBillingDate?.endsWith('-12-04')) throw new Error('Renewal date should end with -12-04, got: ' + parsedTurkey.nextBillingDate);
 
   console.log('\n✅ 验证 100% 通过！土区 Apple 订阅截图成功自动提取出 ChatGPT Plus, ₺499.99 TRY, 12月04日！');
+
+  console.log('\n🧪 测试 Case 3: aisubdeal 热门菲区 ChatGPT Plus (PHP 999 & 28 November)...');
+  const ocrOutputPhilippines = `
+< Subscriptions
+ChatGPT Plus
+Renews 28 November
+₱999.00
+Options
+`;
+  const parsedPh = parseSmartText(ocrOutputPhilippines);
+  if (parsedPh.currency !== 'PHP') throw new Error('Expected PHP, got ' + parsedPh.currency);
+  if (parsedPh.price !== 999) throw new Error('Expected 999, got ' + parsedPh.price);
+  if (parsedPh.paymentMethod !== 'Apple 订阅 (菲区)') throw new Error('Expected Apple 订阅 (菲区), got ' + parsedPh.paymentMethod);
+  console.log('✅ 菲区验证通过！PHP 999.00, Apple 订阅 (菲区)');
+
+  console.log('\n🧪 测试 Case 4: aisubdeal 热门巴基斯坦区 Claude Pro (PKR 4,900 & 15 December)...');
+  const ocrOutputPakistan = `
+< Subscriptions
+Claude Pro
+Renews 15 December
+PKR 4,900
+`;
+  const parsedPk = parseSmartText(ocrOutputPakistan);
+  if (parsedPk.currency !== 'PKR') throw new Error('Expected PKR, got ' + parsedPk.currency);
+  if (parsedPk.price !== 4900) throw new Error('Expected 4900, got ' + parsedPk.price);
+  if (parsedPk.paymentMethod !== 'Apple 订阅 (巴区)') throw new Error('Expected Apple 订阅 (巴区), got ' + parsedPk.paymentMethod);
+  console.log('✅ 巴区验证通过！PKR 4900, Apple 订阅 (巴区)');
 }
 
 testOCRExtraction();
