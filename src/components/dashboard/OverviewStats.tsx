@@ -41,7 +41,7 @@ export const OverviewStats: React.FC<OverviewStatsProps> = ({
         monthlyTotalUSD += priceInUSD / 12;
         break;
       case 'prepaid':
-        monthlyTotalUSD += priceInUSD / 3; // estimate amortized
+        monthlyTotalUSD += priceInUSD / 3;
         break;
     }
   }
@@ -55,75 +55,75 @@ export const OverviewStats: React.FC<OverviewStatsProps> = ({
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
       {/* Monthly Expense Card */}
-      <div className="p-5 rounded-2xl bg-white border border-black/[0.06] card-ambient transition-all flex flex-col justify-between">
-        <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
-          <span className="font-semibold text-slate-600">预估月度总支出</span>
-          <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 border border-blue-100/80 flex items-center justify-center shadow-2xs">
+      <div className="p-5 rounded-2xl bg-white border border-zinc-200/80 card-ambient transition-all flex flex-col justify-between">
+        <div className="flex items-center justify-between text-xs text-zinc-500 mb-2">
+          <span className="font-semibold text-zinc-700">预估月度总支出</span>
+          <div className="w-8 h-8 rounded-xl bg-zinc-100 text-zinc-800 border border-zinc-200/80 flex items-center justify-center shadow-2xs">
             <DollarSign className="w-4 h-4" />
           </div>
         </div>
         <div>
-          <div className="text-2xl font-extrabold text-slate-900 font-mono tracking-tight">
+          <div className="text-2xl font-extrabold text-zinc-950 font-mono tracking-tight">
             {preferredCurrency === 'CNY' ? `¥ ${monthlyTotalCNY.toFixed(1)}` : `$ ${monthlyTotalUSD.toFixed(1)}`}
           </div>
-          <div className="text-[11px] font-mono text-slate-400 mt-1 font-medium">
+          <div className="text-[11px] font-mono text-zinc-400 mt-1 font-medium">
             折合 {preferredCurrency === 'CNY' ? `$ ${monthlyTotalUSD.toFixed(1)}` : `¥ ${monthlyTotalCNY.toFixed(1)}`}
           </div>
         </div>
       </div>
 
       {/* Annual Expense Card */}
-      <div className="p-5 rounded-2xl bg-white border border-black/[0.06] card-ambient transition-all flex flex-col justify-between">
-        <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
-          <span className="font-semibold text-slate-600">预估年度总支出</span>
-          <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100/80 flex items-center justify-center shadow-2xs">
+      <div className="p-5 rounded-2xl bg-white border border-zinc-200/80 card-ambient transition-all flex flex-col justify-between">
+        <div className="flex items-center justify-between text-xs text-zinc-500 mb-2">
+          <span className="font-semibold text-zinc-700">预估年度总支出</span>
+          <div className="w-8 h-8 rounded-xl bg-zinc-100 text-zinc-800 border border-zinc-200/80 flex items-center justify-center shadow-2xs">
             <TrendingUp className="w-4 h-4" />
           </div>
         </div>
         <div>
-          <div className="text-2xl font-extrabold text-slate-900 font-mono tracking-tight">
+          <div className="text-2xl font-extrabold text-zinc-950 font-mono tracking-tight">
             {preferredCurrency === 'CNY' ? `¥ ${annualTotalCNY.toFixed(0)}` : `$ ${annualTotalUSD.toFixed(0)}`}
           </div>
-          <div className="text-[11px] font-mono text-slate-400 mt-1 font-medium">
+          <div className="text-[11px] font-mono text-zinc-400 mt-1 font-medium">
             共 {subscriptions.length} 项有效订阅服务
           </div>
         </div>
       </div>
 
       {/* Secret Keys Stored */}
-      <div className="p-5 rounded-2xl bg-white border border-black/[0.06] card-ambient transition-all flex flex-col justify-between">
-        <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
-          <span className="font-semibold text-slate-600">保险箱加密密钥</span>
-          <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 border border-amber-100/80 flex items-center justify-center shadow-2xs">
+      <div className="p-5 rounded-2xl bg-white border border-zinc-200/80 card-ambient transition-all flex flex-col justify-between">
+        <div className="flex items-center justify-between text-xs text-zinc-500 mb-2">
+          <span className="font-semibold text-zinc-700">保险箱加密密钥</span>
+          <div className="w-8 h-8 rounded-xl bg-zinc-100 text-zinc-800 border border-zinc-200/80 flex items-center justify-center shadow-2xs">
             <Key className="w-4 h-4" />
           </div>
         </div>
         <div>
-          <div className="text-2xl font-extrabold text-slate-900 font-mono tracking-tight flex items-baseline gap-1.5">
+          <div className="text-2xl font-extrabold text-zinc-950 font-mono tracking-tight flex items-baseline gap-1.5">
             <span>{tokens.length}</span>
-            <span className="text-xs font-normal text-slate-400 font-sans">个 API Key</span>
+            <span className="text-xs font-normal text-zinc-400 font-sans">个 API Key</span>
           </div>
-          <div className="text-[11px] text-emerald-600 font-semibold mt-1 flex items-center gap-1">
-            <ShieldCheck className="w-3 h-3" />
-            <span>AES-256-GCM 强加密保护</span>
+          <div className="text-[11px] text-zinc-600 font-medium mt-1 flex items-center gap-1 font-mono">
+            <ShieldCheck className="w-3 h-3 text-zinc-700" />
+            <span>AES-256-GCM 本地加密</span>
           </div>
         </div>
       </div>
 
       {/* Pending Vouchers */}
-      <div className="p-5 rounded-2xl bg-white border border-black/[0.06] card-ambient transition-all flex flex-col justify-between">
-        <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
-          <span className="font-semibold text-slate-600">待核销礼品卡券</span>
-          <div className="w-8 h-8 rounded-xl bg-purple-50 text-purple-600 border border-purple-100/80 flex items-center justify-center shadow-2xs">
+      <div className="p-5 rounded-2xl bg-white border border-zinc-200/80 card-ambient transition-all flex flex-col justify-between">
+        <div className="flex items-center justify-between text-xs text-zinc-500 mb-2">
+          <span className="font-semibold text-zinc-700">待核销礼品卡券</span>
+          <div className="w-8 h-8 rounded-xl bg-zinc-100 text-zinc-800 border border-zinc-200/80 flex items-center justify-center shadow-2xs">
             <Gift className="w-4 h-4" />
           </div>
         </div>
         <div>
-          <div className="text-2xl font-extrabold text-slate-900 font-mono tracking-tight flex items-baseline gap-1.5">
+          <div className="text-2xl font-extrabold text-zinc-950 font-mono tracking-tight flex items-baseline gap-1.5">
             <span>{unredeemedVouchers.length}</span>
-            <span className="text-xs font-normal text-slate-400 font-sans">张待使用</span>
+            <span className="text-xs font-normal text-zinc-400 font-sans">张待使用</span>
           </div>
-          <div className="text-[11px] text-blue-600 font-semibold mt-1">
+          <div className="text-[11px] text-zinc-500 font-medium mt-1">
             随时一键直达充值
           </div>
         </div>

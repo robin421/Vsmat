@@ -17,7 +17,7 @@ export const TokenModal: React.FC<TokenModalProps> = ({
   initialData,
 }) => {
   const [name, setName] = useState('');
-  const [serviceKey, setServiceKey] = useState('openai');
+  const [serviceKey, setServiceKey] = useState('custom');
   const [token, setToken] = useState('');
   const [baseUrl, setBaseUrl] = useState('');
   const [accountEmail, setAccountEmail] = useState('');
@@ -40,25 +40,27 @@ export const TokenModal: React.FC<TokenModalProps> = ({
       setNotes(initialData.notes || '');
       setConsoleUrl(initialData.consoleUrl || '');
     } else {
-      const defaultPreset = getPresetByKey('openai');
-      setName('OpenAI API Key');
-      setServiceKey('openai');
+      setName('');
+      setServiceKey('custom');
       setToken('');
-      setBaseUrl(defaultPreset.defaultBaseUrl || '');
+      setBaseUrl('');
       setAccountEmail('');
       setOrganizationId('');
       setBalance('');
-      setTagsStr('主力, 生产环境');
+      setTagsStr('');
       setNotes('');
-      setConsoleUrl(defaultPreset.consoleUrl || '');
+      setConsoleUrl('');
     }
   }, [initialData, isOpen]);
 
   const handleServiceChange = (key: string) => {
     setServiceKey(key);
+    if (key === 'custom') return;
     const p = getPresetByKey(key);
-    if (!initialData) {
-      setName(`${p.name} Key`);
+    if (!initialData && p) {
+      if (!name || PRESET_SERVICES.some(s => s.name === name)) {
+        setName(`${p.name} API Key`);
+      }
       if (p.defaultBaseUrl) setBaseUrl(p.defaultBaseUrl);
       if (p.consoleUrl) setConsoleUrl(p.consoleUrl);
     }
@@ -71,8 +73,8 @@ export const TokenModal: React.FC<TokenModalProps> = ({
     if (!name.trim() || !token.trim()) return;
 
     const tags = tagsStr
-      .split(/[,，\s]+/)
-      .map(t => t.trim())
+      .split(/[,，]/)
+      .map((t) => t.trim())
       .filter(Boolean);
 
     onSave({
@@ -87,40 +89,44 @@ export const TokenModal: React.FC<TokenModalProps> = ({
       tags,
       notes: notes.trim() || undefined,
       consoleUrl: consoleUrl.trim() || undefined,
-      updatedAt: new Date().toISOString().split('T')[0],
-      createdAt: initialData?.createdAt || new Date().toISOString().split('T')[0],
     });
     onClose();
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-fadeIn">
-      <div className="w-full max-w-lg rounded-2xl bg-white border border-slate-200/90 p-6 shadow-2xl overflow-y-auto max-h-[90vh] text-slate-800">
-        <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-fadeIn">
+      <div className="w-full max-w-lg rounded-2xl bg-white border border-zinc-200 p-6 shadow-2xl overflow-y-auto max-h-[92vh] text-zinc-800">
+        <div className="flex items-center justify-between pb-4 border-b border-zinc-100">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shadow-subtle">
+            <div className="w-9 h-9 rounded-xl bg-zinc-100 text-zinc-900 border border-zinc-200 flex items-center justify-center shadow-2xs">
               <Key className="w-4 h-4" />
             </div>
-            <h3 className="text-base font-bold text-slate-900">
-              {initialData ? '编辑 API Token 密钥' : '收藏新 API Token 密钥'}
-            </h3>
+            <div>
+              <h3 className="text-base font-bold text-zinc-950">
+                {initialData ? '编辑 API Token 密钥' : '添加新 API Token 密钥'}
+              </h3>
+              <p className="text-xs text-zinc-500">
+                端到端强加密保存开发凭证与调用 Endpoint
+              </p>
+            </div>
           </div>
-          <button onClick={onClose} className="p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100">
+          <button onClick={onClose} className="p-1 rounded-lg text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 transition">
             <X className="w-5 h-5" />
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="mt-4 space-y-4 text-sm">
-          {/* Preset Service Selector */}
+          {/* Preset selector */}
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-              预置服务模板
+            <label className="block text-xs font-medium text-zinc-700 mb-1.5">
+              快速预填服务模板
             </label>
             <select
               value={serviceKey}
               onChange={(e) => handleServiceChange(e.target.value)}
-              className="w-full h-10 bg-slate-50 border border-slate-200 rounded-xl px-3 text-slate-800 outline-none focus:bg-white focus:border-blue-500 shadow-subtle text-xs"
+              className="w-full h-10 bg-zinc-50 border border-zinc-200 rounded-xl px-3 text-zinc-800 outline-none focus:bg-white focus:border-zinc-400 shadow-2xs text-xs"
             >
+              <option value="custom">-- 自定义服务 (自行输入) --</option>
               {PRESET_SERVICES.map((p) => (
                 <option key={p.key} value={p.key}>
                   {p.name}
@@ -129,81 +135,96 @@ export const TokenModal: React.FC<TokenModalProps> = ({
             </select>
           </div>
 
-          {/* Key Name */}
-          <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-              密钥备注名称 <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              required
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="例如: OpenAI GPT-4o 生产主密钥"
-              className="w-full h-10 bg-slate-50 border border-slate-200 rounded-xl px-3 text-slate-800 outline-none focus:bg-white focus:border-blue-500 shadow-subtle text-xs"
-            />
+          {/* Name & Token */}
+          <div className="space-y-3">
+            <div>
+              <label className="block text-xs font-medium text-zinc-700 mb-1.5">
+                密钥标识名称 <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                required
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="例如: OpenAI 主主力 Key / DeepSeek 生产环境"
+                className="w-full h-10 bg-zinc-50 border border-zinc-200 rounded-xl px-3 text-zinc-900 outline-none focus:bg-white focus:border-zinc-400 shadow-2xs text-xs"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium text-zinc-700 mb-1.5">
+                API Token / 密钥明文 <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                required
+                value={token}
+                onChange={(e) => setToken(e.target.value)}
+                placeholder="sk-proj-..."
+                className="w-full h-10 bg-zinc-50 border border-zinc-200 rounded-xl px-3 font-mono text-xs text-zinc-900 outline-none focus:bg-white focus:border-zinc-400 shadow-2xs"
+              />
+            </div>
           </div>
 
-          {/* Secret Token Content */}
+          {/* Base URL */}
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-              API Token 密钥值 <span className="text-blue-600 font-normal">* (将进行 AES-256-GCM 强加密)</span>
-            </label>
-            <textarea
-              required
-              rows={2}
-              value={token}
-              onChange={(e) => setToken(e.target.value)}
-              placeholder="例如: sk-proj-xxxxxxxxxxxxxxxxxxxx"
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-mono text-xs text-slate-800 outline-none focus:bg-white focus:border-blue-500 shadow-subtle"
-            />
-          </div>
-
-          {/* Base URL (Endpoint) */}
-          <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-              Base URL (API 端点)
+            <label className="block text-xs font-medium text-zinc-700 mb-1.5">
+              API Base URL (中转 / 代理反代地址)
             </label>
             <input
               type="text"
               value={baseUrl}
               onChange={(e) => setBaseUrl(e.target.value)}
-              placeholder="例如: https://api.openai.com/v1"
-              className="w-full h-10 bg-slate-50 border border-slate-200 rounded-xl px-3 font-mono text-xs text-slate-800 outline-none focus:bg-white focus:border-blue-500 shadow-subtle"
+              placeholder="https://api.openai.com/v1"
+              className="w-full h-10 bg-zinc-50 border border-zinc-200 rounded-xl px-3 font-mono text-xs text-zinc-900 outline-none focus:bg-white focus:border-zinc-400 shadow-2xs"
             />
           </div>
 
-          {/* Grid: Account email & Balance */}
+          {/* Account & Org */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                所属账号邮箱
-              </label>
-              <input
-                type="email"
-                value={accountEmail}
-                onChange={(e) => setAccountEmail(e.target.value)}
-                placeholder="developer@example.com"
-                className="w-full h-10 bg-slate-50 border border-slate-200 rounded-xl px-3 font-mono text-xs text-slate-800 outline-none focus:bg-white focus:border-blue-500 shadow-subtle"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                当前余额/配额备注
+              <label className="block text-xs font-medium text-zinc-700 mb-1.5">
+                归属账号 / 邮箱
               </label>
               <input
                 type="text"
-                value={balance}
-                onChange={(e) => setBalance(e.target.value)}
-                placeholder="例如: 剩余 $50 / 充足"
-                className="w-full h-10 bg-slate-50 border border-slate-200 rounded-xl px-3 text-xs text-slate-800 outline-none focus:bg-white focus:border-blue-500 shadow-subtle"
+                value={accountEmail}
+                onChange={(e) => setAccountEmail(e.target.value)}
+                placeholder="developer@example.com"
+                className="w-full h-10 bg-zinc-50 border border-zinc-200 rounded-xl px-3 font-mono text-xs text-zinc-900 outline-none focus:bg-white focus:border-zinc-400 shadow-2xs"
               />
             </div>
+            <div>
+              <label className="block text-xs font-medium text-zinc-700 mb-1.5">
+                Organization / Project ID
+              </label>
+              <input
+                type="text"
+                value={organizationId}
+                onChange={(e) => setOrganizationId(e.target.value)}
+                placeholder="org-..."
+                className="w-full h-10 bg-zinc-50 border border-zinc-200 rounded-xl px-3 font-mono text-xs text-zinc-900 outline-none focus:bg-white focus:border-zinc-400 shadow-2xs"
+              />
+            </div>
+          </div>
+
+          {/* Balance & Status */}
+          <div>
+            <label className="block text-xs font-medium text-zinc-700 mb-1.5">
+              额度与余额备忘
+            </label>
+            <input
+              type="text"
+              value={balance}
+              onChange={(e) => setBalance(e.target.value)}
+              placeholder="例如: 剩余 $48.50 (有效期至 2026-12)"
+              className="w-full h-10 bg-zinc-50 border border-zinc-200 rounded-xl px-3 text-xs text-zinc-900 outline-none focus:bg-white focus:border-zinc-400 shadow-2xs"
+            />
           </div>
 
           {/* Tags */}
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+            <label className="block text-xs font-medium text-zinc-700 mb-1.5">
               标签 (逗号分隔)
             </label>
             <input
@@ -211,20 +232,20 @@ export const TokenModal: React.FC<TokenModalProps> = ({
               value={tagsStr}
               onChange={(e) => setTagsStr(e.target.value)}
               placeholder="生产环境, GPT-4, 个人自用"
-              className="w-full h-10 bg-slate-50 border border-slate-200 rounded-xl px-3 text-xs text-slate-800 outline-none focus:bg-white focus:border-blue-500 shadow-subtle"
+              className="w-full h-10 bg-zinc-50 border border-zinc-200 rounded-xl px-3 text-xs text-zinc-900 outline-none focus:bg-white focus:border-zinc-400 shadow-2xs"
             />
           </div>
 
           {/* Console URL */}
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1.5 flex items-center justify-between">
+            <label className="block text-xs font-medium text-zinc-700 mb-1.5 flex items-center justify-between">
               <span>官方控制台链接</span>
               {consoleUrl && (
                 <a
                   href={consoleUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="text-blue-600 text-xs flex items-center gap-1 hover:underline font-normal"
+                  className="text-zinc-600 text-xs flex items-center gap-1 hover:text-zinc-900 font-normal"
                 >
                   测试跳转 <ExternalLink className="w-3 h-3" />
                 </a>
@@ -235,13 +256,13 @@ export const TokenModal: React.FC<TokenModalProps> = ({
               value={consoleUrl}
               onChange={(e) => setConsoleUrl(e.target.value)}
               placeholder="https://platform.openai.com/api-keys"
-              className="w-full h-10 bg-slate-50 border border-slate-200 rounded-xl px-3 font-mono text-xs text-slate-800 outline-none focus:bg-white focus:border-blue-500 shadow-subtle"
+              className="w-full h-10 bg-zinc-50 border border-zinc-200 rounded-xl px-3 font-mono text-xs text-zinc-900 outline-none focus:bg-white focus:border-zinc-400 shadow-2xs"
             />
           </div>
 
           {/* Notes */}
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+            <label className="block text-xs font-medium text-zinc-700 mb-1.5">
               安全备忘与说明
             </label>
             <textarea
@@ -249,25 +270,24 @@ export const TokenModal: React.FC<TokenModalProps> = ({
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="例如: 绑定的信用卡、重置周期或组织成员说明..."
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-800 outline-none focus:bg-white focus:border-blue-500 shadow-subtle"
+              className="w-full bg-zinc-50 border border-zinc-200 rounded-xl p-3 text-xs text-zinc-900 outline-none focus:bg-white focus:border-zinc-400 shadow-2xs"
             />
           </div>
 
           {/* Buttons */}
-          <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+          <div className="flex items-center justify-end gap-3 pt-3 border-t border-zinc-100">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition text-xs font-semibold"
+              className="px-4 py-2 rounded-xl bg-zinc-100 hover:bg-zinc-200 text-zinc-700 transition text-xs font-semibold"
             >
               取消
             </button>
             <button
               type="submit"
-              className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold transition text-xs flex items-center gap-1.5 shadow-sm shadow-blue-600/30 active:scale-95"
+              className="px-5 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 active:bg-zinc-950 text-white font-medium transition text-xs flex items-center gap-1.5 shadow-2xs active:scale-95"
             >
-              <Sparkles className="w-3.5 h-3.5" />
-              保存到加密保险箱
+              <span>保存到加密保险箱</span>
             </button>
           </div>
         </form>

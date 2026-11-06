@@ -234,7 +234,7 @@ export function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#fafafc] text-slate-800 flex flex-col font-sans selection:bg-blue-500/20 antialiased">
+    <div className="min-h-screen bg-[#fafafa] text-zinc-900 flex flex-col font-sans selection:bg-zinc-900 selection:text-white antialiased">
       <Navbar
         activeTab={activeTab}
         onTabChange={setActiveTab}
@@ -391,6 +391,7 @@ export function App() {
         isOpen={isSubModalOpen}
         onClose={() => setIsSubModalOpen(false)}
         onSave={handleSaveSubscription}
+        onDelete={handleDeleteSubscription}
         initialData={editingSub}
       />
 

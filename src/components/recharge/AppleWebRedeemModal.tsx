@@ -206,7 +206,7 @@ export const AppleWebRedeemModal: React.FC<AppleWebRedeemModalProps> = ({
           <button
             type="button"
             onClick={handleOpenWebRedeem}
-            className="w-full h-11 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm shadow-md shadow-blue-600/20 transition flex items-center justify-center gap-2 active:scale-95"
+            className="w-full h-11 rounded-xl bg-zinc-900 hover:bg-zinc-800 active:bg-zinc-950 text-white font-medium text-sm shadow-2xs transition flex items-center justify-center gap-2 active:scale-95"
           >
             <ExternalLink className="w-4 h-4" />
             <span>在新标签页打开 Apple 官方兑换页</span>
@@ -216,17 +216,17 @@ export const AppleWebRedeemModal: React.FC<AppleWebRedeemModalProps> = ({
           <button
             type="button"
             onClick={handleCopyIncognitoLink}
-            className="w-full py-2 px-3 rounded-xl bg-slate-100 hover:bg-slate-200/80 text-slate-700 font-medium text-xs border border-slate-200/70 transition flex items-center justify-center gap-1.5"
+            className="w-full py-2 px-3 rounded-xl bg-zinc-50 hover:bg-zinc-100 text-zinc-700 font-medium text-xs border border-zinc-200 transition flex items-center justify-center gap-1.5"
             title="复制带码链接，可在浏览器的无痕/隐私窗口粘贴打开"
           >
             {copiedUrl ? (
               <>
-                <Check className="w-3.5 h-3.5 text-emerald-600" />
-                <span className="text-emerald-700 font-semibold">直达链接已复制！去浏览器按 Cmd+Shift+N 打开无痕窗口即可粘贴！</span>
+                <Check className="w-3.5 h-3.5 text-zinc-900" />
+                <span className="text-zinc-900 font-medium">直达链接已复制！去浏览器按 Cmd+Shift+N 打开无痕窗口即可粘贴！</span>
               </>
             ) : (
               <>
-                <Copy className="w-3.5 h-3.5 text-slate-500" />
+                <Copy className="w-3.5 h-3.5 text-zinc-500" />
                 <span>复制链接并在浏览器【无痕/隐私窗口】打开 (推荐，账号完全隔离)</span>
               </>
             )}
@@ -234,14 +234,14 @@ export const AppleWebRedeemModal: React.FC<AppleWebRedeemModalProps> = ({
         </div>
 
         {/* Finish / Auto-Advance renewal */}
-        <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
-          <span className="text-slate-400">已在网页完成兑换充值？</span>
+        <div className="mt-4 pt-3 border-t border-zinc-100 flex items-center justify-between text-xs">
+          <span className="text-zinc-400">已在网页完成兑换充值？</span>
           <button
             type="button"
             onClick={handleComplete}
-            className="px-3.5 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-semibold border border-emerald-200 transition flex items-center gap-1"
+            className="px-3.5 py-1.5 rounded-lg bg-zinc-100 hover:bg-zinc-200 text-zinc-900 font-medium border border-zinc-200 transition flex items-center gap-1"
           >
-            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+            <CheckCircle2 className="w-3.5 h-3.5 text-zinc-700" />
             <span>我已完成充值 (自动顺延下期续费)</span>
           </button>
         </div>
