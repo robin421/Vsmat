@@ -238,8 +238,9 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
         setName(p.name);
       }
       setCategory(p.category);
-      if (p.defaultPrice && !price) setPrice(String(p.defaultPrice));
-      if (p.defaultCurrency) setCurrency(p.defaultCurrency);
+      // 价格与币种严格以用户的截图录入为准，绝不擅自覆盖或篡改！
+      if (!price && p.defaultPrice) setPrice(String(p.defaultPrice));
+      if (!currency && p.defaultCurrency) setCurrency(p.defaultCurrency);
       if (p.defaultCycle) setCycle(p.defaultCycle);
       if (p.portalUrl) setPortalUrl(p.portalUrl);
       if (p.rechargeUrl) setRechargeUrl(p.rechargeUrl);

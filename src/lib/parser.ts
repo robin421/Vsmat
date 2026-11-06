@@ -96,6 +96,50 @@ export function parseSmartText(text: string): ParsedSmartInput {
     result.serviceKey = 'openai';
     result.serviceName = 'ChatGPT Plus';
     result.category = 'ai';
+  } else if (/perplexity/i.test(text)) {
+    result.serviceKey = 'perplexity';
+    result.serviceName = 'Perplexity Pro';
+    result.category = 'ai';
+  } else if (/windsurf|codeium/i.test(text)) {
+    result.serviceKey = 'windsurf';
+    result.serviceName = 'Windsurf';
+    result.category = 'developer';
+  } else if (/kimi|moonshot/i.test(text)) {
+    result.serviceKey = 'kimi';
+    result.serviceName = 'Kimi (月之暗面)';
+    result.category = 'ai';
+  } else if (/zhipu|chatglm|智谱/i.test(text)) {
+    result.serviceKey = 'zhipu';
+    result.serviceName = '智谱清言 (GLM-4)';
+    result.category = 'ai';
+  } else if (/suno/i.test(text)) {
+    result.serviceKey = 'suno';
+    result.serviceName = 'Suno AI';
+    result.category = 'entertainment';
+  } else if (/runway/i.test(text)) {
+    result.serviceKey = 'runway';
+    result.serviceName = 'Runway';
+    result.category = 'ai';
+  } else if (/elevenlabs/i.test(text)) {
+    result.serviceKey = 'elevenlabs';
+    result.serviceName = 'ElevenLabs';
+    result.category = 'ai';
+  } else if (/hugging\s*face|hf\.co/i.test(text)) {
+    result.serviceKey = 'huggingface';
+    result.serviceName = 'Hugging Face';
+    result.category = 'developer';
+  } else if (/mistral/i.test(text)) {
+    result.serviceKey = 'mistral';
+    result.serviceName = 'Mistral AI';
+    result.category = 'ai';
+  } else if (/poe/i.test(text)) {
+    result.serviceKey = 'poe';
+    result.serviceName = 'Poe AI';
+    result.category = 'ai';
+  } else if (/v0\.dev|\bv0\b/i.test(text)) {
+    result.serviceKey = 'v0';
+    result.serviceName = 'v0.dev';
+    result.category = 'developer';
   }
 
   // 2. Billing Cycle Detection (Monthly, Yearly, etc.)
@@ -181,13 +225,13 @@ export function parseSmartText(text: string): ParsedSmartInput {
       if (cleanNumMatch) {
         let parsedPrice = parseFloat(cleanNumMatch[0]);
 
-        // OCR recovery 1: 49999 for ChatGPT Plus in Turkey (₺499,99 without comma)
-        if (parsedPrice === 49999 || (parsedPrice > 40000 && parsedPrice < 60000 && /chatgpt|₺|turk|tl/i.test(text))) {
+        // Strict user screenshot price fidelity:
+        // Only recover known OCR symbol glyph misreads where symbol merges into digits:
+        // e.g. ₺499,99 read without comma as 49999 -> 499.99
+        // e.g. ₹700 read with ₹ glyph misread as 3 -> 3700 -> 700
+        if (parsedPrice === 49999 && /₺|turk/i.test(text)) {
           parsedPrice = 499.99;
-        }
-
-        // OCR recovery 2: 3700 for Grok / SuperGrok in India (₹700 where ₹ was OCR-read as 3)
-        if ((parsedPrice === 3700 || (parsedPrice > 3000 && parsedPrice < 4000)) && /grok|supergrok/i.test(text)) {
+        } else if (parsedPrice === 3700 && /supergrok|grok/i.test(text) && !/jpy|円/i.test(text)) {
           parsedPrice = 700;
         }
 
