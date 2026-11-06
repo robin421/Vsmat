@@ -29,6 +29,7 @@ interface NavbarProps {
   onToggleCurrency: () => void;
   searchQuery: string;
   onSearchChange: (query: string) => void;
+  onOpenSecurityModal: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -43,6 +44,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onToggleCurrency,
   searchQuery,
   onSearchChange,
+  onOpenSecurityModal,
 }) => {
   const [showBackupMenu, setShowBackupMenu] = useState(false);
 
@@ -93,22 +95,38 @@ export const Navbar: React.FC<NavbarProps> = ({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between gap-3 lg:gap-6">
         
         {/* Brand Area (Executive Obsidian Monochrome) */}
-        <div className="flex items-center gap-2.5 shrink-0">
-          <div className="w-10 h-10 rounded-2xl bg-[#000000] border border-black/10 flex items-center justify-center text-white shadow-2xs">
+        <div
+          onClick={onOpenSecurityModal}
+          className="flex items-center gap-2.5 shrink-0 cursor-pointer group select-none"
+          title="点击查看数据安全与 100% 纯本地离线架构说明"
+        >
+          <div className="w-10 h-10 rounded-2xl bg-[#000000] border border-black/10 flex items-center justify-center text-white shadow-2xs group-hover:bg-[#222222] transition">
             <ShieldCheck className="w-5 h-5" />
           </div>
           <div className="flex flex-col">
             <div className="flex items-center gap-1.5">
               <span className="font-extrabold text-lg tracking-tight text-[#000000] font-sans">Vsmat</span>
-              <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#F7F7F7] text-[#555555] font-semibold border border-[#EBEBEB] tracking-wide font-mono">
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#F7F7F7] group-hover:bg-[#EBEBEB] text-[#555555] font-semibold border border-[#EBEBEB] tracking-wide font-mono transition">
                 AES-256
               </span>
             </div>
-            <span className="text-[11px] text-[#717171] font-medium hidden sm:inline leading-none mt-0.5">
-              端到端本地加密金库
+            <span className="text-[11px] text-[#717171] font-medium hidden sm:inline leading-none mt-0.5 group-hover:text-[#000000] transition">
+              纯本地加密金库 · 零云端上传
             </span>
           </div>
         </div>
+
+        {/* Local Zero-Knowledge Trust Chip (Desktop) */}
+        <button
+          type="button"
+          onClick={onOpenSecurityModal}
+          className="hidden xl:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 hover:bg-emerald-100/70 border border-emerald-200 text-emerald-800 text-xs font-medium transition cursor-pointer"
+          title="点击查看数据安全白皮书"
+        >
+          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span>100% 纯本地离线</span>
+          <span className="text-emerald-700/80 font-mono text-[10px]">· 零云端存储</span>
+        </button>
 
         {/* Minimalist Floating Search Pill */}
         <div className="relative flex-1 max-w-sm md:max-w-md hidden md:flex items-center h-12 rounded-full bg-white border border-[#DDDDDD] airbnb-search-shadow px-3.5 transition-all">
@@ -201,9 +219,12 @@ export const Navbar: React.FC<NavbarProps> = ({
             </button>
 
             {showBackupMenu && (
-              <div className="absolute right-0 mt-2 w-52 rounded-2xl bg-white border border-[#EBEBEB] p-2 airbnb-card z-50 text-xs animate-fadeIn">
+              <div className="absolute right-0 mt-2 w-56 rounded-2xl bg-white border border-[#EBEBEB] p-2 airbnb-card z-50 text-xs animate-fadeIn shadow-xl">
                 <div className="px-3 py-1.5 text-[10px] font-bold text-[#717171] uppercase tracking-wider">
                   数据安全与迁移
+                </div>
+                <div className="px-3 py-1 text-[11px] text-[#717171] leading-normal mb-1">
+                  数据 100% 驻留于本机 LocalStorage，无云端数据库。建议定期导出备份。
                 </div>
                 <button
                   onClick={handleExport}
@@ -222,6 +243,17 @@ export const Navbar: React.FC<NavbarProps> = ({
                     className="hidden"
                   />
                 </label>
+                <div className="my-1 border-t border-[#EBEBEB]" />
+                <button
+                  onClick={() => {
+                    setShowBackupMenu(false);
+                    onOpenSecurityModal();
+                  }}
+                  className="w-full text-left px-3 py-2 rounded-xl hover:bg-emerald-50 text-emerald-800 font-medium flex items-center gap-2 transition"
+                >
+                  <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                  <span>查看数据安全白皮书</span>
+                </button>
               </div>
             )}
           </div>

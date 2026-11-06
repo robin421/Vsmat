@@ -5,6 +5,7 @@ import {
   saveVaultData,
   advanceBillingDate,
   clearSessionPassword,
+  exportBackup,
   INITIAL_MOCK_DATA,
 } from './lib/storage';
 import { checkAndSendRenewalNotifications } from './lib/notifications';
@@ -21,6 +22,8 @@ import { VoucherModal } from './components/recharge/VoucherModal';
 import { AppleWebRedeemModal } from './components/recharge/AppleWebRedeemModal';
 import { SpendAnalytics } from './components/analytics/SpendAnalytics';
 import { MasterPasswordModal } from './components/auth/MasterPasswordModal';
+import { DataSecurityModal } from './components/common/DataSecurityModal';
+import { ShieldCheck } from 'lucide-react';
 
 export function App() {
   const [appData, setAppData] = useState<AppData>(INITIAL_MOCK_DATA);
@@ -29,6 +32,7 @@ export function App() {
   const [isLocked, setIsLocked] = useState(false);
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
   const [isInitialSetup, setIsInitialSetup] = useState(false);
+  const [isSecurityModalOpen, setIsSecurityModalOpen] = useState(false);
 
   // Modals state
   const [isTokenModalOpen, setIsTokenModalOpen] = useState(false);
@@ -248,6 +252,7 @@ export function App() {
         onToggleCurrency={handleToggleCurrency}
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
+        onOpenSecurityModal={() => setIsSecurityModalOpen(true)}
       />
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
@@ -355,7 +360,34 @@ export function App() {
         )}
       </main>
 
+      {/* Executive Clean Footer with Security & Privacy Guarantee */}
+      <footer className="mt-auto py-8 border-t border-[#EBEBEB] text-center text-xs text-[#717171] bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <ShieldCheck className="w-4 h-4 text-emerald-600" />
+            <span className="font-bold text-[#000000]">Vsmat 本地加密金库</span>
+            <span className="text-[#888888]">· 100% 纯前端离线架构 · 无后端服务器 · 零云端数据库</span>
+          </div>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => setIsSecurityModalOpen(true)}
+              className="text-[#000000] hover:text-[#555555] underline decoration-[#DDDDDD] hover:decoration-[#000000] transition font-medium"
+            >
+              数据安全与隐私白皮书
+            </button>
+            <span>·</span>
+            <span className="font-mono text-[#888888]">AES-256-GCM 本地加密</span>
+          </div>
+        </div>
+      </footer>
+
       {/* Modals */}
+      <DataSecurityModal
+        isOpen={isSecurityModalOpen}
+        onClose={() => setIsSecurityModalOpen(false)}
+        onOpenExport={() => exportBackup(appData)}
+      />
+
       <AppleWebRedeemModal
         isOpen={isAppleModalOpen}
         onClose={() => setIsAppleModalOpen(false)}

@@ -367,6 +367,17 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
           </div>
         )}
 
+        {/* Local Security & Privacy Assurance Strip */}
+        <div className="mt-3.5 flex items-center justify-between p-2.5 rounded-xl bg-emerald-50/70 border border-emerald-200/80 text-[11px] text-emerald-900 font-medium">
+          <div className="flex items-center gap-2 min-w-0">
+            <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+            <span className="truncate sm:whitespace-normal">100% 纯本地离线解析与加密存储，所有截图与账号密码绝不离开您的设备。</span>
+          </div>
+          <span className="font-mono text-[10px] text-emerald-700 bg-white px-2 py-0.5 rounded-md border border-emerald-200 shrink-0 hidden sm:inline">
+            无云端上传
+          </span>
+        </div>
+
         <form onSubmit={handleSubmit} className="mt-4 space-y-4 text-sm">
           {/* ========================================================= */}
           {/* 方式 1: 智能识别录入 (OCR / 文本粘贴) */}
@@ -438,7 +449,7 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
                         点击上传 或 在此直接按 <kbd className="px-1.5 py-0.5 rounded bg-white border border-[#EBEBEB] font-mono text-[11px] shadow-2xs">Cmd+V</kbd> 粘贴截图
                       </p>
                       <p className="text-[11px] text-[#717171]">
-                        支持 iPhone 苹果订阅页面截图、SuperGrok、ChatGPT、Claude 账单，本地离线 OCR
+                        支持 iPhone 苹果订阅页面截图、SuperGrok、ChatGPT、Claude 账单，纯本地离线 OCR (零网络上传)
                       </p>
                     </div>
                   )}
