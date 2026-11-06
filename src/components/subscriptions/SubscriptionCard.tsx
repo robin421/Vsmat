@@ -272,24 +272,24 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
         )}
       </div>
 
-      {/* Dual Action Buttons (Airbnb Signature Styling) */}
+      {/* Dual Action Buttons (Airbnb Signature Styling: Primary Coral + Crisp Outline) */}
       <div className="grid grid-cols-2 gap-2.5 pt-3 border-t border-[#EBEBEB]" onClick={(e) => e.stopPropagation()}>
         <button
           type="button"
           onClick={() => onQuickRecharge(subscription.serviceKey, subscription)}
-          className="h-10 px-3 rounded-xl bg-[#FFF0F2] hover:bg-[#FFE2E6] text-[#FF385C] font-semibold text-xs transition flex items-center justify-center gap-1.5 border border-[#FFCCD3] shadow-2xs active:scale-[0.98]"
+          className="h-10 px-3 rounded-xl btn-rausch font-semibold text-xs transition flex items-center justify-center gap-1.5 shadow-xs active:scale-[0.98]"
         >
-          <ArrowUpRight className="w-3.5 h-3.5 text-[#FF385C]" />
+          <ArrowUpRight className="w-3.5 h-3.5 text-white" />
           <span>去充值</span>
         </button>
 
         <button
           type="button"
           onClick={handleRenew}
-          className="h-10 px-3 rounded-xl bg-[#222222] hover:bg-black text-white font-semibold text-xs transition flex items-center justify-center gap-1.5 shadow-2xs active:scale-[0.98]"
+          className="h-10 px-3 rounded-xl bg-white hover:bg-[#F7F7F7] text-[#222222] font-semibold text-xs border border-[#DDDDDD] hover:border-[#222222] transition flex items-center justify-center gap-1.5 shadow-2xs active:scale-[0.98]"
           title="点击将下期扣费时间自动顺延一个周期"
         >
-          <RefreshCw className="w-3.5 h-3.5" />
+          <RefreshCw className="w-3.5 h-3.5 text-[#717171]" />
           <span>我已续费</span>
         </button>
       </div>

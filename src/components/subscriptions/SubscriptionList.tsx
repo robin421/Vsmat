@@ -76,7 +76,7 @@ export const SubscriptionList: React.FC<SubscriptionListProps> = ({
               onClick={() => setSelectedCategory('all')}
               className={`px-4 py-2 rounded-full transition font-semibold select-none ${
                 selectedCategory === 'all'
-                  ? 'bg-[#222222] text-white shadow-sm'
+                  ? 'bg-white text-[#222222] shadow-xs font-bold border border-[#DDDDDD]/70'
                   : 'text-[#717171] hover:text-[#222222]'
               }`}
             >
@@ -86,7 +86,7 @@ export const SubscriptionList: React.FC<SubscriptionListProps> = ({
               onClick={() => setSelectedCategory('ai')}
               className={`px-4 py-2 rounded-full transition font-semibold select-none ${
                 selectedCategory === 'ai'
-                  ? 'bg-[#222222] text-white shadow-sm'
+                  ? 'bg-white text-[#222222] shadow-xs font-bold border border-[#DDDDDD]/70'
                   : 'text-[#717171] hover:text-[#222222]'
               }`}
             >
@@ -96,7 +96,7 @@ export const SubscriptionList: React.FC<SubscriptionListProps> = ({
               onClick={() => setSelectedCategory('developer')}
               className={`px-4 py-2 rounded-full transition font-semibold select-none ${
                 selectedCategory === 'developer'
-                  ? 'bg-[#222222] text-white shadow-sm'
+                  ? 'bg-white text-[#222222] shadow-xs font-bold border border-[#DDDDDD]/70'
                   : 'text-[#717171] hover:text-[#222222]'
               }`}
             >
@@ -106,7 +106,7 @@ export const SubscriptionList: React.FC<SubscriptionListProps> = ({
               onClick={() => setSelectedCategory('server')}
               className={`px-4 py-2 rounded-full transition font-semibold select-none ${
                 selectedCategory === 'server'
-                  ? 'bg-[#222222] text-white shadow-sm'
+                  ? 'bg-white text-[#222222] shadow-xs font-bold border border-[#DDDDDD]/70'
                   : 'text-[#717171] hover:text-[#222222]'
               }`}
             >

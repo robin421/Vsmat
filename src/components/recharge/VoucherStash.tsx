@@ -67,7 +67,7 @@ export const VoucherStash: React.FC<VoucherStashProps> = ({
               onClick={() => setFilter('unredeemed')}
               className={`px-4 py-2 rounded-full transition select-none font-semibold ${
                 filter === 'unredeemed'
-                  ? 'bg-[#222222] text-white shadow-sm'
+                  ? 'bg-white text-[#222222] shadow-xs font-bold border border-[#DDDDDD]/70'
                   : 'text-[#717171] hover:text-[#222222]'
               }`}
             >
@@ -77,7 +77,7 @@ export const VoucherStash: React.FC<VoucherStashProps> = ({
               onClick={() => setFilter('redeemed')}
               className={`px-4 py-2 rounded-full transition select-none font-semibold ${
                 filter === 'redeemed'
-                  ? 'bg-[#222222] text-white shadow-sm'
+                  ? 'bg-white text-[#222222] shadow-xs font-bold border border-[#DDDDDD]/70'
                   : 'text-[#717171] hover:text-[#222222]'
               }`}
             >
@@ -87,7 +87,7 @@ export const VoucherStash: React.FC<VoucherStashProps> = ({
               onClick={() => setFilter('all')}
               className={`px-4 py-2 rounded-full transition select-none font-semibold ${
                 filter === 'all'
-                  ? 'bg-[#222222] text-white shadow-sm'
+                  ? 'bg-white text-[#222222] shadow-xs font-bold border border-[#DDDDDD]/70'
                   : 'text-[#717171] hover:text-[#222222]'
               }`}
             >

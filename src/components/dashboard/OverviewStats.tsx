@@ -75,7 +75,7 @@ export const OverviewStats: React.FC<OverviewStatsProps> = ({
       <div className="p-6 rounded-3xl bg-white border border-[#EBEBEB] airbnb-card transition-all flex flex-col justify-between">
         <div className="flex items-center justify-between text-xs text-[#717171] mb-2">
           <span className="font-semibold text-[#222222]">预估年度总支出</span>
-          <div className="w-9 h-9 rounded-2xl bg-[#FFF0F2] text-[#FF385C] border border-[#FFCCD3] flex items-center justify-center shadow-2xs">
+          <div className="w-9 h-9 rounded-2xl bg-[#E6F7F7] text-[#008489] border border-[#B2DFDB] flex items-center justify-center shadow-2xs">
             <TrendingUp className="w-4 h-4" />
           </div>
         </div>
@@ -93,7 +93,7 @@ export const OverviewStats: React.FC<OverviewStatsProps> = ({
       <div className="p-6 rounded-3xl bg-white border border-[#EBEBEB] airbnb-card transition-all flex flex-col justify-between">
         <div className="flex items-center justify-between text-xs text-[#717171] mb-2">
           <span className="font-semibold text-[#222222]">保险箱加密密钥</span>
-          <div className="w-9 h-9 rounded-2xl bg-[#FFF0F2] text-[#FF385C] border border-[#FFCCD3] flex items-center justify-center shadow-2xs">
+          <div className="w-9 h-9 rounded-2xl bg-[#F7F7F7] text-[#484848] border border-[#EBEBEB] flex items-center justify-center shadow-2xs">
             <Key className="w-4 h-4" />
           </div>
         </div>
@@ -103,7 +103,7 @@ export const OverviewStats: React.FC<OverviewStatsProps> = ({
             <span className="text-xs font-normal text-[#717171] font-sans">个 API Key</span>
           </div>
           <div className="text-[11px] text-[#717171] font-medium mt-1 flex items-center gap-1 font-mono">
-            <ShieldCheck className="w-3.5 h-3.5 text-[#FF385C]" />
+            <ShieldCheck className="w-3.5 h-3.5 text-[#008489]" />
             <span>AES-256-GCM 本地加密</span>
           </div>
         </div>
@@ -113,7 +113,7 @@ export const OverviewStats: React.FC<OverviewStatsProps> = ({
       <div className="p-6 rounded-3xl bg-white border border-[#EBEBEB] airbnb-card transition-all flex flex-col justify-between">
         <div className="flex items-center justify-between text-xs text-[#717171] mb-2">
           <span className="font-semibold text-[#222222]">待核销礼品卡券</span>
-          <div className="w-9 h-9 rounded-2xl bg-[#FFF0F2] text-[#FF385C] border border-[#FFCCD3] flex items-center justify-center shadow-2xs">
+          <div className="w-9 h-9 rounded-2xl bg-[#FFF4EB] text-[#FC642D] border border-[#FFE0D3] flex items-center justify-center shadow-2xs">
             <Gift className="w-4 h-4" />
           </div>
         </div>
@@ -122,7 +122,7 @@ export const OverviewStats: React.FC<OverviewStatsProps> = ({
             <span>{unredeemedVouchers.length}</span>
             <span className="text-xs font-normal text-[#717171] font-sans">张待使用</span>
           </div>
-          <div className="text-[11px] text-[#FF385C] font-semibold mt-1">
+          <div className="text-[11px] text-[#FC642D] font-semibold mt-1">
             随时一键直达充值
           </div>
         </div>

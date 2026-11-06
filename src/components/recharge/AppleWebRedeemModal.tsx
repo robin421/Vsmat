@@ -92,33 +92,33 @@ export const AppleWebRedeemModal: React.FC<AppleWebRedeemModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-fadeIn">
-      <div className="w-full max-w-lg rounded-2xl bg-white border border-slate-200/90 shadow-2xl p-6 text-slate-800">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-fadeIn">
+      <div className="w-full max-w-lg rounded-3xl bg-white border border-[#EBEBEB] p-6 sm:p-7 airbnb-card text-[#222222]">
         {/* Header */}
-        <div className="flex items-start justify-between pb-4 border-b border-slate-100">
+        <div className="flex items-start justify-between pb-4 border-b border-[#EBEBEB]">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600 shadow-sm">
+            <div className="w-10 h-10 rounded-2xl bg-[#FFF0F2] border border-[#FFCCD3] flex items-center justify-center text-[#FF385C] shadow-2xs">
               <ShieldCheck className="w-6 h-6" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="text-base font-bold text-slate-900">
+                <h3 className="text-base font-bold text-[#222222]">
                   Apple 礼品卡网页充值助手
                 </h3>
-                <span className="text-[11px] px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 font-semibold border border-blue-200/60">
-                  方式一 · 免退系统号
+                <span className="text-[11px] px-2.5 py-0.5 rounded-full bg-[#FFF0F2] text-[#FF385C] font-semibold border border-[#FFCCD3]">
+                  免退系统号
                 </span>
               </div>
-              <p className="text-xs text-slate-500 mt-0.5">
+              <p className="text-xs text-[#717171] mt-0.5">
                 在浏览器中直接登录目标 Apple ID 兑换，无需退出电脑系统账号
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition"
+            className="w-8 h-8 rounded-full border border-[#DDDDDD] hover:border-[#222222] text-[#717171] hover:text-[#222222] hover:bg-[#F7F7F7] flex items-center justify-center transition"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
@@ -206,9 +206,9 @@ export const AppleWebRedeemModal: React.FC<AppleWebRedeemModalProps> = ({
           <button
             type="button"
             onClick={handleOpenWebRedeem}
-            className="w-full h-11 rounded-xl bg-zinc-900 hover:bg-zinc-800 active:bg-zinc-950 text-white font-medium text-sm shadow-2xs transition flex items-center justify-center gap-2 active:scale-95"
+            className="w-full h-11 rounded-xl btn-rausch text-white font-bold text-sm shadow-md transition flex items-center justify-center gap-2 active:scale-95"
           >
-            <ExternalLink className="w-4 h-4" />
+            <ExternalLink className="w-4 h-4 text-white" />
             <span>在新标签页打开 Apple 官方兑换页</span>
           </button>
 
@@ -216,17 +216,17 @@ export const AppleWebRedeemModal: React.FC<AppleWebRedeemModalProps> = ({
           <button
             type="button"
             onClick={handleCopyIncognitoLink}
-            className="w-full py-2 px-3 rounded-xl bg-zinc-50 hover:bg-zinc-100 text-zinc-700 font-medium text-xs border border-zinc-200 transition flex items-center justify-center gap-1.5"
+            className="w-full py-2.5 px-3 rounded-xl bg-white hover:bg-[#F7F7F7] text-[#222222] font-semibold text-xs border border-[#DDDDDD] hover:border-[#222222] transition flex items-center justify-center gap-1.5 shadow-2xs"
             title="复制带码链接，可在浏览器的无痕/隐私窗口粘贴打开"
           >
             {copiedUrl ? (
               <>
-                <Check className="w-3.5 h-3.5 text-zinc-900" />
-                <span className="text-zinc-900 font-medium">直达链接已复制！去浏览器按 Cmd+Shift+N 打开无痕窗口即可粘贴！</span>
+                <Check className="w-3.5 h-3.5 text-[#FF385C]" />
+                <span className="text-[#FF385C] font-semibold">直达链接已复制！去浏览器按 Cmd+Shift+N 打开无痕窗口即可粘贴！</span>
               </>
             ) : (
               <>
-                <Copy className="w-3.5 h-3.5 text-zinc-500" />
+                <Copy className="w-3.5 h-3.5 text-[#717171]" />
                 <span>复制链接并在浏览器【无痕/隐私窗口】打开 (推荐，账号完全隔离)</span>
               </>
             )}
@@ -234,14 +234,14 @@ export const AppleWebRedeemModal: React.FC<AppleWebRedeemModalProps> = ({
         </div>
 
         {/* Finish / Auto-Advance renewal */}
-        <div className="mt-4 pt-3 border-t border-zinc-100 flex items-center justify-between text-xs">
-          <span className="text-zinc-400">已在网页完成兑换充值？</span>
+        <div className="mt-4 pt-3.5 border-t border-[#EBEBEB] flex items-center justify-between text-xs">
+          <span className="text-[#717171]">已在网页完成兑换充值？</span>
           <button
             type="button"
             onClick={handleComplete}
-            className="px-3.5 py-1.5 rounded-lg bg-zinc-100 hover:bg-zinc-200 text-zinc-900 font-medium border border-zinc-200 transition flex items-center gap-1"
+            className="px-4 py-2 rounded-xl bg-[#FFF0F2] hover:bg-[#FFE2E6] text-[#FF385C] font-bold border border-[#FFCCD3] transition flex items-center gap-1.5 active:scale-95 shadow-2xs"
           >
-            <CheckCircle2 className="w-3.5 h-3.5 text-zinc-700" />
+            <CheckCircle2 className="w-3.5 h-3.5 text-[#FF385C]" />
             <span>我已完成充值 (自动顺延下期续费)</span>
           </button>
         </div>

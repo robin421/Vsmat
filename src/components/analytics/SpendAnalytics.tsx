@@ -13,14 +13,14 @@ export const SpendAnalytics: React.FC<SpendAnalyticsProps> = ({
   preferredCurrency,
   usdToCnyRate,
 }) => {
-  // Airbnb inspired palette: Rausch Red hero accent + warm neutrals
+  // Airbnb inspired palette: Rausch Red hero accent + Babu Teal + warm tones
   const categoryNames: Record<ServiceCategory, { label: string; color: string; dot: string }> = {
     ai: { label: 'AI 大模型与服务', color: 'bg-[#FF385C]', dot: 'bg-[#FF385C] ring-[#FFCCD3]' },
-    developer: { label: '开发者工具与平台', color: 'bg-[#222222]', dot: 'bg-[#222222] ring-[#DDDDDD]' },
-    server: { label: '服务器 / VPS / 域名', color: 'bg-[#717171]', dot: 'bg-[#717171] ring-[#EBEBEB]' },
-    productivity: { label: '生产力办公工具', color: 'bg-[#E00B41]', dot: 'bg-[#E00B41] ring-[#FFCCD3]' },
-    entertainment: { label: '流媒体影音娱乐', color: 'bg-[#B0B0B0]', dot: 'bg-[#B0B0B0] ring-[#EBEBEB]' },
-    other: { label: '其他杂项', color: 'bg-[#DDDDDD]', dot: 'bg-[#DDDDDD] ring-[#F7F7F7]' },
+    developer: { label: '开发者工具与平台', color: 'bg-[#008489]', dot: 'bg-[#008489] ring-[#B2DFDB]' },
+    server: { label: '服务器 / VPS / 域名', color: 'bg-[#484848]', dot: 'bg-[#484848] ring-[#EBEBEB]' },
+    productivity: { label: '生产力办公工具', color: 'bg-[#FFB400]', dot: 'bg-[#FFB400] ring-[#FFE082]' },
+    entertainment: { label: '流媒体影音娱乐', color: 'bg-[#FC642D]', dot: 'bg-[#FC642D] ring-[#FFCCBC]' },
+    other: { label: '其他杂项', color: 'bg-[#B0B0B0]', dot: 'bg-[#B0B0B0] ring-[#F7F7F7]' },
   };
 
   const getMonthlyAmountInUSD = (sub: SubscriptionItem): number => {

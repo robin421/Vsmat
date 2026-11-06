@@ -161,47 +161,50 @@ export const SmartAccountModal: React.FC<SmartAccountModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-fadeIn">
-      <div className="w-full max-w-xl rounded-2xl bg-white border border-zinc-200 p-6 shadow-2xl overflow-y-auto max-h-[92vh] text-zinc-800">
+      <div className="w-full max-w-xl rounded-3xl bg-white border border-[#EBEBEB] p-6 sm:p-7 airbnb-card overflow-y-auto max-h-[92vh] text-[#222222]">
         {/* Header */}
-        <div className="flex items-center justify-between pb-3 border-b border-zinc-100">
+        <div className="flex items-center justify-between pb-4 border-b border-[#EBEBEB]">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-zinc-100 text-zinc-900 border border-zinc-200 flex items-center justify-center shadow-2xs">
-              <Sparkles className="w-4 h-4" />
+            <div className="w-10 h-10 rounded-2xl bg-[#FFF0F2] text-[#FF385C] border border-[#FFCCD3] flex items-center justify-center shadow-2xs">
+              <Sparkles className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-zinc-950">
+              <h3 className="text-base font-bold text-[#222222]">
                 智能识别录入订阅
               </h3>
-              <p className="text-xs text-zinc-500">
+              <p className="text-xs text-[#717171]">
                 支持直接粘贴苹果/谷歌订阅截图或发货文本，自动提取续费时间与金额
               </p>
             </div>
           </div>
-          <button onClick={onClose} className="p-1 rounded-lg text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 transition">
-            <X className="w-5 h-5" />
+          <button
+            onClick={onClose}
+            className="w-8 h-8 rounded-full border border-[#DDDDDD] hover:border-[#222222] text-[#717171] hover:text-[#222222] hover:bg-[#F7F7F7] flex items-center justify-center transition"
+          >
+            <X className="w-4 h-4" />
           </button>
         </div>
 
-        {/* Mode Switcher Tabs */}
-        <div className="flex items-center gap-1 p-1 rounded-xl bg-zinc-100 border border-zinc-200 mt-4 text-xs">
+        {/* Mode Switcher Tabs (Airbnb segmented control) */}
+        <div className="flex items-center p-1 rounded-full bg-[#F7F7F7] border border-[#EBEBEB] mt-4 text-xs">
           <button
             onClick={() => setActiveTab('image')}
-            className={`flex-1 py-1.5 rounded-lg font-medium transition flex items-center justify-center gap-1.5 ${
+            className={`flex-1 py-2 rounded-full font-semibold transition flex items-center justify-center gap-1.5 select-none ${
               activeTab === 'image'
-                ? 'bg-zinc-900 text-white shadow-2xs'
-                : 'text-zinc-600 hover:text-zinc-950'
+                ? 'bg-white text-[#222222] shadow-xs border border-[#DDDDDD]/70'
+                : 'text-[#717171] hover:text-[#222222]'
             }`}
           >
-            <ImageIcon className="w-3.5 h-3.5" />
+            <ImageIcon className={`w-3.5 h-3.5 ${activeTab === 'image' ? 'text-[#FF385C]' : 'text-[#717171]'}`} />
             <span>📸 截图识别 (按 Cmd+V 直接粘贴)</span>
           </button>
 
           <button
             onClick={() => setActiveTab('text')}
-            className={`flex-1 py-1.5 rounded-lg font-medium transition flex items-center justify-center gap-1.5 ${
+            className={`flex-1 py-2 rounded-full font-semibold transition flex items-center justify-center gap-1.5 select-none ${
               activeTab === 'text'
-                ? 'bg-zinc-900 text-white shadow-2xs'
-                : 'text-zinc-600 hover:text-zinc-950'
+                ? 'bg-white text-[#222222] shadow-xs border border-[#DDDDDD]/70'
+                : 'text-[#717171] hover:text-[#222222]'
             }`}
           >
             <span>📝 纯文本粘贴解析</span>
@@ -219,7 +222,7 @@ export const SmartAccountModal: React.FC<SmartAccountModalProps> = ({
                 const file = e.dataTransfer.files?.[0];
                 if (file) handleProcessImage(file);
               }}
-              className="border-2 border-dashed border-zinc-200 hover:border-zinc-400 rounded-2xl p-6 text-center cursor-pointer bg-zinc-50/60 hover:bg-zinc-50 transition group"
+              className="border-2 border-dashed border-[#EBEBEB] hover:border-zinc-400 rounded-2xl p-6 text-center cursor-pointer bg-zinc-50/60 hover:bg-zinc-50 transition group"
             >
               <input
                 ref={fileInputRef}
@@ -234,7 +237,7 @@ export const SmartAccountModal: React.FC<SmartAccountModalProps> = ({
                   <img
                     src={previewImageUrl}
                     alt="截图预览"
-                    className="max-h-40 rounded-xl object-contain shadow-2xs border border-zinc-200"
+                    className="max-h-40 rounded-xl object-contain shadow-2xs border border-[#EBEBEB]"
                   />
                   <span className="text-xs text-zinc-600 font-medium group-hover:underline">
                     点击更换截图或重新粘贴
@@ -242,14 +245,14 @@ export const SmartAccountModal: React.FC<SmartAccountModalProps> = ({
                 </div>
               ) : (
                 <div className="space-y-2">
-                  <div className="w-12 h-12 rounded-xl bg-zinc-100 text-zinc-800 border border-zinc-200 flex items-center justify-center mx-auto shadow-2xs group-hover:scale-105 transition">
+                  <div className="w-12 h-12 rounded-xl bg-zinc-100 text-[#222222] border border-[#EBEBEB] flex items-center justify-center mx-auto shadow-2xs group-hover:scale-105 transition">
                     <Upload className="w-6 h-6" />
                   </div>
                   <div>
                     <p className="text-sm font-semibold text-zinc-900">
-                      点击上传 或 在此处直接按 <kbd className="px-1.5 py-0.5 rounded bg-white border border-zinc-200 font-mono text-xs shadow-2xs">Cmd+V</kbd> 粘贴截图
+                      点击上传 或 在此处直接按 <kbd className="px-1.5 py-0.5 rounded bg-white border border-[#EBEBEB] font-mono text-xs shadow-2xs">Cmd+V</kbd> 粘贴截图
                     </p>
-                    <p className="text-xs text-zinc-500 mt-1">
+                    <p className="text-xs text-[#717171] mt-1">
                       支持 iPhone 苹果订阅页面截图、账单截图等，纯本地离线 OCR 识别
                     </p>
                   </div>
@@ -259,17 +262,17 @@ export const SmartAccountModal: React.FC<SmartAccountModalProps> = ({
 
             {/* OCR Progress Indicator */}
             {ocrLoading && (
-              <div className="p-3 rounded-xl bg-zinc-100 border border-zinc-200 space-y-1.5 text-xs animate-fadeIn">
-                <div className="flex items-center justify-between text-zinc-700 font-medium">
+              <div className="p-3.5 rounded-2xl bg-[#FFF0F2] border border-[#FFCCD3] space-y-1.5 text-xs animate-fadeIn">
+                <div className="flex items-center justify-between text-[#FF385C] font-semibold">
                   <div className="flex items-center gap-2">
-                    <Loader2 className="w-4 h-4 text-zinc-800 animate-spin" />
+                    <Loader2 className="w-4 h-4 text-[#FF385C] animate-spin" />
                     <span>{ocrStatus}</span>
                   </div>
-                  <span className="font-mono text-zinc-800">{ocrProgress}%</span>
+                  <span className="font-mono">{ocrProgress}%</span>
                 </div>
-                <div className="w-full h-1.5 bg-zinc-200 rounded-full overflow-hidden">
+                <div className="w-full h-1.5 bg-[#FFE2E6] rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-zinc-900 transition-all duration-300"
+                    className="h-full bg-[#FF385C] transition-all duration-300"
                     style={{ width: `${ocrProgress}%` }}
                   />
                 </div>
@@ -282,7 +285,7 @@ export const SmartAccountModal: React.FC<SmartAccountModalProps> = ({
         {activeTab === 'text' && (
           <div className="mt-4 space-y-2">
             <div className="flex items-center justify-between">
-              <label className="text-xs font-medium text-zinc-700">
+              <label className="text-xs font-medium text-[#222222]">
                 直接粘贴账号发货单、邮件通知或订阅文本：
               </label>
               <button
@@ -303,35 +306,35 @@ ChatGPT Plus 账号：user@example.com
 密码：MySecretPass123
 下期续费：2026-12-08
 金额：20 USD/月"
-              className="w-full bg-zinc-50 border border-zinc-200 rounded-xl p-3 text-xs font-mono text-zinc-900 outline-none focus:bg-white focus:border-zinc-400 shadow-2xs"
+              className="w-full bg-[#F7F7F7] border border-[#DDDDDD] rounded-xl p-3 text-xs font-mono text-zinc-900 outline-none focus:bg-white focus:border-[#222222] shadow-2xs"
             />
           </div>
         )}
 
         {/* Live Parsing Preview Card */}
         {parsed && (
-          <div className="mt-4 rounded-xl border border-zinc-200 bg-zinc-50 p-4 space-y-3 animate-fadeIn">
-            <div className="flex items-center justify-between border-b border-zinc-200/80 pb-2">
+          <div className="mt-4 rounded-xl border border-[#EBEBEB] bg-zinc-50 p-4 space-y-3 animate-fadeIn">
+            <div className="flex items-center justify-between border-b border-[#EBEBEB]/80 pb-2">
               <span className="text-xs font-bold text-zinc-900 flex items-center gap-1.5">
-                <Check className="w-4 h-4 text-zinc-800" />
+                <Check className="w-4 h-4 text-[#222222]" />
                 识别结果预览
               </span>
-              <span className="text-[11px] font-mono text-zinc-500">
+              <span className="text-[11px] font-mono text-[#717171]">
                 可核对后一键存入保险箱
               </span>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
               {/* Service Name */}
-              <div className="p-2.5 rounded-lg bg-white border border-zinc-200 shadow-2xs">
+              <div className="p-2.5 rounded-lg bg-white border border-[#EBEBEB] shadow-2xs">
                 <div className="text-[10px] text-zinc-400 mb-0.5 font-medium">服务名称</div>
                 <div className="font-bold text-zinc-900">{parsed.serviceName || '未识别'}</div>
               </div>
 
               {/* Cost & Currency */}
-              <div className="p-2.5 rounded-lg bg-white border border-zinc-200 shadow-2xs">
+              <div className="p-2.5 rounded-lg bg-white border border-[#EBEBEB] shadow-2xs">
                 <div className="text-[10px] text-zinc-400 mb-0.5 flex items-center gap-1 font-medium">
-                  <DollarSign className="w-3 h-3 text-zinc-500" /> 续费金额与币种
+                  <DollarSign className="w-3 h-3 text-[#717171]" /> 续费金额与币种
                 </div>
                 <div className="font-mono text-zinc-900 font-bold">
                   {parsed.currency} {parsed.price} ({parsed.cycle === 'monthly' ? '月付' : parsed.cycle})
@@ -339,9 +342,9 @@ ChatGPT Plus 账号：user@example.com
               </div>
 
               {/* Renewal Date */}
-              <div className="p-2.5 rounded-lg bg-white border border-zinc-200 shadow-2xs sm:col-span-2">
+              <div className="p-2.5 rounded-lg bg-white border border-[#EBEBEB] shadow-2xs sm:col-span-2">
                 <div className="text-[10px] text-zinc-400 mb-0.5 flex items-center gap-1 font-medium">
-                  <Calendar className="w-3 h-3 text-zinc-500" /> 下期扣费时间 (更新日)
+                  <Calendar className="w-3 h-3 text-[#717171]" /> 下期扣费时间 (更新日)
                 </div>
                 <div className="font-mono font-bold text-zinc-900 text-sm">
                   {parsed.nextBillingDate}
@@ -350,19 +353,19 @@ ChatGPT Plus 账号：user@example.com
 
               {/* Payment Method / Channel */}
               {parsed.paymentMethod && (
-                <div className="p-2.5 rounded-lg bg-white border border-zinc-200 shadow-2xs sm:col-span-2">
+                <div className="p-2.5 rounded-lg bg-white border border-[#EBEBEB] shadow-2xs sm:col-span-2">
                   <div className="text-[10px] text-zinc-400 mb-0.5 font-medium">支付渠道推断</div>
-                  <div className="font-medium text-zinc-800">{parsed.paymentMethod}</div>
+                  <div className="font-medium text-[#222222]">{parsed.paymentMethod}</div>
                 </div>
               )}
 
               {/* Account Email (if found) */}
               {parsed.accountEmail && (
-                <div className="p-2.5 rounded-lg bg-white border border-zinc-200 shadow-2xs sm:col-span-2">
+                <div className="p-2.5 rounded-lg bg-white border border-[#EBEBEB] shadow-2xs sm:col-span-2">
                   <div className="text-[10px] text-zinc-400 mb-0.5 flex items-center gap-1 font-medium">
-                    <Mail className="w-3 h-3 text-zinc-500" /> 账号邮箱
+                    <Mail className="w-3 h-3 text-[#717171]" /> 账号邮箱
                   </div>
-                  <div className="font-mono text-zinc-800 truncate">{parsed.accountEmail}</div>
+                  <div className="font-mono text-[#222222] truncate">{parsed.accountEmail}</div>
                 </div>
               )}
             </div>
@@ -370,11 +373,11 @@ ChatGPT Plus 账号：user@example.com
         )}
 
         {/* Action Footer */}
-        <div className="flex items-center justify-end gap-3 mt-5 pt-3 border-t border-zinc-100">
+        <div className="flex items-center justify-end gap-3 mt-5 pt-4 border-t border-[#EBEBEB]">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 rounded-xl bg-zinc-100 hover:bg-zinc-200 text-zinc-700 text-xs font-semibold transition"
+            className="px-5 py-2.5 rounded-xl bg-white hover:bg-[#F7F7F7] text-[#222222] border border-[#DDDDDD] hover:border-[#222222] text-xs font-semibold transition"
           >
             取消
           </button>
@@ -382,10 +385,10 @@ ChatGPT Plus 账号：user@example.com
             type="button"
             disabled={!parsed || ocrLoading}
             onClick={handleConfirmSave}
-            className="px-5 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 disabled:opacity-40 disabled:cursor-not-allowed text-white font-medium text-xs flex items-center gap-1.5 shadow-2xs transition active:scale-95"
+            className="px-6 py-2.5 rounded-xl btn-rausch disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold text-xs flex items-center gap-1.5 shadow-md transition active:scale-95"
           >
             <span>一键确认并录入</span>
-            <ArrowRight className="w-3.5 h-3.5" />
+            <ArrowRight className="w-3.5 h-3.5 text-white" />
           </button>
         </div>
       </div>

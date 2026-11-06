@@ -43,15 +43,15 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.18);
 }
 
-/* Airbnb Signature Rausch Button Gradient */
+/* Airbnb Signature Rausch Button */
 .btn-rausch {
-  background: radial-gradient(circle at center, #FF385C 0%, #E61E4D 27.5%, #E31C5F 40%, #D70466 57.5%, #BD1E59 75%, #BD1E59 100%);
+  background-color: #FF385C;
   color: #ffffff;
-  transition: opacity 0.2s ease, transform 0.1s ease;
+  transition: background-color 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
 }
 
 .btn-rausch:hover {
-  opacity: 0.95;
+  background-color: #E00B41;
 }
 
 .btn-rausch:active {
