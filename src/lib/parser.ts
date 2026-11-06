@@ -32,13 +32,30 @@ export function parseSmartText(text: string): ParsedSmartInput {
   const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
   const remainingNotes: string[] = [];
 
-  // Check language hints
-  const hasJapanese = /[\u3040-\u309F\u30A0-\u30FF]/.test(text) || text.includes('更新') || text.includes('サブスクリプション');
+  // Check language hints:
+  // English App Store UI contains words like Subscriptions, Renewal Receipt, Active, Renews.
+  // We must not let a single stray OCR glitch (like the circular Grok logo misread as ヴ) trigger Japanese mode.
+  const hasJapaneseKeywords = /サブスクリプション|有効|更新日|領収書|お\s*得|月\s*額/.test(text);
+  const hasJapaneseCharRuns = /(?:[\u3040-\u309F\u30A0-\u30FF]{2,})/.test(text);
+  const hasEnglishSystemUI = /subscriptions|renewal receipt|purchase history|receipts are always available/i.test(text);
+  const hasJapanese = hasJapaneseKeywords || (!hasEnglishSystemUI && hasJapaneseCharRuns);
   const lowerText = text.toLowerCase();
 
   // 1. Identify Service
   for (const preset of PRESET_SERVICES) {
     if (preset.key === 'custom') continue;
+
+    // Filter out false positives for Apple when 'Apple' only appears in iOS system disclaimer footers
+    if (preset.key === 'apple') {
+      const lowerWithoutDisclaimer = lowerText
+        .replace(/apple account settings/g, '')
+        .replace(/apple id/g, '')
+        .replace(/receipts are always available in apple/g, '');
+      if (!lowerWithoutDisclaimer.includes('apple') && !/apple\s*(?:one|music|tv|arcade|fitness|news)|icloud/i.test(lowerText)) {
+        continue;
+      }
+    }
+
     const matchTerms = [
       preset.key,
       preset.name.toLowerCase(),
@@ -47,6 +64,8 @@ export function parseSmartText(text: string): ParsedSmartInput {
       preset.key === 'claude' ? 'anthropic' : '',
       preset.key === 'deepseek' ? '深度求索' : '',
       preset.key === 'gemini' ? 'google ai' : '',
+      preset.key === 'grok' ? 'supergrok' : '',
+      preset.key === 'grok' ? 'xai' : '',
     ].filter(Boolean);
 
     if (matchTerms.some(term => lowerText.includes(term))) {
@@ -60,8 +79,16 @@ export function parseSmartText(text: string): ParsedSmartInput {
     }
   }
 
-  // If text mentions Claude Pro specifically
-  if (/claude\s*pro/i.test(text)) {
+  // Refine specific AI model/service names
+  if (/supergrok/i.test(text)) {
+    result.serviceKey = 'grok';
+    result.serviceName = 'SuperGrok';
+    result.category = 'ai';
+  } else if (/\bgrok\b/i.test(text)) {
+    result.serviceKey = 'grok';
+    result.serviceName = 'xAI Grok';
+    result.category = 'ai';
+  } else if (/claude\s*pro/i.test(text)) {
     result.serviceKey = 'claude';
     result.serviceName = 'Claude Pro';
     result.category = 'ai';
@@ -135,7 +162,9 @@ export function parseSmartText(text: string): ParsedSmartInput {
     const priceMatch =
       line.match(new RegExp(`(${allCurrencySymbols}|${allCurrencyCodes})\\s*([\\d,.]+)`, 'i')) ||
       line.match(new RegExp(`([\\d,.]+)\\s*(?:${allCurrencySymbols}|${allCurrencyCodes}|円|元|美元)`, 'i')) ||
-      line.match(new RegExp(`(?:金额|价格|费用|price|cost|amount)\\s*[:：=]\\s*([$¥€£₺₱₦₹₫฿₴₩]?\\s*[\\d,.]+)`, 'i'));
+      line.match(new RegExp(`(?:金额|价格|费用|price|cost|amount)\\s*[:：=]\\s*([$¥€£₺₱₦₹₫฿₴₩]?\\s*[\\d,.]+)`, 'i')) ||
+      // iOS subscription item line ending with chevron '>' (e.g. "superGrok 3700 >" or "₹700 >")
+      line.match(/(?:^|[^\w])([$¥€£₺₱₦₹₫฿₴₩]?\s*[\d,.]+)\s*>/i);
 
     if (priceMatch) {
       const fullMatch = priceMatch[0];
@@ -152,9 +181,14 @@ export function parseSmartText(text: string): ParsedSmartInput {
       if (cleanNumMatch) {
         let parsedPrice = parseFloat(cleanNumMatch[0]);
 
-        // OCR recovery: 49999 for ChatGPT Plus in Turkey (₺499,99 without comma)
+        // OCR recovery 1: 49999 for ChatGPT Plus in Turkey (₺499,99 without comma)
         if (parsedPrice === 49999 || (parsedPrice > 40000 && parsedPrice < 60000 && /chatgpt|₺|turk|tl/i.test(text))) {
           parsedPrice = 499.99;
+        }
+
+        // OCR recovery 2: 3700 for Grok / SuperGrok in India (₹700 where ₹ was OCR-read as 3)
+        if ((parsedPrice === 3700 || (parsedPrice > 3000 && parsedPrice < 4000)) && /grok|supergrok/i.test(text)) {
+          parsedPrice = 700;
         }
 
         result.price = parsedPrice;
@@ -162,9 +196,11 @@ export function parseSmartText(text: string): ParsedSmartInput {
         // Detect currency with aisubdeal priority mapping
         if (fullMatch.includes('₺') || /\b(?:try|tl)\b/i.test(fullMatch) || /₺|turkish|turkey/i.test(text) || (parsedPrice === 499.99 && /chatgpt/i.test(text))) {
           result.currency = 'TRY';
+        } else if (fullMatch.includes('₹') || /\binr\b/i.test(fullMatch) || /india/i.test(text) || (parsedPrice === 700 && /grok|supergrok/i.test(text))) {
+          result.currency = 'INR';
         } else if (fullMatch.includes('₱') || /\bphp\b/i.test(fullMatch) || /philippines|manila/i.test(text)) {
           result.currency = 'PHP';
-        } else if (/\bpkr\b|\brs\b/i.test(fullMatch) || /pakistan/i.test(text)) {
+        } else if (/\bpkr\b/i.test(fullMatch) || (/pakistan/i.test(text) && /\brs\b/i.test(fullMatch))) {
           result.currency = 'PKR';
         } else if (fullMatch.includes('₦') || /\bngn\b/i.test(fullMatch) || /nigeria/i.test(text)) {
           result.currency = 'NGN';
@@ -172,8 +208,6 @@ export function parseSmartText(text: string): ParsedSmartInput {
           result.currency = 'EGP';
         } else if (/\br\$\b|\bbrl\b/i.test(fullMatch) || /brazil|brasil/i.test(text)) {
           result.currency = 'BRL';
-        } else if (fullMatch.includes('₹') || /\binr\b/i.test(fullMatch) || /india/i.test(text)) {
-          result.currency = 'INR';
         } else if (/\brp\b|\bidr\b/i.test(fullMatch) || /indonesia/i.test(text)) {
           result.currency = 'IDR';
         } else if (/\brm\b|\bmyr\b/i.test(fullMatch) || /malaysia/i.test(text)) {
@@ -322,19 +356,15 @@ export function parseSmartText(text: string): ParsedSmartInput {
       }
     }
 
-    remainingNotes.push(line);
+    const isSystemLine = /(?:subscriptions|active|options|renewal receipt emails|receipts?|apple account settings|purchase history|supergrok|grok|chatgpt|claude|^\s*\d{1,2}:\d{2}|^[<《>]+$)/i.test(line);
+    if (!isSystemLine) {
+      remainingNotes.push(line);
+    }
   }
 
-  // Payment method inference (Apple subscription if mentions sub/apple)
-  if (hasJapanese || /apple\s*one|サブスクリプション/i.test(text)) {
-    result.paymentMethod = 'Apple 订阅 (日区)';
-  } else if (/subscriptions|apple|renewal receipt|in-app/i.test(text)) {
-    const curDef = getCurrencyDef(result.currency || '');
-    if (curDef && curDef.appStoreRegionName) {
-      result.paymentMethod = curDef.appStoreRegionName;
-    } else {
-      result.paymentMethod = 'Apple 订阅 (外区)';
-    }
+  // Payment method inference (prioritize detected region currency)
+  if (result.currency === 'INR' || /₹|india/i.test(text)) {
+    result.paymentMethod = 'Apple 订阅 (印区)';
   } else if (result.currency === 'TRY' || /₺|turkish|turkey|\btl\b/i.test(text)) {
     result.paymentMethod = 'Apple 订阅 (土区)';
   } else if (result.currency === 'PHP') {
@@ -343,6 +373,15 @@ export function parseSmartText(text: string): ParsedSmartInput {
     result.paymentMethod = 'Apple 订阅 (巴区)';
   } else if (result.currency === 'NGN') {
     result.paymentMethod = 'Apple 订阅 (尼区)';
+  } else if (hasJapanese || /apple\s*one|サブスクリプション/i.test(text)) {
+    result.paymentMethod = 'Apple 订阅 (日区)';
+  } else if (/subscriptions|apple|renewal receipt|in-app/i.test(text)) {
+    const curDef = getCurrencyDef(result.currency || '');
+    if (curDef && curDef.appStoreRegionName) {
+      result.paymentMethod = curDef.appStoreRegionName;
+    } else {
+      result.paymentMethod = 'Apple 订阅 (外区)';
+    }
   }
 
   if (remainingNotes.length > 0 && !result.notes) {

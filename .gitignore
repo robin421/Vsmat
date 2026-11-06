@@ -12,6 +12,7 @@ dist
 dist-ssr
 *.zip
 *.local
+*.traineddata
 
 # Editor directories and files
 .vscode/*

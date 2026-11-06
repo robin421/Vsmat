@@ -64,6 +64,14 @@ export const BrandBadge: React.FC<BrandBadgeProps> = ({
     );
   }
 
+  if (normalizedKey.includes('grok') || lowerName.includes('grok') || lowerName.includes('supergrok') || lowerName.includes('xai')) {
+    return (
+      <div className={baseSquircle} title="xAI Grok / SuperGrok">
+        <Bot className={`${iconSizes[size]} text-[#222222]`} />
+      </div>
+    );
+  }
+
   if (normalizedKey.includes('cursor') || lowerName.includes('cursor')) {
     return (
       <div className={baseSquircle} title="Cursor AI">

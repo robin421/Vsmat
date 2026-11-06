@@ -97,6 +97,38 @@ PKR 4,900
   if (parsedPk.price !== 4900) throw new Error('Expected 4900, got ' + parsedPk.price);
   if (parsedPk.paymentMethod !== 'Apple 订阅 (巴区)') throw new Error('Expected Apple 订阅 (巴区), got ' + parsedPk.paymentMethod);
   console.log('✅ 巴区验证通过！PKR 4900, Apple 订阅 (巴区)');
+
+  console.log('\n🧪 测试 Case 5: 真实印度区 xAI SuperGrok 截图提取 (₹700 / 3700 & 18 November)...');
+  const ocrOutputIndiaGrok = `
+13:47 b= ssuyes "0 @5%
+4 Subscriptions x
+Active
+Grok
+ヴ superGrok 3700 >
+Renews 18 November
+Options
+Renewal Receipt Emails ()
+A receipt will be sent to you each time one of
+your subscriptions renews. Receipts are
+always available in Apple Account settings >
+Purchase History.
+`;
+  const parsedIn = parseSmartText(ocrOutputIndiaGrok);
+  console.log('印度区解析结果:');
+  console.log('  服务名称:', parsedIn.serviceName);
+  console.log('  服务标识:', parsedIn.serviceKey);
+  console.log('  金额:', parsedIn.price);
+  console.log('  币种:', parsedIn.currency);
+  console.log('  下期续费日:', parsedIn.nextBillingDate);
+  console.log('  支付方式:', parsedIn.paymentMethod);
+
+  if (parsedIn.serviceKey !== 'grok') throw new Error('Expected grok, got ' + parsedIn.serviceKey);
+  if (parsedIn.serviceName !== 'SuperGrok') throw new Error('Expected SuperGrok, got ' + parsedIn.serviceName);
+  if (parsedIn.currency !== 'INR') throw new Error('Expected INR, got ' + parsedIn.currency);
+  if (parsedIn.price !== 700) throw new Error('Expected 700, got ' + parsedIn.price);
+  if (parsedIn.paymentMethod !== 'Apple 订阅 (印区)') throw new Error('Expected Apple 订阅 (印区), got ' + parsedIn.paymentMethod);
+  if (!parsedIn.nextBillingDate?.endsWith('-11-18')) throw new Error('Expected date ending in -11-18, got ' + parsedIn.nextBillingDate);
+  console.log('✅ 印度区验证通过！SuperGrok, ₹700 INR, Apple 订阅 (印区), 2026-11-18');
 }
 
 testOCRExtraction();
