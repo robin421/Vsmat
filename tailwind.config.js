@@ -9,23 +9,32 @@ export default {
     extend: {
       colors: {
         brand: {
-          50: '#f0f7ff',
-          100: '#e0effe',
-          200: '#bae0fd',
-          300: '#7cc7fb',
-          400: '#36abf7',
-          500: '#0c8fe9',
-          600: '#0066cc', // 1Password Security Blue
-          700: '#025bb5',
-          800: '#064d95',
-          900: '#0b417c',
-          950: '#072a53',
+          50: '#eff6ff',
+          100: '#dbeafe',
+          200: '#bfdbfe',
+          300: '#93c5fd',
+          400: '#60a5fa',
+          500: '#3b82f6',
+          600: '#2563eb', // Commercial Crisp Blue
+          700: '#1d4ed8',
+          800: '#1e40af',
+          900: '#1e3a8a',
+          950: '#172554',
         },
+        surface: {
+          50: '#fbfcfd',
+          100: '#f8fafc',
+          200: '#f1f5f9',
+          300: '#e2e8f0',
+        }
       },
       boxShadow: {
-        'subtle': '0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.04)',
-        'elevated': '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05)',
-        'card': '0 10px 15px -3px rgba(0, 0, 0, 0.04), 0 4px 6px -4px rgba(0, 0, 0, 0.02)',
+        'subtle': '0 1px 2px 0 rgba(0, 0, 0, 0.03)',
+        'card': '0 1px 3px 0 rgba(0, 0, 0, 0.02), 0 6px 16px -4px rgba(0, 0, 0, 0.03)',
+        'elevated': '0 4px 6px -1px rgba(0, 0, 0, 0.03), 0 12px 24px -4px rgba(0, 0, 0, 0.06)',
+        'glow-blue': '0 0 20px -3px rgba(37, 99, 235, 0.25)',
+        'glow-emerald': '0 0 20px -3px rgba(16, 185, 129, 0.25)',
+        'glow-amber': '0 0 20px -3px rgba(245, 158, 11, 0.25)',
       }
     },
   },

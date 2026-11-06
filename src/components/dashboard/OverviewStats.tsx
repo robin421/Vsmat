@@ -1,5 +1,5 @@
 import React from 'react';
-import { DollarSign, Key, CreditCard, Gift, TrendingUp } from 'lucide-react';
+import { DollarSign, Key, Gift, TrendingUp, ShieldCheck } from 'lucide-react';
 import { SubscriptionItem, TokenItem, VoucherItem } from '../../types';
 
 interface OverviewStatsProps {
@@ -53,75 +53,78 @@ export const OverviewStats: React.FC<OverviewStatsProps> = ({
   const unredeemedVouchers = vouchers.filter(v => v.status === 'unredeemed');
 
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
       {/* Monthly Expense Card */}
-      <div className="p-4 rounded-2xl bg-white border border-slate-200/90 shadow-subtle hover:shadow-elevated transition flex flex-col justify-between">
-        <div className="flex items-center justify-between text-xs text-slate-500 mb-1">
-          <span className="font-medium">预估月度总支出</span>
-          <div className="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
+      <div className="p-5 rounded-2xl bg-white border border-black/[0.06] card-ambient transition-all flex flex-col justify-between">
+        <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
+          <span className="font-semibold text-slate-600">预估月度总支出</span>
+          <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 border border-blue-100/80 flex items-center justify-center shadow-2xs">
             <DollarSign className="w-4 h-4" />
           </div>
         </div>
         <div>
-          <div className="text-xl font-extrabold text-slate-900 font-mono tracking-tight">
+          <div className="text-2xl font-extrabold text-slate-900 font-mono tracking-tight">
             {preferredCurrency === 'CNY' ? `¥ ${monthlyTotalCNY.toFixed(1)}` : `$ ${monthlyTotalUSD.toFixed(1)}`}
           </div>
-          <div className="text-[11px] text-slate-400 mt-0.5">
+          <div className="text-[11px] font-mono text-slate-400 mt-1 font-medium">
             折合 {preferredCurrency === 'CNY' ? `$ ${monthlyTotalUSD.toFixed(1)}` : `¥ ${monthlyTotalCNY.toFixed(1)}`}
           </div>
         </div>
       </div>
 
       {/* Annual Expense Card */}
-      <div className="p-4 rounded-2xl bg-white border border-slate-200/90 shadow-subtle hover:shadow-elevated transition flex flex-col justify-between">
-        <div className="flex items-center justify-between text-xs text-slate-500 mb-1">
-          <span className="font-medium">预估年度总支出</span>
-          <div className="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
+      <div className="p-5 rounded-2xl bg-white border border-black/[0.06] card-ambient transition-all flex flex-col justify-between">
+        <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
+          <span className="font-semibold text-slate-600">预估年度总支出</span>
+          <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100/80 flex items-center justify-center shadow-2xs">
             <TrendingUp className="w-4 h-4" />
           </div>
         </div>
         <div>
-          <div className="text-xl font-extrabold text-slate-900 font-mono tracking-tight">
+          <div className="text-2xl font-extrabold text-slate-900 font-mono tracking-tight">
             {preferredCurrency === 'CNY' ? `¥ ${annualTotalCNY.toFixed(0)}` : `$ ${annualTotalUSD.toFixed(0)}`}
           </div>
-          <div className="text-[11px] text-slate-400 mt-0.5">
+          <div className="text-[11px] font-mono text-slate-400 mt-1 font-medium">
             共 {subscriptions.length} 项有效订阅服务
           </div>
         </div>
       </div>
 
       {/* Secret Keys Stored */}
-      <div className="p-4 rounded-2xl bg-white border border-slate-200/90 shadow-subtle hover:shadow-elevated transition flex flex-col justify-between">
-        <div className="flex items-center justify-between text-xs text-slate-500 mb-1">
-          <span className="font-medium">保险箱加密密钥</span>
-          <div className="w-7 h-7 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
+      <div className="p-5 rounded-2xl bg-white border border-black/[0.06] card-ambient transition-all flex flex-col justify-between">
+        <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
+          <span className="font-semibold text-slate-600">保险箱加密密钥</span>
+          <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 border border-amber-100/80 flex items-center justify-center shadow-2xs">
             <Key className="w-4 h-4" />
           </div>
         </div>
         <div>
-          <div className="text-xl font-extrabold text-slate-900 font-mono tracking-tight">
-            {tokens.length} <span className="text-xs text-slate-500 font-normal">个 API Key</span>
+          <div className="text-2xl font-extrabold text-slate-900 font-mono tracking-tight flex items-baseline gap-1.5">
+            <span>{tokens.length}</span>
+            <span className="text-xs font-normal text-slate-400 font-sans">个 API Key</span>
           </div>
-          <div className="text-[11px] text-emerald-600 font-medium mt-0.5">
-            AES-256-GCM 强加密保护
+          <div className="text-[11px] text-emerald-600 font-semibold mt-1 flex items-center gap-1">
+            <ShieldCheck className="w-3 h-3" />
+            <span>AES-256-GCM 强加密保护</span>
           </div>
         </div>
       </div>
 
-      {/* Unused Vouchers */}
-      <div className="p-4 rounded-2xl bg-white border border-slate-200/90 shadow-subtle hover:shadow-elevated transition flex flex-col justify-between">
-        <div className="flex items-center justify-between text-xs text-slate-500 mb-1">
-          <span className="font-medium">待核销礼品卡券</span>
-          <div className="w-7 h-7 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center">
+      {/* Pending Vouchers */}
+      <div className="p-5 rounded-2xl bg-white border border-black/[0.06] card-ambient transition-all flex flex-col justify-between">
+        <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
+          <span className="font-semibold text-slate-600">待核销礼品卡券</span>
+          <div className="w-8 h-8 rounded-xl bg-purple-50 text-purple-600 border border-purple-100/80 flex items-center justify-center shadow-2xs">
             <Gift className="w-4 h-4" />
           </div>
         </div>
         <div>
-          <div className="text-xl font-extrabold text-slate-900 font-mono tracking-tight">
-            {unredeemedVouchers.length} <span className="text-xs text-slate-500 font-normal">张待使用</span>
+          <div className="text-2xl font-extrabold text-slate-900 font-mono tracking-tight flex items-baseline gap-1.5">
+            <span>{unredeemedVouchers.length}</span>
+            <span className="text-xs font-normal text-slate-400 font-sans">张待使用</span>
           </div>
-          <div className="text-[11px] text-purple-600 font-medium mt-0.5">
-            支持一键直达充值
+          <div className="text-[11px] text-blue-600 font-semibold mt-1">
+            随时一键直达充值
           </div>
         </div>
       </div>

@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Plus, Key } from 'lucide-react';
+import { Plus, Key, ShieldCheck } from 'lucide-react';
 import { TokenItem } from '../../types';
 import { TokenCard } from './TokenCard';
 
@@ -32,24 +32,25 @@ export const TokenList: React.FC<TokenListProps> = ({
 
   return (
     <div className="space-y-4">
-      {/* Top action toolbar (Minimalist, clean) */}
+      {/* Top action toolbar */}
       <div className="flex items-center justify-between pb-1">
-        <div className="text-xs text-slate-500 font-medium">
-          共收录 {tokens.length} 个 API 密钥凭证 · 本地 AES-256 强加密保护
+        <div className="flex items-center gap-2 text-xs text-slate-500 font-medium">
+          <ShieldCheck className="w-4 h-4 text-emerald-600" />
+          <span>共收录 <strong className="text-slate-800 font-mono">{tokens.length}</strong> 个 API 密钥凭证 · 硬件级 AES-256 离线加密保护</span>
         </div>
 
         <button
           onClick={onAddNew}
-          className="h-9 px-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs transition flex items-center justify-center gap-1.5 shadow-sm shadow-blue-600/20 active:scale-95"
+          className="h-9 px-3.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold text-xs transition flex items-center justify-center gap-1.5 shadow-[0_2px_8px_rgba(37,99,235,0.25)] active:scale-[0.98]"
         >
           <Plus className="w-3.5 h-3.5" />
-          收藏新密钥
+          <span>收藏新密钥</span>
         </button>
       </div>
 
       {/* Grid of Tokens */}
       {filteredTokens.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4.5">
           {filteredTokens.map(token => (
             <TokenCard
               key={token.id}
@@ -60,8 +61,8 @@ export const TokenList: React.FC<TokenListProps> = ({
           ))}
         </div>
       ) : (
-        <div className="text-center py-12 px-4 rounded-2xl border border-dashed border-slate-200 bg-white shadow-subtle">
-          <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mx-auto mb-3 shadow-subtle">
+        <div className="text-center py-16 px-4 rounded-3xl border border-dashed border-slate-200 bg-white/60 shadow-subtle">
+          <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mx-auto mb-3 shadow-2xs">
             <Key className="w-6 h-6" />
           </div>
           <h4 className="text-sm font-bold text-slate-900 mb-1">
@@ -72,10 +73,10 @@ export const TokenList: React.FC<TokenListProps> = ({
           </p>
           <button
             onClick={onAddNew}
-            className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs transition inline-flex items-center gap-1.5 shadow-sm shadow-blue-600/20"
+            className="px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold text-xs transition inline-flex items-center gap-1.5 shadow-sm shadow-blue-600/20 active:scale-[0.98]"
           >
             <Plus className="w-4 h-4" />
-            现在添加密钥
+            <span>现在添加密钥</span>
           </button>
         </div>
       )}

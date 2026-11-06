@@ -1,9 +1,17 @@
 import React, { useState } from 'react';
-import { AlertTriangle, Bell, Calendar, Clock, CheckCircle2, ExternalLink, ShieldAlert, Sparkles } from 'lucide-react';
+import {
+  AlertTriangle,
+  Bell,
+  Calendar,
+  CheckCircle2,
+  RefreshCw,
+  ArrowUpRight,
+  Clock
+} from 'lucide-react';
 import { SubscriptionItem } from '../../types';
 import { getDaysUntil, requestNotificationPermission, checkAndSendRenewalNotifications } from '../../lib/notifications';
 import { downloadICalendarFile } from '../../lib/calendar';
-import { getPresetByKey } from '../../types/presets';
+import { BrandBadge } from '../common/BrandBadge';
 import confetti from 'canvas-confetti';
 
 interface UrgentReminderBannerProps {
@@ -27,19 +35,21 @@ export const UrgentReminderBanner: React.FC<UrgentReminderBannerProps> = ({
 
   if (urgentSubs.length === 0) {
     return (
-      <div className="flex flex-col sm:flex-row items-center justify-between p-4 rounded-xl bg-white border border-slate-200 text-xs text-slate-600 gap-3 shadow-subtle">
-        <div className="flex items-center gap-2">
-          <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-          <span>当前未来 7 天内无临期续费项目，全部订阅状态良好。</span>
+      <div className="flex flex-col sm:flex-row items-center justify-between p-4 rounded-2xl bg-white/90 border border-black/[0.06] text-xs text-slate-600 gap-3 shadow-[0_1px_3px_rgba(0,0,0,0.02)]">
+        <div className="flex items-center gap-2.5">
+          <div className="w-6 h-6 rounded-lg bg-emerald-50 text-emerald-600 border border-emerald-200/60 flex items-center justify-center">
+            <CheckCircle2 className="w-3.5 h-3.5" />
+          </div>
+          <span className="font-medium text-slate-700">未来 7 天内无临期待扣费项目，所有服务运转良好。</span>
         </div>
         <div className="flex items-center gap-2">
           <button
             onClick={() => downloadICalendarFile(subscriptions)}
-            className="px-3 py-1.5 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 transition flex items-center gap-1.5 font-medium shadow-subtle"
+            className="px-3 py-1.5 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200/90 transition flex items-center gap-1.5 font-semibold shadow-2xs active:scale-[0.98]"
             title="一键将全部订阅生成系统日历事件，导入 Mac/iPhone 闹钟"
           >
             <Calendar className="w-3.5 h-3.5 text-blue-600" />
-            导出到系统日历 (.ics)
+            <span>导出到系统日历 (.ics)</span>
           </button>
         </div>
       </div>
@@ -60,7 +70,7 @@ export const UrgentReminderBanner: React.FC<UrgentReminderBannerProps> = ({
 
   const handleRenewClick = (subId: string) => {
     confetti({
-      particleCount: 40,
+      particleCount: 35,
       spread: 50,
       origin: { y: 0.6 }
     });
@@ -68,21 +78,22 @@ export const UrgentReminderBanner: React.FC<UrgentReminderBannerProps> = ({
   };
 
   return (
-    <div className="rounded-2xl bg-amber-50/70 border border-amber-200/90 p-5 shadow-subtle">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-amber-200/60">
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-amber-100 border border-amber-200 flex items-center justify-center text-amber-700 animate-pulse shadow-subtle">
-            <AlertTriangle className="w-4 h-4" />
+    <div className="rounded-2xl bg-gradient-to-b from-amber-500/[0.05] via-amber-500/[0.02] to-transparent border border-amber-200/80 p-4 sm:p-5 shadow-[0_2px_12px_rgba(245,158,11,0.06)] relative overflow-hidden">
+      {/* Top Header Row */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-amber-200/50">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-xl bg-amber-100/90 border border-amber-200 text-amber-700 flex items-center justify-center shrink-0 shadow-2xs">
+            <AlertTriangle className="w-4 h-4 animate-pulse" />
           </div>
           <div>
-            <h3 className="text-sm font-bold text-amber-950 flex items-center gap-2">
-              充值与续费预警中心
-              <span className="text-xs px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 font-bold border border-amber-300">
-                {urgentSubs.length} 个待充值
+            <div className="flex items-center gap-2">
+              <h3 className="text-sm font-bold text-slate-900 tracking-tight">充值与续费预警中心</h3>
+              <span className="text-[11px] px-2 py-0.2 rounded-full bg-amber-100/90 text-amber-800 font-bold border border-amber-300/80">
+                {urgentSubs.length} 项待处理
               </span>
-            </h3>
-            <p className="text-xs text-amber-800/80">
-              为防止服务中断，请及时充值或完成续费扣款。支持一键导入系统日历享受强力闹钟！
+            </div>
+            <p className="text-xs text-slate-500 mt-0.5">
+              及时充值确保 API 与服务不断流。支持一键导出到系统日历，由 Mac / iPhone 提前 1 天和 3 天强力响铃提醒。
             </p>
           </div>
         </div>
@@ -91,106 +102,82 @@ export const UrgentReminderBanner: React.FC<UrgentReminderBannerProps> = ({
         <div className="flex items-center gap-2 shrink-0">
           <button
             onClick={() => downloadICalendarFile(subscriptions)}
-            className="text-xs px-3 py-1.5 rounded-lg bg-white hover:bg-slate-50 text-blue-700 border border-blue-200 transition flex items-center gap-1.5 font-semibold shadow-subtle"
+            className="text-xs px-3 py-1.5 rounded-xl bg-white hover:bg-slate-50 active:scale-[0.98] text-slate-700 border border-slate-200/90 transition flex items-center gap-1.5 font-semibold shadow-2xs"
             title="把所有续费日程导入 Mac / iPhone 日历，提前1天和3天响铃提醒"
           >
             <Calendar className="w-3.5 h-3.5 text-blue-600" />
-            一键同步日历闹钟 (.ics)
+            <span>一键同步日历闹钟 (.ics)</span>
           </button>
 
           <button
             onClick={handleEnableNotification}
-            className="text-xs px-3 py-1.5 rounded-lg bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 transition flex items-center gap-1.5 font-medium shadow-subtle"
-            title="开启系统级通知弹窗"
+            className="text-xs px-3 py-1.5 rounded-xl bg-white hover:bg-slate-50 active:scale-[0.98] text-slate-700 border border-slate-200/90 transition flex items-center gap-1.5 font-semibold shadow-2xs"
+            title="开启网页桌面系统通知"
           >
             <Bell className="w-3.5 h-3.5 text-amber-600" />
-            桌面通知
+            <span>桌面通知</span>
           </button>
         </div>
       </div>
 
       {notificationStatus && (
-        <div className="mt-2.5 px-3 py-1.5 rounded-lg bg-white border border-blue-200 text-xs text-blue-800 flex items-center gap-2 shadow-subtle">
-          <Sparkles className="w-3.5 h-3.5 text-blue-600" />
+        <div className="mt-2.5 py-1 px-3 rounded-lg bg-amber-100/80 border border-amber-200 text-xs text-amber-800 font-medium animate-fadeIn">
           {notificationStatus}
         </div>
       )}
 
-      {/* Urgent cards grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mt-4">
+      {/* Elegant Horizontal Urgent Items Row */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 pt-3.5">
         {urgentSubs.map(({ sub, days }) => {
-          const preset = getPresetByKey(sub.serviceKey);
           const isOverdue = days < 0;
           const isToday = days === 0;
 
           return (
             <div
               key={sub.id}
-              className={`p-3.5 rounded-xl border flex flex-col justify-between transition bg-white shadow-subtle ${
-                isOverdue
-                  ? 'border-red-300 bg-red-50/30'
-                  : isToday
-                  ? 'border-amber-300 bg-amber-50/30'
-                  : 'border-slate-200'
-              }`}
+              className="rounded-xl bg-white border border-amber-200/70 p-3 shadow-2xs hover:shadow-subtle hover:border-amber-300 transition-all flex items-center justify-between gap-3"
             >
-              <div>
-                <div className="flex items-start justify-between gap-2 mb-2">
-                  <div className="flex items-center gap-2">
-                    <span className="w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold border bg-slate-100 text-slate-800 border-slate-200">
-                      {sub.name.slice(0, 1)}
+              <div className="flex items-center gap-2.5 min-w-0">
+                <BrandBadge serviceKey={sub.serviceKey} name={sub.name} size="sm" />
+                <div className="min-w-0">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-xs font-bold text-slate-900 truncate">{sub.name}</span>
+                    <span
+                      className={`text-[10px] font-mono px-1.5 py-0.2 rounded font-bold shrink-0 ${
+                        isOverdue
+                          ? 'bg-red-100 text-red-700'
+                          : isToday
+                          ? 'bg-amber-100 text-amber-800'
+                          : 'bg-amber-50 text-amber-700 border border-amber-200/60'
+                      }`}
+                    >
+                      {isOverdue ? `逾期 ${Math.abs(days)}d` : isToday ? '今天扣费' : `还剩 ${days}d`}
                     </span>
-                    <div>
-                      <h4 className="text-sm font-bold text-slate-900 leading-tight truncate max-w-[150px]">
-                        {sub.name}
-                      </h4>
-                      <p className="text-[11px] text-slate-500 font-mono truncate max-w-[150px]">
-                        {sub.accountEmail || '未指定邮箱'}
-                      </p>
-                    </div>
                   </div>
-
-                  {/* Urgency Badge */}
-                  <span
-                    className={`text-[11px] px-2 py-0.5 rounded-full font-bold shrink-0 ${
-                      isOverdue
-                        ? 'bg-red-100 text-red-700 border border-red-200 animate-pulse'
-                        : isToday
-                        ? 'bg-amber-100 text-amber-800 border border-amber-300 animate-pulse'
-                        : 'bg-amber-50 text-amber-800 border border-amber-200'
-                    }`}
-                  >
-                    {isOverdue ? `已逾期 ${Math.abs(days)} 天` : isToday ? '今日扣费!' : `还剩 ${days} 天`}
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between text-xs py-1.5 border-t border-slate-100 mb-2">
-                  <span className="text-slate-500">扣费金额:</span>
-                  <span className="font-bold text-slate-900 font-mono">
-                    {sub.currency} {sub.price}
-                  </span>
+                  <p className="text-[11px] font-mono text-slate-500 truncate mt-0.5">
+                    {sub.currency} {sub.price} · {sub.nextBillingDate}
+                  </p>
                 </div>
               </div>
 
-              {/* Action buttons */}
-              <div className="flex items-center gap-2 pt-2 border-t border-slate-100">
+              {/* Action Buttons */}
+              <div className="flex items-center gap-1.5 shrink-0">
                 <button
                   type="button"
                   onClick={() => onOpenRechargeWithService(sub.serviceKey, sub)}
-                  className="flex-1 py-1.5 px-2.5 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 text-xs font-semibold transition flex items-center justify-center gap-1 shadow-subtle"
+                  className="px-2 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 active:scale-95 text-blue-700 text-[11px] font-semibold border border-blue-200/60 transition flex items-center gap-1"
                 >
-                  <ExternalLink className="w-3 h-3" />
-                  去充值
+                  <ArrowUpRight className="w-3 h-3" />
+                  <span>去充值</span>
                 </button>
-
                 <button
                   type="button"
                   onClick={() => handleRenewClick(sub.id)}
-                  className="py-1.5 px-3 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-semibold transition flex items-center justify-center gap-1 shadow-subtle"
-                  title="点击将下期扣费时间自动往后顺延一个周期"
+                  className="px-2 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 active:scale-95 text-emerald-800 text-[11px] font-semibold border border-emerald-200/60 transition flex items-center gap-1"
+                  title="顺延续费一个周期"
                 >
-                  <CheckCircle2 className="w-3 h-3 text-emerald-600" />
-                  我已续费
+                  <RefreshCw className="w-3 h-3 text-emerald-600" />
+                  <span>已续费</span>
                 </button>
               </div>
             </div>
