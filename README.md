@@ -33,25 +33,61 @@
 
 ---
 
-## 🚀 启动与使用方式
+## 🚀 面向真实用户：零终端开箱即用 (PWA + Cloudflare Pages)
 
-在终端中进入项目目录：
+普通用户**不需要懂终端或运行代码**，直接像原生 App 一样使用：
+
+### 1. 桌面端（Mac / Windows）原生体验
+1. 在 Chrome / Edge / Safari 中打开部署好的网址。
+2. 浏览器地址栏右侧会显示 **“安装应用”** 或 **“添加到程序坞 (Add to Dock)”** 按钮。
+3. 点击安装后，Vsmat 将化身为**独立窗口桌面应用**，常驻 Mac 程序坞或 Windows 任务栏，无浏览器多余地址栏和标签页，体验与 1Password / Apple Passwords 独立软件一致！
+4. **离线可用**：内置 Service Worker 缓存，完全断网/飞行模式下依然秒开。
+
+### 2. 移动端（iPhone / iPad / Android）
+1. 用 Safari / 移动浏览器打开网址。
+2. 点击底部 **“分享”** 按钮 -> 选择 **“添加到主屏幕”**。
+3. 手机桌面立刻生成独立 App 图标，点击全屏沉浸式打开，绝不卡顿。
+
+---
+
+## 🌐 推荐部署方案：Cloudflare Pages（无限流量 + 军工级防 DDoS）
+
+针对此前使用 Vercel 容易被攻击刷流量导致下线的问题，本项目 100% 推荐部署在 **Cloudflare Pages**：
+- **无限免费带宽**：永不因流量激增停机或收取额外费用。
+- **全球 Anycast 防御**：全球 300+ 边缘节点自动清洗 DDoS 恶意流量。
+- **零后端维护**：纯静态 SPA，毫秒级全球加速。
+
+### 部署方法（任选一种）：
+
+#### 方式 A：控制台网页拖拽（1 分钟搞定，无需 Git）
+1. 本地执行 `pnpm build`，编译生成 `dist/` 文件夹。
+2. 登录 [Cloudflare 控制台](https://dash.cloudflare.com/) -> 点击左侧 **Workers 和 Pages** -> **创建** -> **Pages**。
+3. 点击 **上传资产 (Upload assets)**，直接将 `dist` 文件夹上传。
+4. 部署完成！立即免费获得高防二级域名（如 `https://vsmat.pages.dev`）。
+
+#### 方式 B：CLI 命令行一条命令发布
+```bash
+# 自动构建并直传发布到 Cloudflare Pages
+pnpm run deploy:cf
+```
+
+#### 方式 C：关联 GitHub 仓库（自动持续集成）
+1. 将当前项目 push 到你的 GitHub 私有仓库。
+2. 在 Cloudflare Pages 中选择 **连接到 Git**，关联该仓库。
+3. 构建设置：
+   - 构建命令：`pnpm build`
+   - 构建输出目录：`dist`
+4. 以后每次 `git push`，Cloudflare 全自动完成全球部署。
+
+---
+
+## 💻 本地开发与调试
 
 ```bash
 cd "/Volumes/T7 Shield/MyDocument/Vsmat"
-```
-
-### 方式一：开发调试模式 (Dev)
-```bash
 pnpm dev
 ```
-启动后在浏览器访问 `http://localhost:5173` 即可。
-
-### 方式二：打包运行模式 (Production Preview)
-```bash
-pnpm build
-pnpm preview
-```
+启动后在浏览器访问 `http://localhost:5173`。
 
 ---
 
