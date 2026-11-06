@@ -17,7 +17,6 @@ export const OverviewStats: React.FC<OverviewStatsProps> = ({
   usdToCnyRate,
   preferredCurrency,
 }) => {
-  // Calculate monthly normalized expense
   let monthlyTotalUSD = 0;
   for (const sub of subscriptions) {
     if (!sub.autoRenew && sub.cycle === 'lifetime') continue;
@@ -53,77 +52,77 @@ export const OverviewStats: React.FC<OverviewStatsProps> = ({
   const unredeemedVouchers = vouchers.filter(v => v.status === 'unredeemed');
 
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4.5">
       {/* Monthly Expense Card */}
-      <div className="p-5 rounded-2xl bg-white border border-zinc-200/80 card-ambient transition-all flex flex-col justify-between">
-        <div className="flex items-center justify-between text-xs text-zinc-500 mb-2">
-          <span className="font-semibold text-zinc-700">预估月度总支出</span>
-          <div className="w-8 h-8 rounded-xl bg-zinc-100 text-zinc-800 border border-zinc-200/80 flex items-center justify-center shadow-2xs">
+      <div className="p-6 rounded-3xl bg-white border border-[#EBEBEB] airbnb-card transition-all flex flex-col justify-between">
+        <div className="flex items-center justify-between text-xs text-[#717171] mb-2">
+          <span className="font-semibold text-[#222222]">预估月度总支出</span>
+          <div className="w-9 h-9 rounded-2xl bg-[#FFF0F2] text-[#FF385C] border border-[#FFCCD3] flex items-center justify-center shadow-2xs">
             <DollarSign className="w-4 h-4" />
           </div>
         </div>
         <div>
-          <div className="text-2xl font-extrabold text-zinc-950 font-mono tracking-tight">
+          <div className="text-2xl font-bold text-[#222222] font-mono tracking-tight">
             {preferredCurrency === 'CNY' ? `¥ ${monthlyTotalCNY.toFixed(1)}` : `$ ${monthlyTotalUSD.toFixed(1)}`}
           </div>
-          <div className="text-[11px] font-mono text-zinc-400 mt-1 font-medium">
+          <div className="text-[11px] font-mono text-[#717171] mt-1 font-medium">
             折合 {preferredCurrency === 'CNY' ? `$ ${monthlyTotalUSD.toFixed(1)}` : `¥ ${monthlyTotalCNY.toFixed(1)}`}
           </div>
         </div>
       </div>
 
       {/* Annual Expense Card */}
-      <div className="p-5 rounded-2xl bg-white border border-zinc-200/80 card-ambient transition-all flex flex-col justify-between">
-        <div className="flex items-center justify-between text-xs text-zinc-500 mb-2">
-          <span className="font-semibold text-zinc-700">预估年度总支出</span>
-          <div className="w-8 h-8 rounded-xl bg-zinc-100 text-zinc-800 border border-zinc-200/80 flex items-center justify-center shadow-2xs">
+      <div className="p-6 rounded-3xl bg-white border border-[#EBEBEB] airbnb-card transition-all flex flex-col justify-between">
+        <div className="flex items-center justify-between text-xs text-[#717171] mb-2">
+          <span className="font-semibold text-[#222222]">预估年度总支出</span>
+          <div className="w-9 h-9 rounded-2xl bg-[#FFF0F2] text-[#FF385C] border border-[#FFCCD3] flex items-center justify-center shadow-2xs">
             <TrendingUp className="w-4 h-4" />
           </div>
         </div>
         <div>
-          <div className="text-2xl font-extrabold text-zinc-950 font-mono tracking-tight">
+          <div className="text-2xl font-bold text-[#222222] font-mono tracking-tight">
             {preferredCurrency === 'CNY' ? `¥ ${annualTotalCNY.toFixed(0)}` : `$ ${annualTotalUSD.toFixed(0)}`}
           </div>
-          <div className="text-[11px] font-mono text-zinc-400 mt-1 font-medium">
+          <div className="text-[11px] font-mono text-[#717171] mt-1 font-medium">
             共 {subscriptions.length} 项有效订阅服务
           </div>
         </div>
       </div>
 
       {/* Secret Keys Stored */}
-      <div className="p-5 rounded-2xl bg-white border border-zinc-200/80 card-ambient transition-all flex flex-col justify-between">
-        <div className="flex items-center justify-between text-xs text-zinc-500 mb-2">
-          <span className="font-semibold text-zinc-700">保险箱加密密钥</span>
-          <div className="w-8 h-8 rounded-xl bg-zinc-100 text-zinc-800 border border-zinc-200/80 flex items-center justify-center shadow-2xs">
+      <div className="p-6 rounded-3xl bg-white border border-[#EBEBEB] airbnb-card transition-all flex flex-col justify-between">
+        <div className="flex items-center justify-between text-xs text-[#717171] mb-2">
+          <span className="font-semibold text-[#222222]">保险箱加密密钥</span>
+          <div className="w-9 h-9 rounded-2xl bg-[#FFF0F2] text-[#FF385C] border border-[#FFCCD3] flex items-center justify-center shadow-2xs">
             <Key className="w-4 h-4" />
           </div>
         </div>
         <div>
-          <div className="text-2xl font-extrabold text-zinc-950 font-mono tracking-tight flex items-baseline gap-1.5">
+          <div className="text-2xl font-bold text-[#222222] font-mono tracking-tight flex items-baseline gap-1.5">
             <span>{tokens.length}</span>
-            <span className="text-xs font-normal text-zinc-400 font-sans">个 API Key</span>
+            <span className="text-xs font-normal text-[#717171] font-sans">个 API Key</span>
           </div>
-          <div className="text-[11px] text-zinc-600 font-medium mt-1 flex items-center gap-1 font-mono">
-            <ShieldCheck className="w-3 h-3 text-zinc-700" />
+          <div className="text-[11px] text-[#717171] font-medium mt-1 flex items-center gap-1 font-mono">
+            <ShieldCheck className="w-3.5 h-3.5 text-[#FF385C]" />
             <span>AES-256-GCM 本地加密</span>
           </div>
         </div>
       </div>
 
       {/* Pending Vouchers */}
-      <div className="p-5 rounded-2xl bg-white border border-zinc-200/80 card-ambient transition-all flex flex-col justify-between">
-        <div className="flex items-center justify-between text-xs text-zinc-500 mb-2">
-          <span className="font-semibold text-zinc-700">待核销礼品卡券</span>
-          <div className="w-8 h-8 rounded-xl bg-zinc-100 text-zinc-800 border border-zinc-200/80 flex items-center justify-center shadow-2xs">
+      <div className="p-6 rounded-3xl bg-white border border-[#EBEBEB] airbnb-card transition-all flex flex-col justify-between">
+        <div className="flex items-center justify-between text-xs text-[#717171] mb-2">
+          <span className="font-semibold text-[#222222]">待核销礼品卡券</span>
+          <div className="w-9 h-9 rounded-2xl bg-[#FFF0F2] text-[#FF385C] border border-[#FFCCD3] flex items-center justify-center shadow-2xs">
             <Gift className="w-4 h-4" />
           </div>
         </div>
         <div>
-          <div className="text-2xl font-extrabold text-zinc-950 font-mono tracking-tight flex items-baseline gap-1.5">
+          <div className="text-2xl font-bold text-[#222222] font-mono tracking-tight flex items-baseline gap-1.5">
             <span>{unredeemedVouchers.length}</span>
-            <span className="text-xs font-normal text-zinc-400 font-sans">张待使用</span>
+            <span className="text-xs font-normal text-[#717171] font-sans">张待使用</span>
           </div>
-          <div className="text-[11px] text-zinc-500 font-medium mt-1">
+          <div className="text-[11px] text-[#FF385C] font-semibold mt-1">
             随时一键直达充值
           </div>
         </div>

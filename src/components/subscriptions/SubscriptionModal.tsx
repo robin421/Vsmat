@@ -50,7 +50,6 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
       setRechargeUrl(initialData.rechargeUrl || '');
       setNotes(initialData.notes || '');
     } else {
-      // Clean blank state for adding new subscription
       setName('');
       setServiceKey('custom');
       setCategory('ai');
@@ -75,9 +74,7 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
 
   const handleServiceChange = (key: string) => {
     setServiceKey(key);
-    if (key === 'custom') {
-      return;
-    }
+    if (key === 'custom') return;
     const p = getPresetByKey(key);
     if (p) {
       if (!name || PRESET_SERVICES.some(s => s.name === name)) {
@@ -123,37 +120,41 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-fadeIn">
-      <div className="w-full max-w-lg rounded-2xl bg-white border border-zinc-200 p-6 shadow-2xl overflow-y-auto max-h-[92vh] text-zinc-800">
-        <div className="flex items-center justify-between pb-4 border-b border-zinc-100">
-          <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-zinc-100 text-zinc-900 border border-zinc-200/80 flex items-center justify-center shadow-2xs">
-              <CreditCard className="w-4 h-4" />
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fadeIn">
+      <div className="w-full max-w-lg rounded-3xl bg-white border border-[#EBEBEB] p-6 sm:p-7 shadow-2xl overflow-y-auto max-h-[92vh] text-[#222222] airbnb-card">
+        {/* Header */}
+        <div className="flex items-center justify-between pb-4 border-b border-[#EBEBEB]">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-[#FFF0F2] text-[#FF385C] border border-[#FFCCD3] flex items-center justify-center shadow-2xs">
+              <CreditCard className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-zinc-950">
+              <h3 className="text-base font-bold text-[#222222]">
                 {initialData ? '编辑订阅详情' : '新建订阅记录'}
               </h3>
-              <p className="text-xs text-zinc-500">
+              <p className="text-xs text-[#717171]">
                 {initialData ? '修改账号、金额、到期时间与登录备忘' : '录入新的周期续费服务或账号'}
               </p>
             </div>
           </div>
-          <button onClick={onClose} className="p-1 rounded-lg text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 transition">
-            <X className="w-5 h-5" />
+          <button
+            onClick={onClose}
+            className="w-9 h-9 rounded-full border border-[#DDDDDD] hover:bg-[#F7F7F7] flex items-center justify-center text-[#717171] hover:text-[#222222] transition"
+          >
+            <X className="w-4 h-4" />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="mt-4 space-y-4 text-sm">
+        <form onSubmit={handleSubmit} className="mt-5 space-y-4 text-sm">
           {/* Preset selector */}
           <div>
-            <label className="block text-xs font-medium text-zinc-700 mb-1.5">
+            <label className="block text-xs font-semibold text-[#222222] mb-1.5">
               快捷服务模板
             </label>
             <select
               value={serviceKey}
               onChange={(e) => handleServiceChange(e.target.value)}
-              className="w-full h-10 bg-zinc-50 border border-zinc-200 rounded-xl px-3 text-zinc-800 outline-none focus:bg-white focus:border-zinc-400 shadow-2xs text-xs"
+              className="w-full h-11 bg-[#F7F7F7] border border-[#DDDDDD] focus:border-[#222222] focus:bg-white rounded-xl px-3.5 text-xs font-medium text-[#222222] outline-none transition shadow-2xs"
             >
               <option value="custom">-- 自定义服务 (自行输入) --</option>
               {PRESET_SERVICES.map((p) => (
@@ -167,8 +168,8 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
           {/* Name & Category */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-medium text-zinc-700 mb-1.5">
-                服务名称 <span className="text-red-500">*</span>
+              <label className="block text-xs font-semibold text-[#222222] mb-1.5">
+                服务名称 <span className="text-[#FF385C]">*</span>
               </label>
               <input
                 type="text"
@@ -176,17 +177,17 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="例如: ChatGPT Plus / Cursor / Netflix"
-                className="w-full h-10 bg-zinc-50 border border-zinc-200 rounded-xl px-3 text-zinc-900 outline-none focus:bg-white focus:border-zinc-400 shadow-2xs text-xs"
+                className="w-full h-11 bg-[#F7F7F7] border border-[#DDDDDD] focus:border-[#222222] focus:bg-white rounded-xl px-3.5 text-xs font-medium text-[#222222] outline-none transition shadow-2xs"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-zinc-700 mb-1.5">
+              <label className="block text-xs font-semibold text-[#222222] mb-1.5">
                 所属类别
               </label>
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value as ServiceCategory)}
-                className="w-full h-10 bg-zinc-50 border border-zinc-200 rounded-xl px-3 text-zinc-800 outline-none focus:bg-white focus:border-zinc-400 shadow-2xs text-xs"
+                className="w-full h-11 bg-[#F7F7F7] border border-[#DDDDDD] focus:border-[#222222] focus:bg-white rounded-xl px-3.5 text-xs font-medium text-[#222222] outline-none transition shadow-2xs"
               >
                 <option value="ai">AI 智能模型</option>
                 <option value="developer">开发工具与托管</option>
@@ -201,7 +202,7 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
           {/* Account credentials */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-medium text-zinc-700 mb-1.5">
+              <label className="block text-xs font-semibold text-[#222222] mb-1.5">
                 登录账号 / 邮箱
               </label>
               <input
@@ -209,11 +210,11 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
                 value={accountEmail}
                 onChange={(e) => setAccountEmail(e.target.value)}
                 placeholder="user@example.com"
-                className="w-full h-10 bg-zinc-50 border border-zinc-200 rounded-xl px-3 font-mono text-xs text-zinc-900 outline-none focus:bg-white focus:border-zinc-400 shadow-2xs"
+                className="w-full h-11 bg-[#F7F7F7] border border-[#DDDDDD] focus:border-[#222222] focus:bg-white rounded-xl px-3.5 font-mono text-xs text-[#222222] outline-none transition shadow-2xs"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-zinc-700 mb-1.5">
+              <label className="block text-xs font-semibold text-[#222222] mb-1.5">
                 登录密码备忘 (本地强加密)
               </label>
               <input
@@ -221,7 +222,7 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
                 value={passwordNote}
                 onChange={(e) => setPasswordNote(e.target.value)}
                 placeholder="登录密码或安全提示"
-                className="w-full h-10 bg-zinc-50 border border-zinc-200 rounded-xl px-3 font-mono text-xs text-zinc-900 outline-none focus:bg-white focus:border-zinc-400 shadow-2xs"
+                className="w-full h-11 bg-[#F7F7F7] border border-[#DDDDDD] focus:border-[#222222] focus:bg-white rounded-xl px-3.5 font-mono text-xs text-[#222222] outline-none transition shadow-2xs"
               />
             </div>
           </div>
@@ -229,13 +230,13 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
           {/* Pricing & Cycle */}
           <div className="grid grid-cols-3 gap-2.5">
             <div>
-              <label className="block text-xs font-medium text-zinc-700 mb-1.5">
+              <label className="block text-xs font-semibold text-[#222222] mb-1.5">
                 续费周期
               </label>
               <select
                 value={cycle}
                 onChange={(e) => setCycle(e.target.value as BillingCycle)}
-                className="w-full h-10 bg-zinc-50 border border-zinc-200 rounded-xl px-2.5 text-xs text-zinc-800 outline-none focus:bg-white focus:border-zinc-400 shadow-2xs"
+                className="w-full h-11 bg-[#F7F7F7] border border-[#DDDDDD] focus:border-[#222222] focus:bg-white rounded-xl px-2.5 text-xs text-[#222222] outline-none transition shadow-2xs"
               >
                 <option value="monthly">按月付 (Monthly)</option>
                 <option value="quarterly">按季度 (Quarterly)</option>
@@ -246,7 +247,7 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
               </select>
             </div>
             <div>
-              <label className="block text-xs font-medium text-zinc-700 mb-1.5">
+              <label className="block text-xs font-semibold text-[#222222] mb-1.5">
                 金额
               </label>
               <input
@@ -255,17 +256,17 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
                 placeholder="20"
-                className="w-full h-10 bg-zinc-50 border border-zinc-200 rounded-xl px-3 font-mono text-xs text-zinc-900 outline-none focus:bg-white focus:border-zinc-400 shadow-2xs"
+                className="w-full h-11 bg-[#F7F7F7] border border-[#DDDDDD] focus:border-[#222222] focus:bg-white rounded-xl px-3 font-mono text-xs text-[#222222] outline-none transition shadow-2xs"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-zinc-700 mb-1.5">
+              <label className="block text-xs font-semibold text-[#222222] mb-1.5">
                 币种
               </label>
               <select
                 value={currency}
                 onChange={(e) => setCurrency(e.target.value as any)}
-                className="w-full h-10 bg-zinc-50 border border-zinc-200 rounded-xl px-2.5 text-xs text-zinc-800 outline-none focus:bg-white focus:border-zinc-400 shadow-2xs"
+                className="w-full h-11 bg-[#F7F7F7] border border-[#DDDDDD] focus:border-[#222222] focus:bg-white rounded-xl px-2.5 text-xs text-[#222222] outline-none transition shadow-2xs"
               >
                 <option value="USD">USD ($)</option>
                 <option value="CNY">CNY (¥)</option>
@@ -280,19 +281,19 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
           {/* Next Billing Date & Payment Method */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-medium text-zinc-700 mb-1.5">
-                下期扣费/续费日 <span className="text-red-500">*</span>
+              <label className="block text-xs font-semibold text-[#222222] mb-1.5">
+                下期扣费/续费日 <span className="text-[#FF385C]">*</span>
               </label>
               <input
                 type="date"
                 required
                 value={nextBillingDate}
                 onChange={(e) => setNextBillingDate(e.target.value)}
-                className="w-full h-10 bg-zinc-50 border border-zinc-200 rounded-xl px-3 font-mono text-xs text-zinc-900 outline-none focus:bg-white focus:border-zinc-400 shadow-2xs"
+                className="w-full h-11 bg-[#F7F7F7] border border-[#DDDDDD] focus:border-[#222222] focus:bg-white rounded-xl px-3 font-mono text-xs text-[#222222] outline-none transition shadow-2xs"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-zinc-700 mb-1.5">
+              <label className="block text-xs font-semibold text-[#222222] mb-1.5">
                 付款方式 / 充值渠道
               </label>
               <input
@@ -300,7 +301,7 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
                 value={paymentMethod}
                 onChange={(e) => setPaymentMethod(e.target.value)}
                 placeholder="例如: 美区 Apple 礼品卡 / 信用卡"
-                className="w-full h-10 bg-zinc-50 border border-zinc-200 rounded-xl px-3 text-xs text-zinc-900 outline-none focus:bg-white focus:border-zinc-400 shadow-2xs"
+                className="w-full h-11 bg-[#F7F7F7] border border-[#DDDDDD] focus:border-[#222222] focus:bg-white rounded-xl px-3 text-xs text-[#222222] outline-none transition shadow-2xs"
               />
             </div>
           </div>
@@ -308,7 +309,7 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
           {/* Direct URLs */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-medium text-zinc-700 mb-1.5">
+              <label className="block text-xs font-semibold text-[#222222] mb-1.5">
                 官方管理后台 URL
               </label>
               <input
@@ -316,11 +317,11 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
                 value={portalUrl}
                 onChange={(e) => setPortalUrl(e.target.value)}
                 placeholder="https://..."
-                className="w-full h-10 bg-zinc-50 border border-zinc-200 rounded-xl px-3 font-mono text-xs text-zinc-900 outline-none focus:bg-white focus:border-zinc-400 shadow-2xs"
+                className="w-full h-11 bg-[#F7F7F7] border border-[#DDDDDD] focus:border-[#222222] focus:bg-white rounded-xl px-3 font-mono text-xs text-[#222222] outline-none transition shadow-2xs"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-zinc-700 mb-1.5">
+              <label className="block text-xs font-semibold text-[#222222] mb-1.5">
                 充值兑换直达 URL
               </label>
               <input
@@ -328,14 +329,14 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
                 value={rechargeUrl}
                 onChange={(e) => setRechargeUrl(e.target.value)}
                 placeholder="https://apps.apple.com/redeem"
-                className="w-full h-10 bg-zinc-50 border border-zinc-200 rounded-xl px-3 font-mono text-xs text-zinc-900 outline-none focus:bg-white focus:border-zinc-400 shadow-2xs"
+                className="w-full h-11 bg-[#F7F7F7] border border-[#DDDDDD] focus:border-[#222222] focus:bg-white rounded-xl px-3 font-mono text-xs text-[#222222] outline-none transition shadow-2xs"
               />
             </div>
           </div>
 
           {/* Notes */}
           <div>
-            <label className="block text-xs font-medium text-zinc-700 mb-1.5">
+            <label className="block text-xs font-semibold text-[#222222] mb-1.5">
               备注备忘
             </label>
             <textarea
@@ -343,12 +344,12 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="记录家庭共享成员、绑定手机、订阅注意事项等..."
-              className="w-full bg-zinc-50 border border-zinc-200 rounded-xl p-3 text-xs text-zinc-900 outline-none focus:bg-white focus:border-zinc-400 shadow-2xs"
+              className="w-full bg-[#F7F7F7] border border-[#DDDDDD] focus:border-[#222222] focus:bg-white rounded-xl p-3 text-xs text-[#222222] outline-none transition shadow-2xs"
             />
           </div>
 
-          {/* Action buttons */}
-          <div className="flex items-center justify-between pt-3 border-t border-zinc-100">
+          {/* Action buttons (Airbnb Style) */}
+          <div className="flex items-center justify-between pt-4 border-t border-[#EBEBEB]">
             {initialData && onDelete ? (
               <button
                 type="button"
@@ -356,7 +357,7 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
                   onDelete(initialData.id);
                   onClose();
                 }}
-                className="px-3 py-2 rounded-xl text-red-600 hover:text-red-700 hover:bg-red-50 text-xs font-semibold flex items-center gap-1.5 transition active:scale-95"
+                className="px-4 py-2.5 rounded-xl text-[#c13515] hover:bg-[#FFF0F2] text-xs font-bold flex items-center gap-1.5 transition active:scale-95"
               >
                 <Trash2 className="w-3.5 h-3.5" />
                 <span>删除此订阅</span>
@@ -365,17 +366,17 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
               <div />
             )}
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2.5">
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2 rounded-xl bg-zinc-100 hover:bg-zinc-200 text-zinc-700 text-xs font-semibold transition"
+                className="px-5 py-2.5 rounded-xl bg-white hover:bg-[#F7F7F7] text-[#222222] border border-[#DDDDDD] text-xs font-semibold transition"
               >
                 取消
               </button>
               <button
                 type="submit"
-                className="px-5 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 active:bg-zinc-950 text-white font-semibold text-xs flex items-center gap-1.5 shadow-2xs transition active:scale-95"
+                className="px-6 py-2.5 rounded-xl btn-rausch text-white font-bold text-xs flex items-center gap-1.5 shadow-md transition active:scale-95"
               >
                 <span>{initialData ? '保存修改' : '确认添加'}</span>
               </button>

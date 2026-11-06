@@ -88,53 +88,58 @@ export const Navbar: React.FC<NavbarProps> = ({
   ];
 
   return (
-    <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-xl border-b border-zinc-200/80 shadow-2xs transition-all">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3 lg:gap-6">
+    <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-[#EBEBEB] transition-all">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between gap-3 lg:gap-6">
         
-        {/* Brand Area */}
-        <div className="flex items-center gap-3 shrink-0">
-          <div className="w-9 h-9 rounded-xl bg-zinc-900 text-white flex items-center justify-center shadow-2xs ring-1 ring-zinc-800">
-            <ShieldCheck className="w-5 h-5" />
+        {/* Brand Area (Airbnb Rausch Coral Accent) */}
+        <div className="flex items-center gap-2.5 shrink-0">
+          <div className="w-10 h-10 rounded-2xl bg-[#FFF0F2] border border-[#FFCCD3] flex items-center justify-center text-[#FF385C] shadow-2xs">
+            <ShieldCheck className="w-6 h-6 fill-[#FF385C]/15" />
           </div>
           <div className="flex flex-col">
             <div className="flex items-center gap-1.5">
-              <span className="font-extrabold text-base tracking-tight text-zinc-950 font-sans">Vsmat</span>
-              <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-zinc-100 text-zinc-600 font-medium border border-zinc-200/80 tracking-wide font-mono">
+              <span className="font-extrabold text-lg tracking-tight text-[#222222] font-sans">Vsmat</span>
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#F7F7F7] text-[#717171] font-semibold border border-[#EBEBEB] tracking-wide font-mono">
                 AES-256
               </span>
             </div>
-            <span className="text-[11px] text-zinc-400 font-medium hidden sm:inline leading-none mt-0.5">
+            <span className="text-[11px] text-[#717171] font-medium hidden sm:inline leading-none mt-0.5">
               端到端本地加密金库
             </span>
           </div>
         </div>
 
-        {/* Global Spotlight Search Bar */}
-        <div className="relative flex-1 max-w-xs md:max-w-sm hidden md:block">
-          <Search className="w-4 h-4 text-zinc-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => onSearchChange(e.target.value)}
-            placeholder="全局搜索服务、账号、密钥..."
-            className="w-full h-9 pl-9 pr-12 rounded-xl bg-zinc-50 hover:bg-zinc-100/70 focus:bg-white border border-zinc-200/80 focus:border-zinc-400 text-xs text-zinc-900 placeholder:text-zinc-400 outline-none transition-all duration-150 shadow-2xs"
-          />
+        {/* Airbnb Iconic Floating Search Pill */}
+        <div className="relative flex-1 max-w-sm md:max-w-md hidden md:flex items-center h-12 rounded-full bg-white border border-[#DDDDDD] airbnb-search-shadow px-3.5 transition-all">
+          <div className="flex items-center gap-2 flex-1 min-w-0">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => onSearchChange(e.target.value)}
+              placeholder="搜索任何服务、账号或密钥..."
+              className="w-full text-xs font-semibold text-[#222222] placeholder:text-[#717171] placeholder:font-normal outline-none bg-transparent"
+            />
+          </div>
           {searchQuery ? (
             <button
               onClick={() => onSearchChange('')}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-zinc-200 hover:bg-zinc-300 text-zinc-600 text-[10px] flex items-center justify-center transition"
+              className="w-5 h-5 rounded-full bg-[#F7F7F7] hover:bg-[#EBEBEB] text-[#717171] text-xs flex items-center justify-center transition mr-1.5"
             >
               ✕
             </button>
           ) : (
-            <kbd className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] font-mono px-1.5 py-0.5 rounded bg-white text-zinc-400 border border-zinc-200 shadow-2xs pointer-events-none">
+            <kbd className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#F7F7F7] text-[#717171] border border-[#EBEBEB] mr-2 pointer-events-none">
               ⌘K
             </kbd>
           )}
+          {/* Circular Coral Search Icon Button */}
+          <div className="w-8 h-8 rounded-full bg-[#FF385C] flex items-center justify-center text-white shrink-0 shadow-sm cursor-pointer hover:bg-[#E00B41] transition">
+            <Search className="w-3.5 h-3.5 stroke-[2.5]" />
+          </div>
         </div>
 
-        {/* Minimalist Segmented Navigation Tabs */}
-        <nav className="flex items-center p-1 rounded-xl bg-zinc-100 border border-zinc-200/80">
+        {/* Airbnb Style Rounded Navigation Tabs */}
+        <nav className="flex items-center p-1 rounded-full bg-[#F7F7F7] border border-[#EBEBEB]">
           {navItems.map(item => {
             const Icon = item.icon;
             const isActive = activeTab === item.key;
@@ -142,17 +147,17 @@ export const Navbar: React.FC<NavbarProps> = ({
               <button
                 key={item.key}
                 onClick={() => onTabChange(item.key)}
-                className={`relative flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-150 select-none ${
+                className={`relative flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs transition-all duration-200 select-none ${
                   isActive
-                    ? 'bg-white text-zinc-950 shadow-2xs border border-zinc-200/70 font-semibold'
-                    : 'text-zinc-600 hover:text-zinc-950 hover:bg-white/50'
+                    ? 'bg-white text-[#222222] shadow-[0_1px_4px_rgba(0,0,0,0.1)] font-bold'
+                    : 'text-[#717171] hover:text-[#222222] hover:bg-white/60 font-medium'
                 }`}
               >
-                <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-zinc-900' : 'text-zinc-500'}`} />
+                <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-[#FF385C]' : 'text-[#717171]'}`} />
                 <span className="hidden sm:inline">{item.label}</span>
                 {item.count !== undefined && item.count > 0 && (
-                  <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded-full leading-tight ${
-                    isActive ? 'bg-zinc-900 text-white font-semibold' : 'bg-zinc-200 text-zinc-700'
+                  <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded-full leading-tight font-bold ${
+                    isActive ? 'bg-[#FFF0F2] text-[#FF385C]' : 'bg-[#EBEBEB] text-[#717171]'
                   }`}>
                     {item.count}
                   </span>
@@ -163,21 +168,21 @@ export const Navbar: React.FC<NavbarProps> = ({
         </nav>
 
         {/* Action Controls & Utilities */}
-        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-          {/* Smart Paste Quick Action */}
+        <div className="flex items-center gap-2 shrink-0">
+          {/* Smart Paste Quick Action (Airbnb Rausch Gradient) */}
           <button
             onClick={onOpenSmartParser}
-            className="h-9 px-3.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 active:bg-zinc-950 text-white text-xs font-medium flex items-center gap-1.5 shadow-2xs transition-all active:scale-[0.98]"
+            className="h-10 px-4 rounded-full btn-rausch font-semibold text-xs flex items-center gap-1.5 shadow-sm active:scale-[0.98] transition-all"
             title="一键粘贴/截图智能解析录入"
           >
-            <Sparkles className="w-3.5 h-3.5 text-zinc-300" />
+            <Sparkles className="w-3.5 h-3.5 text-white" />
             <span className="hidden lg:inline">智能录入</span>
           </button>
 
           {/* Currency Toggle */}
           <button
             onClick={onToggleCurrency}
-            className="h-9 w-9 rounded-xl bg-white hover:bg-zinc-50 active:scale-[0.98] text-zinc-800 border border-zinc-200/90 text-xs font-mono font-bold flex items-center justify-center transition shadow-2xs"
+            className="h-10 w-10 rounded-full bg-white hover:bg-[#F7F7F7] border border-[#DDDDDD] hover:border-[#222222] text-[#222222] text-xs font-mono font-bold flex items-center justify-center transition shadow-2xs"
             title={`当前显示币种：${preferredCurrency}，点击切换为 ${preferredCurrency === 'CNY' ? 'USD ($)' : 'CNY (¥)'}`}
           >
             {preferredCurrency === 'CNY' ? '¥' : '$'}
@@ -187,27 +192,27 @@ export const Navbar: React.FC<NavbarProps> = ({
           <div className="relative">
             <button
               onClick={() => setShowBackupMenu(!showBackupMenu)}
-              className="h-9 px-2.5 rounded-xl bg-white hover:bg-zinc-50 active:scale-[0.98] text-zinc-700 border border-zinc-200/90 text-xs transition flex items-center gap-1 shadow-2xs"
+              className="h-10 px-3 rounded-full bg-white hover:bg-[#F7F7F7] border border-[#DDDDDD] hover:border-[#222222] text-[#222222] text-xs transition flex items-center gap-1 shadow-2xs"
               title="本地加密备份与恢复"
             >
-              <Download className="w-3.5 h-3.5 text-zinc-600" />
-              <ChevronDown className="w-3 h-3 text-zinc-400" />
+              <Download className="w-3.5 h-3.5 text-[#222222]" />
+              <ChevronDown className="w-3 h-3 text-[#717171]" />
             </button>
 
             {showBackupMenu && (
-              <div className="absolute right-0 mt-2 w-48 rounded-2xl bg-white border border-zinc-200 p-1.5 shadow-xl z-50 text-xs animate-fadeIn">
-                <div className="px-3 py-1.5 text-[10px] font-semibold text-zinc-400 uppercase tracking-wider">
+              <div className="absolute right-0 mt-2 w-52 rounded-2xl bg-white border border-[#EBEBEB] p-2 airbnb-card z-50 text-xs animate-fadeIn">
+                <div className="px-3 py-1.5 text-[10px] font-bold text-[#717171] uppercase tracking-wider">
                   数据安全与迁移
                 </div>
                 <button
                   onClick={handleExport}
-                  className="w-full text-left px-3 py-2 rounded-xl hover:bg-zinc-100 text-zinc-800 flex items-center gap-2 transition"
+                  className="w-full text-left px-3 py-2.5 rounded-xl hover:bg-[#F7F7F7] text-[#222222] font-medium flex items-center gap-2 transition"
                 >
-                  <Download className="w-3.5 h-3.5 text-zinc-600" />
+                  <Download className="w-4 h-4 text-[#FF385C]" />
                   <span>导出本地备份 (.json)</span>
                 </button>
-                <label className="w-full text-left px-3 py-2 rounded-xl hover:bg-zinc-100 text-zinc-800 flex items-center gap-2 cursor-pointer transition">
-                  <Upload className="w-3.5 h-3.5 text-zinc-600" />
+                <label className="w-full text-left px-3 py-2.5 rounded-xl hover:bg-[#F7F7F7] text-[#222222] font-medium flex items-center gap-2 cursor-pointer transition">
+                  <Upload className="w-4 h-4 text-[#FF385C]" />
                   <span>导入本地备份 (.json)</span>
                   <input
                     type="file"
@@ -223,14 +228,14 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* Lock Vault Button */}
           <button
             onClick={onLockVault}
-            className={`h-9 w-9 rounded-xl border flex items-center justify-center transition active:scale-[0.98] shadow-2xs ${
+            className={`h-10 w-10 rounded-full border flex items-center justify-center transition active:scale-[0.98] shadow-2xs ${
               isLocked
-                ? 'bg-zinc-100 border-zinc-300 text-zinc-900 font-bold'
-                : 'bg-white hover:bg-zinc-50 border-zinc-200/90 text-zinc-600 hover:text-zinc-900'
+                ? 'bg-[#FFF0F2] border-[#FFCCD3] text-[#FF385C]'
+                : 'bg-white hover:bg-[#F7F7F7] border-[#DDDDDD] hover:border-[#222222] text-[#222222]'
             }`}
             title={isLocked ? '保险箱已锁定' : '立即锁定保险箱'}
           >
-            {isLocked ? <Lock className="w-3.5 h-3.5 text-zinc-900" /> : <Unlock className="w-3.5 h-3.5" />}
+            {isLocked ? <Lock className="w-4 h-4 text-[#FF385C]" /> : <Unlock className="w-4 h-4 text-[#222222]" />}
           </button>
         </div>
       </div>

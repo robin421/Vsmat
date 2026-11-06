@@ -10,9 +10,9 @@
   }
 
   body {
-    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    background-color: #f8fafc;
-    color: #0f172a;
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: #FFFFFF;
+    color: #222222;
   }
   
   code, pre, .font-mono {
@@ -21,18 +21,41 @@
   }
 }
 
-/* Custom retina hairline ring helper */
-.hairline-border {
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.06);
-}
-
-.card-ambient {
+/* Airbnb Signature 3-Layer Warm Lift Shadow */
+.airbnb-card {
   background: #ffffff;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02), 0 8px 24px -4px rgba(0, 0, 0, 0.04);
+  box-shadow: rgba(0, 0, 0, 0.02) 0px 0px 0px 1px, rgba(0, 0, 0, 0.04) 0px 2px 6px, rgba(0, 0, 0, 0.1) 0px 4px 8px;
+  transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
 }
 
-.card-ambient:hover {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03), 0 14px 28px -4px rgba(0, 0, 0, 0.07);
+.airbnb-card:hover {
+  box-shadow: rgba(0, 0, 0, 0.08) 0px 6px 20px;
+  transform: translateY(-1px);
+}
+
+/* Airbnb Floating Pill Search Shadow */
+.airbnb-search-shadow {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.airbnb-search-shadow:hover {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.18);
+}
+
+/* Airbnb Signature Rausch Button Gradient */
+.btn-rausch {
+  background: radial-gradient(circle at center, #FF385C 0%, #E61E4D 27.5%, #E31C5F 40%, #D70466 57.5%, #BD1E59 75%, #BD1E59 100%);
+  color: #ffffff;
+  transition: opacity 0.2s ease, transform 0.1s ease;
+}
+
+.btn-rausch:hover {
+  opacity: 0.95;
+}
+
+.btn-rausch:active {
+  transform: scale(0.98);
 }
 
 /* Subtle smooth scrollbar */
@@ -46,10 +69,10 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(148, 163, 184, 0.3);
+  background: #DDDDDD;
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(148, 163, 184, 0.5);
+  background: #B0B0B0;
 }
