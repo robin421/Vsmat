@@ -1,7 +1,7 @@
 import { parseSmartText } from '../src/lib/parser';
 import { sanitizeVoucherCode, detectVoucherService, execute1ClickRecharge } from '../src/lib/rechargeEngines';
 import { generateICalendarData } from '../src/lib/calendar';
-import { generateSalt, hashPassword, encryptText, decryptText } from '../src/lib/crypto';
+import { generateSalt, deriveKey, encryptWithKey, decryptWithKey } from '../src/lib/crypto';
 import { advanceBillingDate } from '../src/lib/storage';
 import { SubscriptionItem } from '../src/types';
 
@@ -12,21 +12,19 @@ async function runTests() {
   console.log('1️⃣ 测试 Web Crypto 加解密与主密码验证:');
   const salt = generateSalt();
   const password = 'MyMasterSecretPassword2026!';
-  const hash1 = await hashPassword(password, salt);
-  const hash2 = await hashPassword(password, salt);
-  if (hash1 !== hash2) throw new Error('Password hash mismatch');
-  console.log('   ✓ 主密码加盐哈希一致性验证通过');
+  const key = await deriveKey(password, salt);
 
   const secretPlain = 'sk-proj-super-secret-api-key-test-123456';
-  const cipher = await encryptText(secretPlain, password, salt);
-  const decrypted = await decryptText(cipher, password, salt);
+  const cipher = await encryptWithKey(secretPlain, key);
+  const decrypted = await decryptWithKey(cipher, key);
   if (decrypted !== secretPlain) throw new Error('Decryption mismatch');
   console.log('   ✓ AES-256-GCM 加密与解密回环匹配成功');
 
   try {
-    await decryptText(cipher, 'WrongPassword', salt);
+    await decryptWithKey(cipher, await deriveKey('WrongPassword', salt));
     throw new Error('Should have failed with wrong password');
   } catch (err: any) {
+    if (err.name !== 'WrongPasswordError') throw err;
     console.log('   ✓ 错误密码解密拦截验证通过:', err.message);
   }
 

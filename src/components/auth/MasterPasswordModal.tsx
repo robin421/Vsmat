@@ -1,6 +1,22 @@
 import React, { useState } from 'react';
 import { Lock, Shield, KeyRound, Check, AlertCircle } from 'lucide-react';
 
+const MIN_PASSWORD_LENGTH = 10;
+
+/** Rough 0–4 strength score: length plus character-class variety. */
+function passwordStrength(pw: string): number {
+  if (!pw) return 0;
+  const classes = [/[a-z]/, /[A-Z]/, /\d/, /[^A-Za-z0-9]/].filter((r) => r.test(pw)).length;
+  let score = 0;
+  if (pw.length >= MIN_PASSWORD_LENGTH) score++;
+  if (pw.length >= 14) score++;
+  if (classes >= 3) score++;
+  if (pw.length >= 18 || (pw.length >= 14 && classes === 4)) score++;
+  return score;
+}
+
+const STRENGTH_LABELS = ['太弱', '较弱', '一般', '良好', '很强'];
+
 interface MasterPasswordModalProps {
   isOpen: boolean;
   isInitialSetup: boolean;
@@ -33,8 +49,8 @@ export const MasterPasswordModal: React.FC<MasterPasswordModalProps> = ({
     setLoading(true);
     try {
       if (isInitialSetup) {
-        if (password.length < 6) {
-          setError('主密码长度建议至少 6 位');
+        if (password.length < MIN_PASSWORD_LENGTH) {
+          setError(`主密码至少需要 ${MIN_PASSWORD_LENGTH} 位`);
           setLoading(false);
           return;
         }
@@ -89,6 +105,12 @@ export const MasterPasswordModal: React.FC<MasterPasswordModalProps> = ({
             />
           </div>
 
+          {isInitialSetup && password && (
+            <p className="text-[11px] text-[#717171] -mt-2" aria-live="polite">
+              强度：{STRENGTH_LABELS[passwordStrength(password)]}（至少 {MIN_PASSWORD_LENGTH} 位，建议混合大小写、数字、符号或使用长口令）。忘记主密码将无法恢复数据。
+            </p>
+          )}
+
           {isInitialSetup && (
             <div>
               <label className="block text-xs font-semibold text-[#222222] mb-1.5">
@@ -113,7 +135,7 @@ export const MasterPasswordModal: React.FC<MasterPasswordModalProps> = ({
                 onChange={(e) => setRemember(e.target.checked)}
                 className="w-4 h-4 rounded border-[#DDDDDD] bg-white accent-[#000000]"
               />
-              <span>记住解锁状态 (本机信任免密，日常使用无需反复输入)</span>
+              <span>记住解锁状态（仅在本设备保存不可导出的解锁密钥，主动锁定或空闲超时后需重新输入）</span>
             </label>
           </div>
 

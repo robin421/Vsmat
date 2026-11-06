@@ -1,10 +1,31 @@
 /**
  * Native Web Crypto API (SubtleCrypto)
- * PBKDF2 (100,000 rounds) + AES-256-GCM authenticated encryption
+ * PBKDF2-SHA256 + AES-256-GCM authenticated encryption.
+ *
+ * The master password is only used to derive a non-extractable AES-GCM key.
+ * Correctness of the password is established by whether GCM authentication
+ * succeeds — there is no separate (brute-forceable) password hash.
  */
 
-function bufferToBase64(buffer: ArrayBuffer | Uint8Array): string {
-  const bytes = new Uint8Array(buffer);
+/** Current PBKDF2 work factor (OWASP 2023 guidance for PBKDF2-HMAC-SHA256). */
+export const CURRENT_KDF_ITERATIONS = 600_000;
+/** Work factor used by vault format v1 (kept only to read old vaults). */
+export const LEGACY_KDF_ITERATIONS = 100_000;
+
+export class WrongPasswordError extends Error {
+  constructor() {
+    super('解密失败：主密码错误或密文损坏');
+    this.name = 'WrongPasswordError';
+  }
+}
+
+export interface CipherBlob {
+  iv: string;
+  data: string;
+}
+
+export function bufferToBase64(buffer: ArrayBuffer | Uint8Array): string {
+  const bytes = buffer instanceof Uint8Array ? buffer : new Uint8Array(buffer);
   let binary = '';
   for (let i = 0; i < bytes.byteLength; i++) {
     binary += String.fromCharCode(bytes[i]);
@@ -12,7 +33,7 @@ function bufferToBase64(buffer: ArrayBuffer | Uint8Array): string {
   return btoa(binary);
 }
 
-function base64ToBuffer(base64: string): Uint8Array {
+export function base64ToBuffer(base64: string): Uint8Array<ArrayBuffer> {
   const binary = atob(base64);
   const bytes = new Uint8Array(binary.length);
   for (let i = 0; i < binary.length; i++) {
@@ -27,33 +48,22 @@ export function generateSalt(): string {
   return bufferToBase64(array);
 }
 
-export async function hashPassword(password: string, salt: string): Promise<string> {
-  const enc = new TextEncoder();
-  const data = enc.encode(salt + password + 'vsmat-vault-salt-v1');
-  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-  return bufferToBase64(hashBuffer);
-}
-
-async function getEncryptionKey(password: string, salt: string): Promise<CryptoKey> {
-  const enc = new TextEncoder();
-  const rawKey = enc.encode(password);
-  const saltBytes = base64ToBuffer(salt);
-
+/** Derive a non-extractable AES-256-GCM key from the master password. */
+export async function deriveKey(
+  password: string,
+  salt: string,
+  iterations: number = CURRENT_KDF_ITERATIONS
+): Promise<CryptoKey> {
   const baseKey = await crypto.subtle.importKey(
     'raw',
-    rawKey,
+    new TextEncoder().encode(password),
     { name: 'PBKDF2' },
     false,
     ['deriveKey']
   );
 
-  return await crypto.subtle.deriveKey(
-    {
-      name: 'PBKDF2',
-      salt: saltBytes as unknown as BufferSource,
-      iterations: 100000,
-      hash: 'SHA-256',
-    },
+  return crypto.subtle.deriveKey(
+    { name: 'PBKDF2', salt: base64ToBuffer(salt), iterations, hash: 'SHA-256' },
     baseKey,
     { name: 'AES-GCM', length: 256 },
     false,
@@ -61,63 +71,29 @@ async function getEncryptionKey(password: string, salt: string): Promise<CryptoK
   );
 }
 
-export async function encryptText(plainText: string, password: string, salt: string): Promise<string> {
-  if (!plainText) return '';
-  const key = await getEncryptionKey(password, salt);
+export async function encryptWithKey(plainText: string, key: CryptoKey): Promise<CipherBlob> {
   const iv = new Uint8Array(12);
   crypto.getRandomValues(iv);
-
-  const enc = new TextEncoder();
-  const encodedData = enc.encode(plainText);
-
-  const encryptedBuffer = await crypto.subtle.encrypt(
-    {
-      name: 'AES-GCM',
-      iv: iv,
-    },
+  const encrypted = await crypto.subtle.encrypt(
+    { name: 'AES-GCM', iv },
     key,
-    encodedData
+    new TextEncoder().encode(plainText)
   );
-
-  return JSON.stringify({
-    iv: bufferToBase64(iv),
-    data: bufferToBase64(encryptedBuffer),
-  });
+  return { iv: bufferToBase64(iv), data: bufferToBase64(encrypted) };
 }
 
-export async function decryptText(cipherJson: string, password: string, salt: string): Promise<string> {
-  if (!cipherJson) return '';
-  try {
-    const { iv, data } = JSON.parse(cipherJson);
-    if (!iv || !data) return cipherJson; // Fallback if plain
-
-    const key = await getEncryptionKey(password, salt);
-    const ivBytes = base64ToBuffer(iv);
-    const dataBytes = base64ToBuffer(data);
-
-    const decryptedBuffer = await crypto.subtle.decrypt(
-      {
-        name: 'AES-GCM',
-        iv: ivBytes as unknown as BufferSource,
-      },
-      key,
-      dataBytes as unknown as BufferSource
-    );
-
-    const dec = new TextDecoder();
-    return dec.decode(decryptedBuffer);
-  } catch (err) {
-    console.error('Decryption failed, incorrect password or corrupted data', err);
-    throw new Error('解密失败：主密码错误或密文损坏');
+export async function decryptWithKey(blob: CipherBlob, key: CryptoKey): Promise<string> {
+  if (!blob || typeof blob.iv !== 'string' || typeof blob.data !== 'string') {
+    throw new WrongPasswordError();
   }
-}
-
-export async function encryptObject<T>(obj: T, password: string, salt: string): Promise<string> {
-  const json = JSON.stringify(obj);
-  return await encryptText(json, password, salt);
-}
-
-export async function decryptObject<T>(cipherJson: string, password: string, salt: string): Promise<T> {
-  const decrypted = await decryptText(cipherJson, password, salt);
-  return JSON.parse(decrypted);
+  try {
+    const decrypted = await crypto.subtle.decrypt(
+      { name: 'AES-GCM', iv: base64ToBuffer(blob.iv) },
+      key,
+      base64ToBuffer(blob.data)
+    );
+    return new TextDecoder().decode(decrypted);
+  } catch {
+    throw new WrongPasswordError();
+  }
 }

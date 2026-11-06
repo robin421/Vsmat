@@ -70,8 +70,6 @@ export interface VoucherItem {
 
 export interface AppSettings {
   isConfigured: boolean;
-  masterPasswordHash?: string;
-  salt?: string;
   rememberUnlocked: boolean;
   enableBrowserNotifications: boolean;
   preferredCurrency: 'CNY' | 'USD';

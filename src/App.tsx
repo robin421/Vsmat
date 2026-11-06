@@ -1,13 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { AppData, SubscriptionItem, TokenItem, VoucherItem } from './types';
 import {
-  loadVaultData,
-  saveVaultData,
   advanceBillingDate,
-  clearSessionPassword,
   exportBackup,
-  INITIAL_MOCK_DATA,
+  parseBackup,
+  probeBackup,
 } from './lib/storage';
+import { useVault } from './hooks/useVault';
 import { checkAndSendRenewalNotifications } from './lib/notifications';
 import { Navbar } from './components/layout/Navbar';
 import { QuickRechargeBar } from './components/dashboard/QuickRechargeBar';
@@ -23,15 +22,19 @@ import { AppleWebRedeemModal } from './components/recharge/AppleWebRedeemModal';
 import { SpendAnalytics } from './components/analytics/SpendAnalytics';
 import { MasterPasswordModal } from './components/auth/MasterPasswordModal';
 import { DataSecurityModal } from './components/common/DataSecurityModal';
-import { ShieldCheck } from 'lucide-react';
+import { ShieldCheck, AlertCircle, X } from 'lucide-react';
+
+const todayStr = () => new Date().toISOString().split('T')[0];
+const newId = (prefix: string) => `${prefix}-${crypto.randomUUID()}`;
 
 export function App() {
-  const [appData, setAppData] = useState<AppData>(INITIAL_MOCK_DATA);
+  const { data: appData, status, loadError, saveError, dismissSaveError, update, setup, unlock, lock } = useVault();
+  const isLocked = status === 'locked';
+  const isPasswordModalOpen = status === 'setup' || status === 'locked';
+  const isInitialSetup = status === 'setup';
+
   const [activeTab, setActiveTab] = useState<'dashboard' | 'subscriptions' | 'tokens' | 'vouchers' | 'analytics'>('subscriptions');
   const [searchQuery, setSearchQuery] = useState('');
-  const [isLocked, setIsLocked] = useState(false);
-  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
-  const [isInitialSetup, setIsInitialSetup] = useState(false);
   const [isSecurityModalOpen, setIsSecurityModalOpen] = useState(false);
 
   // Modals state
@@ -49,191 +52,169 @@ export function App() {
   const [appleVoucherCode, setAppleVoucherCode] = useState('');
   const [appleActiveSub, setAppleActiveSub] = useState<SubscriptionItem | null>(null);
 
-  // Initial load
+  // Renewal notifications: once per unlock, only after real data is available
+  const notifiedRef = useRef(false);
   useEffect(() => {
-    async function init() {
-      try {
-        const { data, isLocked: locked, requiresSetup } = await loadVaultData();
-        setAppData(data);
-        setIsLocked(locked);
-        if (locked) {
-          setIsPasswordModalOpen(true);
-        } else if (requiresSetup) {
-          setIsInitialSetup(true);
-          setIsPasswordModalOpen(true);
-        } else {
-          if (data.settings.enableBrowserNotifications) {
-            checkAndSendRenewalNotifications(data.subscriptions);
-          }
-        }
-      } catch (err) {
-        console.error('Failed to init vault:', err);
+    if (status === 'ready' && !notifiedRef.current) {
+      notifiedRef.current = true;
+      if (appData.settings.enableBrowserNotifications) {
+        checkAndSendRenewalNotifications(appData.subscriptions);
       }
     }
-    init();
-  }, []);
+    if (status === 'locked') notifiedRef.current = false;
+  }, [status, appData]);
 
-  // Sync to encrypted storage on data changes
-  const updateAppData = async (newData: AppData) => {
-    setAppData(newData);
-    await saveVaultData(newData);
-  };
+  const handleUnlock = (password: string, remember: boolean) => unlock(password, remember);
+  const handleSetupPassword = (password: string, remember: boolean) => setup(password, remember);
+  const handleLockVault = () => void lock();
 
-  // Password Unlock
-  const handleUnlock = async (password: string, remember: boolean): Promise<boolean> => {
+  // Replace the vault contents with a backup file, after validation + confirmation
+  const handleImportBackup = async (text: string) => {
     try {
-      const { data } = await loadVaultData(password);
-      data.settings.rememberUnlocked = remember;
-      setAppData(data);
-      setIsLocked(false);
-      setIsPasswordModalOpen(false);
-      return true;
-    } catch {
-      return false;
+      const probe = probeBackup(text);
+      let password: string | undefined;
+      if (probe.kind === 'encrypted' && probe.needsPassword) {
+        const entered = window.prompt('该备份使用了不同的主密码加密，请输入备份文件的主密码：');
+        if (!entered) return;
+        password = entered;
+      }
+      const imported = await parseBackup(text, password);
+      const summary = `${imported.tokens.length} 个 Token、${imported.subscriptions.length} 个订阅、${imported.vouchers.length} 张卡券`;
+      if (!window.confirm(`备份包含 ${summary}。\n导入将【覆盖】当前保险箱内容，确定继续吗？\n（覆盖前会先自动下载一份当前数据的加密备份）`)) return;
+      await exportBackup(appData, `vsmat-before-import-${todayStr()}.vsmat.json`);
+      update({ ...imported, settings: { ...imported.settings, isConfigured: true } });
+      window.alert('数据备份已成功导入！');
+    } catch (err) {
+      window.alert(err instanceof Error ? err.message : '导入备份失败');
     }
-  };
-
-  // Password Setup
-  const handleSetupPassword = async (password: string, remember: boolean) => {
-    const updated = {
-      ...appData,
-      settings: {
-        ...appData.settings,
-        isConfigured: true,
-        rememberUnlocked: remember,
-      },
-    };
-    setAppData(updated);
-    await saveVaultData(updated, password);
-    setIsLocked(false);
-    setIsPasswordModalOpen(false);
-  };
-
-  const handleLockVault = () => {
-    clearSessionPassword();
-    setIsLocked(true);
-    setIsPasswordModalOpen(true);
   };
 
   // Mark a subscription as renewed
-  const handleMarkRenewed = async (subId: string) => {
-    const nextSubs = appData.subscriptions.map(sub => {
-      if (sub.id !== subId) return sub;
-      const nextDate = advanceBillingDate(sub.nextBillingDate, sub.cycle);
-      const newHistoryItem = {
-        id: 'h-' + Date.now(),
-        date: new Date().toISOString().split('T')[0],
-        amount: sub.price,
-        currency: sub.currency,
-        note: `自动顺延续费至 ${nextDate}`,
-      };
-      return {
-        ...sub,
-        nextBillingDate: nextDate,
-        history: [newHistoryItem, ...(sub.history || [])],
-        updatedAt: new Date().toISOString().split('T')[0],
-      };
-    });
-
-    await updateAppData({
-      ...appData,
-      subscriptions: nextSubs,
-    });
+  const handleMarkRenewed = (subId: string) => {
+    update((prev) => ({
+      ...prev,
+      subscriptions: prev.subscriptions.map((sub) => {
+        if (sub.id !== subId) return sub;
+        const nextDate = advanceBillingDate(sub.nextBillingDate, sub.cycle);
+        const newHistoryItem = {
+          id: newId('h'),
+          date: todayStr(),
+          amount: sub.price,
+          currency: sub.currency,
+          note: `自动顺延续费至 ${nextDate}`,
+        };
+        return {
+          ...sub,
+          nextBillingDate: nextDate,
+          history: [newHistoryItem, ...(sub.history || [])],
+          updatedAt: todayStr(),
+        };
+      }),
+    }));
   };
 
   // Open Apple Web Redeem Modal (Method 1)
   const handleOpenAppleWebRedeem = (code?: string, sub?: SubscriptionItem) => {
     const effectiveSub = sub || appData.subscriptions.find(s => s.serviceKey === 'openai' || s.paymentMethod?.includes('Apple')) || appData.subscriptions[0];
     const appleVoucher = appData.vouchers.find(v => v.serviceKey === 'apple' && v.status === 'unredeemed');
-    const effectiveCode = code || appleVoucher?.code || 'X89A-24B8-90CD-EF12';
 
-    setAppleVoucherCode(effectiveCode);
+    setAppleVoucherCode(code || appleVoucher?.code || '');
     setAppleActiveSub(effectiveSub || null);
     setIsAppleModalOpen(true);
   };
 
   // Token Handlers
-  const handleSaveToken = async (tokenData: Partial<TokenItem>) => {
-    let nextTokens: TokenItem[];
-    if (tokenData.id) {
-      nextTokens = appData.tokens.map(t => (t.id === tokenData.id ? ({ ...t, ...tokenData } as TokenItem) : t));
-    } else {
-      const newToken: TokenItem = {
+  const handleSaveToken = (tokenData: Partial<TokenItem>) => {
+    update((prev) => {
+      if (tokenData.id) {
+        return {
+          ...prev,
+          tokens: prev.tokens.map(t => (t.id === tokenData.id ? ({ ...t, ...tokenData } as TokenItem) : t)),
+        };
+      }
+      const newToken = {
         ...tokenData,
-        id: 'token-' + Date.now(),
-        createdAt: new Date().toISOString().split('T')[0],
-        updatedAt: new Date().toISOString().split('T')[0],
+        id: newId('token'),
+        createdAt: todayStr(),
+        updatedAt: todayStr(),
       } as TokenItem;
-      nextTokens = [newToken, ...appData.tokens];
-    }
-    await updateAppData({ ...appData, tokens: nextTokens });
+      return { ...prev, tokens: [newToken, ...prev.tokens] };
+    });
   };
 
-  const handleDeleteToken = async (id: string) => {
+  const handleDeleteToken = (id: string) => {
     if (!confirm('确定要删除该 Token 密钥吗？')) return;
-    const nextTokens = appData.tokens.filter(t => t.id !== id);
-    await updateAppData({ ...appData, tokens: nextTokens });
+    update((prev) => ({ ...prev, tokens: prev.tokens.filter(t => t.id !== id) }));
   };
 
   // Subscription Handlers
-  const handleSaveSubscription = async (subData: Partial<SubscriptionItem>) => {
-    let nextSubs: SubscriptionItem[];
-    if (subData.id) {
-      nextSubs = appData.subscriptions.map(s => (s.id === subData.id ? ({ ...s, ...subData } as SubscriptionItem) : s));
-    } else {
-      const newSub: SubscriptionItem = {
+  const handleSaveSubscription = (subData: Partial<SubscriptionItem>) => {
+    update((prev) => {
+      if (subData.id) {
+        return {
+          ...prev,
+          subscriptions: prev.subscriptions.map(s => (s.id === subData.id ? ({ ...s, ...subData } as SubscriptionItem) : s)),
+        };
+      }
+      const newSub = {
         ...subData,
-        id: 'sub-' + Date.now(),
+        id: newId('sub'),
         history: [],
-        createdAt: new Date().toISOString().split('T')[0],
-        updatedAt: new Date().toISOString().split('T')[0],
+        createdAt: todayStr(),
+        updatedAt: todayStr(),
       } as SubscriptionItem;
-      nextSubs = [newSub, ...appData.subscriptions];
-    }
-    await updateAppData({ ...appData, subscriptions: nextSubs });
+      return { ...prev, subscriptions: [newSub, ...prev.subscriptions] };
+    });
   };
 
-  const handleDeleteSubscription = async (id: string) => {
+  const handleDeleteSubscription = (id: string) => {
     if (!confirm('确定要删除该订阅账号记录吗？')) return;
-    const nextSubs = appData.subscriptions.filter(s => s.id !== id);
-    await updateAppData({ ...appData, subscriptions: nextSubs });
+    update((prev) => ({ ...prev, subscriptions: prev.subscriptions.filter(s => s.id !== id) }));
   };
 
   // Voucher Handlers
-  const handleSaveVoucher = async (vData: Partial<VoucherItem>) => {
-    let nextVouchers: VoucherItem[];
-    if (vData.id) {
-      nextVouchers = appData.vouchers.map(v => (v.id === vData.id ? ({ ...v, ...vData } as VoucherItem) : v));
-    } else {
-      const newV: VoucherItem = {
-        ...vData,
-        id: 'voucher-' + Date.now(),
-        createdAt: new Date().toISOString().split('T')[0],
-      } as VoucherItem;
-      nextVouchers = [newV, ...appData.vouchers];
-    }
-    await updateAppData({ ...appData, vouchers: nextVouchers });
+  const handleSaveVoucher = (vData: Partial<VoucherItem>) => {
+    update((prev) => {
+      if (vData.id) {
+        return {
+          ...prev,
+          vouchers: prev.vouchers.map(v => (v.id === vData.id ? ({ ...v, ...vData } as VoucherItem) : v)),
+        };
+      }
+      const newV = { ...vData, id: newId('voucher'), createdAt: todayStr() } as VoucherItem;
+      return { ...prev, vouchers: [newV, ...prev.vouchers] };
+    });
   };
 
-  const handleUpdateVoucherStatus = async (id: string, status: 'unredeemed' | 'redeemed') => {
-    const nextVouchers = appData.vouchers.map(v => (v.id === id ? { ...v, status } : v));
-    await updateAppData({ ...appData, vouchers: nextVouchers });
+  const handleUpdateVoucherStatus = (id: string, status: 'unredeemed' | 'redeemed') => {
+    update((prev) => ({ ...prev, vouchers: prev.vouchers.map(v => (v.id === id ? { ...v, status } : v)) }));
   };
 
-  const handleDeleteVoucher = async (id: string) => {
+  const handleDeleteVoucher = (id: string) => {
     if (!confirm('确定要删除该卡券记录吗？')) return;
-    const nextVouchers = appData.vouchers.filter(v => v.id !== id);
-    await updateAppData({ ...appData, vouchers: nextVouchers });
+    update((prev) => ({ ...prev, vouchers: prev.vouchers.filter(v => v.id !== id) }));
   };
 
   // Toggle preferred currency
-  const handleToggleCurrency = async () => {
-    const nextCur = appData.settings.preferredCurrency === 'CNY' ? 'USD' : 'CNY';
-    await updateAppData({
-      ...appData,
-      settings: { ...appData.settings, preferredCurrency: nextCur },
-    });
+  const handleToggleCurrency = () => {
+    update((prev) => ({
+      ...prev,
+      settings: { ...prev.settings, preferredCurrency: prev.settings.preferredCurrency === 'CNY' ? 'USD' : 'CNY' },
+    }));
   };
+
+  if (loadError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-6 text-center">
+        <div className="max-w-md space-y-2">
+          <AlertCircle className="w-8 h-8 text-rose-600 mx-auto" />
+          <p className="font-bold text-[#222222]">无法加载保险箱</p>
+          <p className="text-sm text-[#717171]">{loadError}</p>
+          <p className="text-xs text-[#717171]">为避免覆盖你的数据，应用已停止。请先从备份恢复或检查浏览器存储。</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white text-[#222222] flex flex-col font-sans selection:bg-[#18181B] selection:text-white antialiased">
@@ -247,13 +228,21 @@ export function App() {
         onLockVault={handleLockVault}
         isLocked={isLocked}
         appData={appData}
-        onImportBackup={updateAppData}
+        onImportBackup={handleImportBackup}
         preferredCurrency={appData.settings.preferredCurrency}
         onToggleCurrency={handleToggleCurrency}
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
         onOpenSecurityModal={() => setIsSecurityModalOpen(true)}
       />
+
+      {saveError && (
+        <div role="alert" className="bg-rose-50 border-b border-rose-200 text-rose-700 text-xs font-semibold px-4 py-2 flex items-center justify-center gap-2">
+          <AlertCircle className="w-4 h-4 shrink-0" />
+          <span>保存失败，最近的修改可能未写入本地：{saveError}</span>
+          <button onClick={dismissSaveError} aria-label="关闭" className="ml-2"><X className="w-3.5 h-3.5" /></button>
+        </div>
+      )}
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
         {/* Tab 1: Subscriptions (Clean & Spacious) */}
@@ -385,15 +374,15 @@ export function App() {
       <DataSecurityModal
         isOpen={isSecurityModalOpen}
         onClose={() => setIsSecurityModalOpen(false)}
-        onOpenExport={() => exportBackup(appData)}
+        onOpenExport={() => void exportBackup(appData)}
       />
 
       <AppleWebRedeemModal
         isOpen={isAppleModalOpen}
         onClose={() => setIsAppleModalOpen(false)}
         voucherCode={appleVoucherCode}
-        accountEmail={appleActiveSub?.accountEmail || 'vip_subscriber@gmail.com'}
-        passwordNote={appleActiveSub?.passwordNote || 'ApplePass#2026'}
+        accountEmail={appleActiveSub?.accountEmail || ''}
+        passwordNote={appleActiveSub?.passwordNote || ''}
         onConfirmRecharged={() => {
           if (appleActiveSub) {
             handleMarkRenewed(appleActiveSub.id);

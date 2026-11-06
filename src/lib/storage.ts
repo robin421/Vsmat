@@ -1,304 +1,411 @@
-import { AppData, SubscriptionItem, TokenItem, VoucherItem } from '../types';
-import { encryptObject, decryptObject, generateSalt, hashPassword } from './crypto';
+import { AppData, AppSettings } from '../types';
+import {
+  CURRENT_KDF_ITERATIONS,
+  LEGACY_KDF_ITERATIONS,
+  CipherBlob,
+  WrongPasswordError,
+  decryptWithKey,
+  deriveKey,
+  encryptWithKey,
+  generateSalt,
+} from './crypto';
 
 const STORAGE_KEY = 'vsmat_vault_storage_v1';
-const SESSION_PASSWORD_KEY = 'vsmat_session_master_pw';
+const KEY_DB_NAME = 'vsmat_keystore';
+const KEY_STORE = 'keys';
+const KEY_RECORD_ID = 'vault-key';
 
-export const INITIAL_MOCK_DATA: AppData = {
+export const EMPTY_DATA: AppData = {
   settings: {
-    isConfigured: true,
-    masterPasswordHash: '',
-    salt: '',
+    isConfigured: false,
     rememberUnlocked: true,
     enableBrowserNotifications: true,
     preferredCurrency: 'CNY',
     usdToCnyRate: 7.25,
-    autoLockMinutes: 60,
+    autoLockMinutes: 30,
   },
-  tokens: [
-    {
-      id: 'token-openai-1',
-      name: 'OpenAI GPT-4o Production Key',
-      serviceKey: 'openai',
-      token: 'sk-proj-abc123987456xyz99887766554433221100aabbcc',
-      baseUrl: 'https://api.openai.com/v1',
-      accountEmail: 'my_work_ai@gmail.com',
-      organizationId: 'org-AlphaTech2026',
-      tags: ['生产环境', 'GPT-4o', '主力API'],
-      balance: '$45.20 / $100 额度',
-      consoleUrl: 'https://platform.openai.com/api-keys',
-      notes: '绑定了主力 Visa 卡，每月初自动扣费充值',
-      createdAt: '2026-10-01',
-      updatedAt: '2026-11-01',
-    },
-    {
-      id: 'token-deepseek-1',
-      name: 'DeepSeek V3 / R1 推理 Token',
-      serviceKey: 'deepseek',
-      token: 'sk-d98f7e6a5b4c3d2e1f0a9b8c7d6e5f4a',
-      baseUrl: 'https://api.deepseek.com',
-      accountEmail: 'coder_dev@163.com',
-      tags: ['DeepSeek-R1', '高性价比', '代码推理'],
-      balance: '¥128.50 余额充裕',
-      consoleUrl: 'https://platform.deepseek.com/api_keys',
-      notes: '深度求索国产旗舰大模型 API',
-      createdAt: '2026-10-15',
-      updatedAt: '2026-11-02',
-    },
-    {
-      id: 'token-claude-1',
-      name: 'Anthropic Claude 3.5 Sonnet',
-      serviceKey: 'claude',
-      token: 'sk-ant-api03-abcdef1234567890abcdef1234567890',
-      baseUrl: 'https://api.anthropic.com/v1',
-      accountEmail: 'my_work_ai@gmail.com',
-      tags: ['Claude 3.5', '长文本分析'],
-      balance: '$28.00',
-      consoleUrl: 'https://console.anthropic.com/settings/keys',
-      notes: '用于复杂代码架构审查与长文本研究',
-      createdAt: '2026-10-20',
-      updatedAt: '2026-11-03',
-    }
-  ],
-  subscriptions: [
-    {
-      id: 'sub-chatgpt-plus',
-      name: 'ChatGPT Plus (土区 Apple 订阅)',
-      serviceKey: 'openai',
-      category: 'ai',
-      accountEmail: 'vip_subscriber@gmail.com',
-      passwordNote: 'ChatGPT#2026Safe!',
-      twoFactorNote: 'Google Authenticator (6位动态码)',
-      cycle: 'monthly',
-      price: 499.99,
-      currency: 'TRY',
-      nextBillingDate: '2026-12-04',
-      autoRenew: true,
-      paymentMethod: 'Apple 订阅 (土区)',
-      portalUrl: 'https://chatgpt.com/#settings/Account',
-      rechargeUrl: 'https://apps.apple.com/redeem',
-      notes: '土耳其区 Apple ID 订阅，每月 ₺499,99 (折合约 $14.5 / ¥105)',
-      history: [
-        { id: 'h1', date: '2026-11-04', amount: 499.99, currency: 'TRY', note: '土区 Apple ID 扣款 ₺499,99' },
-        { id: 'h2', date: '2026-10-04', amount: 499.99, currency: 'TRY', note: '常规续费' },
-      ],
-      createdAt: '2026-08-01',
-      updatedAt: '2026-11-06',
-    },
-    {
-      id: 'sub-claude-pro',
-      name: 'Claude Pro',
-      serviceKey: 'claude',
-      category: 'ai',
-      accountEmail: 'robin.wen4218@gmail.com',
-      passwordNote: 'AnthropicClaude#2026',
-      twoFactorNote: 'Authenticator App',
-      cycle: 'monthly',
-      price: 3000,
-      currency: 'JPY',
-      nextBillingDate: '2026-11-14',
-      autoRenew: true,
-      paymentMethod: 'Apple 订阅 (日区)',
-      portalUrl: 'https://claude.ai/settings/billing',
-      rechargeUrl: 'https://apps.apple.com/redeem',
-      notes: 'Anthropic Claude 3.5 Sonnet 订阅，每月 ¥3000 JPY (折合约 $19.48 USD)',
-      history: [
-        { id: 'h-claude-1', date: '2026-10-14', amount: 3000, currency: 'JPY', note: '日区 Apple 订阅扣费 ¥3000' }
-      ],
-      createdAt: '2026-09-14',
-      updatedAt: '2026-11-06',
-    },
-    {
-      id: 'sub-supergrok',
-      name: 'SuperGrok',
-      serviceKey: 'grok',
-      category: 'ai',
-      accountEmail: 'vip_subscriber@gmail.com',
-      passwordNote: 'xAI#SuperGrok2026',
-      twoFactorNote: 'Apple ID 双重认证',
-      cycle: 'monthly',
-      price: 700,
-      currency: 'INR',
-      nextBillingDate: '2026-11-18',
-      autoRenew: true,
-      paymentMethod: 'Apple 订阅 (印区)',
-      portalUrl: 'https://x.ai',
-      rechargeUrl: 'https://apps.apple.com/redeem',
-      notes: 'xAI SuperGrok 订阅，每月 ₹700 (折合约 $8.29 USD / ¥60.1)',
-      history: [
-        { id: 'h-grok-1', date: '2026-10-18', amount: 700, currency: 'INR', note: 'Apple 订阅 (印区) 首次扣费 ₹700' }
-      ],
-      createdAt: '2026-10-18',
-      updatedAt: '2026-11-06',
-    },
-    {
-      id: 'sub-cursor-pro',
-      name: 'Cursor Pro AI 编辑器',
-      serviceKey: 'cursor',
-      category: 'developer',
-      accountEmail: 'coder_dev@163.com',
-      passwordNote: 'Github一键登录关联',
-      twoFactorNote: 'GitHub 2FA',
-      cycle: 'monthly',
-      price: 20,
-      currency: 'USD',
-      // Next billing 6 days from now
-      nextBillingDate: new Date(Date.now() + 6 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-      autoRenew: true,
-      paymentMethod: 'WildCard 虚拟卡 (尾号 6821)',
-      portalUrl: 'https://www.cursor.com/settings',
-      rechargeUrl: 'https://www.cursor.com/settings',
-      notes: '编程主力工具，包含 Fast GPT-4o / Claude 3.5 次数',
-      history: [
-        { id: 'h3', date: '2026-10-11', amount: 20, currency: 'USD' }
-      ],
-      createdAt: '2026-09-11',
-      updatedAt: '2026-11-02',
-    },
-    {
-      id: 'sub-vps-bandwagon',
-      name: 'Bandwagon 搬瓦工 CN2-GIA VPS',
-      serviceKey: 'vps',
-      category: 'server',
-      accountEmail: 'my_work_ai@gmail.com',
-      passwordNote: 'KiwiVM面板独立密码',
-      cycle: 'annually',
-      price: 49.99,
-      currency: 'USD',
-      nextBillingDate: '2026-12-15',
-      autoRenew: true,
-      paymentMethod: '支付宝 / Alipay',
-      portalUrl: 'https://bwh88.net/clientarea.php',
-      rechargeUrl: 'https://bwh88.net/clientarea.php?action=addfunds',
-      notes: '主力开发海外节点与测试服务器',
-      history: [
-        { id: 'h4', date: '2025-12-15', amount: 49.99, currency: 'USD', note: '年付续费' }
-      ],
-      createdAt: '2024-12-15',
-      updatedAt: '2026-10-01',
-    }
-  ],
-  vouchers: [
-    {
-      id: 'v-apple-1',
-      serviceKey: 'apple',
-      serviceName: 'Apple App Store 礼品卡 (美区)',
-      code: 'X89A-24B8-90CD-EF12',
-      amount: 25,
-      currency: 'USD',
-      status: 'unredeemed',
-      notes: '充值美区 Apple ID 用于续费 ChatGPT Plus',
-      createdAt: '2026-11-01',
-    },
-    {
-      id: 'v-steam-1',
-      serviceKey: 'steam',
-      serviceName: 'Steam 钱包充值码',
-      code: 'K3T7P-99MQ2-8XB44',
-      amount: 100,
-      currency: 'CNY',
-      status: 'unredeemed',
-      notes: '促销囤货待充值',
-      createdAt: '2026-11-03',
-    }
-  ]
+  tokens: [],
+  subscriptions: [],
+  vouchers: [],
 };
 
-export function getSessionPassword(): string | null {
-  return sessionStorage.getItem(SESSION_PASSWORD_KEY);
+export function createEmptyData(): AppData {
+  return structuredClone(EMPTY_DATA);
 }
 
-export function setSessionPassword(password: string) {
-  sessionStorage.setItem(SESSION_PASSWORD_KEY, password);
+/* ------------------------------------------------------------------ */
+/* Storage formats                                                    */
+/* ------------------------------------------------------------------ */
+
+/** v2: everything (including settings) is inside the encrypted payload. */
+interface VaultEnvelopeV2 {
+  v: 2;
+  kdf: { name: 'PBKDF2'; hash: 'SHA-256'; iterations: number };
+  salt: string;
+  payload: CipherBlob;
 }
 
-export function clearSessionPassword() {
-  sessionStorage.removeItem(SESSION_PASSWORD_KEY);
+/** v1 (legacy): `payload` is a JSON string of CipherBlob, plus a password hash. */
+interface VaultEnvelopeV1 {
+  isEncrypted: true;
+  salt: string;
+  hash?: string;
+  payload: string;
 }
 
-/**
- * Loads vault data from localStorage.
- * If data is encrypted, decrypts using provided password or session password.
- */
-export async function loadVaultData(password?: string): Promise<{ data: AppData; isLocked: boolean; requiresSetup: boolean }> {
-  const raw = localStorage.getItem(STORAGE_KEY);
-  if (!raw) {
-    // Fresh install, initialize with mock data
-    return { data: INITIAL_MOCK_DATA, isLocked: false, requiresSetup: false };
-  }
+export type VaultState =
+  /** Nothing stored yet: a new vault must be created. */
+  | { kind: 'empty' }
+  /** Old unencrypted vault found: user must set a password to encrypt it. */
+  | { kind: 'legacy-plain'; data: AppData }
+  /** Encrypted vault present, key not available. */
+  | { kind: 'locked' }
+  /** Encrypted vault present and unlocked via a remembered key. */
+  | { kind: 'unlocked'; data: AppData };
 
-  try {
-    const parsed = JSON.parse(raw);
+interface Session {
+  key: CryptoKey;
+  salt: string;
+  iterations: number;
+}
 
-    // If unencrypted format
-    if (!parsed.isEncrypted) {
-      return { data: parsed as AppData, isLocked: false, requiresSetup: false };
-    }
+/** Key lives in memory only; it is never written to sessionStorage/localStorage. */
+let session: Session | null = null;
 
-    // Encrypted format
-    const effectivePassword = password || getSessionPassword();
-    if (!effectivePassword) {
-      return {
-        data: {
-          settings: parsed.settings,
-          tokens: [],
-          subscriptions: [],
-          vouchers: []
-        },
-        isLocked: true,
-        requiresSetup: false,
-      };
-    }
+/* ------------------------------------------------------------------ */
+/* Validation                                                         */
+/* ------------------------------------------------------------------ */
 
-    // Verify hash
-    const hash = await hashPassword(effectivePassword, parsed.salt);
-    if (hash !== parsed.hash) {
-      throw new Error('主密码错误');
-    }
-
-    // Decrypt payload
-    const decryptedData: AppData = await decryptObject(parsed.payload, effectivePassword, parsed.salt);
-    setSessionPassword(effectivePassword);
-    return { data: decryptedData, isLocked: false, requiresSetup: false };
-  } catch (err) {
-    console.error('Error loading vault data:', err);
-    throw err;
-  }
+function isObj(v: unknown): v is Record<string, unknown> {
+  return typeof v === 'object' && v !== null && !Array.isArray(v);
 }
 
 /**
- * Saves vault data to localStorage, optionally encrypted.
+ * Validate and normalise untrusted data (imported file / decrypted payload).
+ * Fills missing optional collections/settings so the UI can't crash on them,
+ * and drops legacy fields that must not be persisted any more.
  */
-export async function saveVaultData(data: AppData, password?: string): Promise<void> {
-  const effectivePassword = password || getSessionPassword();
-
-  if (!effectivePassword) {
-    // Unencrypted or remember mode
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-    return;
+export function normalizeAppData(input: unknown): AppData {
+  if (!isObj(input) || !Array.isArray(input.tokens) || !Array.isArray(input.subscriptions)) {
+    throw new Error('备份文件格式不正确：缺少 tokens / subscriptions');
   }
+  const vouchers = input.vouchers === undefined ? [] : input.vouchers;
+  if (!Array.isArray(vouchers)) throw new Error('备份文件格式不正确：vouchers 不是数组');
 
-  let salt = data.settings.salt;
-  if (!salt) {
-    salt = generateSalt();
-    data.settings.salt = salt;
-  }
+  const arrOfObjects = (name: string, arr: unknown[]) => {
+    if (!arr.every(isObj)) throw new Error(`备份文件格式不正确：${name} 含有非法条目`);
+  };
+  arrOfObjects('tokens', input.tokens);
+  arrOfObjects('subscriptions', input.subscriptions);
+  arrOfObjects('vouchers', vouchers);
 
-  const hash = await hashPassword(effectivePassword, salt);
-  data.settings.masterPasswordHash = hash;
-
-  const payload = await encryptObject(data, effectivePassword, salt);
-
-  const storageEnvelope = {
-    isEncrypted: true,
-    salt,
-    hash,
-    payload,
-    settings: data.settings,
+  const s = isObj(input.settings) ? input.settings : {};
+  const base = EMPTY_DATA.settings;
+  const settings: AppSettings = {
+    isConfigured: true,
+    rememberUnlocked: typeof s.rememberUnlocked === 'boolean' ? s.rememberUnlocked : base.rememberUnlocked,
+    enableBrowserNotifications:
+      typeof s.enableBrowserNotifications === 'boolean' ? s.enableBrowserNotifications : base.enableBrowserNotifications,
+    preferredCurrency: s.preferredCurrency === 'USD' ? 'USD' : 'CNY',
+    usdToCnyRate:
+      typeof s.usdToCnyRate === 'number' && Number.isFinite(s.usdToCnyRate) && s.usdToCnyRate > 0
+        ? s.usdToCnyRate
+        : base.usdToCnyRate,
+    autoLockMinutes:
+      typeof s.autoLockMinutes === 'number' && Number.isFinite(s.autoLockMinutes) && s.autoLockMinutes >= 0
+        ? s.autoLockMinutes
+        : base.autoLockMinutes,
   };
 
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(storageEnvelope));
-  setSessionPassword(effectivePassword);
+  return {
+    tokens: input.tokens as AppData['tokens'],
+    subscriptions: (input.subscriptions as AppData['subscriptions']).map((sub) => ({
+      ...sub,
+      history: Array.isArray(sub.history) ? sub.history : [],
+    })),
+    vouchers: vouchers as AppData['vouchers'],
+    settings,
+  };
+}
+
+/* ------------------------------------------------------------------ */
+/* "Remember on this device": non-extractable CryptoKey in IndexedDB   */
+/* ------------------------------------------------------------------ */
+
+function openKeyDb(): Promise<IDBDatabase> {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(KEY_DB_NAME, 1);
+    req.onupgradeneeded = () => req.result.createObjectStore(KEY_STORE);
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+async function idbRun<T>(mode: IDBTransactionMode, fn: (store: IDBObjectStore) => IDBRequest<T>): Promise<T> {
+  const db = await openKeyDb();
+  try {
+    return await new Promise<T>((resolve, reject) => {
+      const tx = db.transaction(KEY_STORE, mode);
+      const req = fn(tx.objectStore(KEY_STORE));
+      tx.oncomplete = () => resolve(req.result);
+      tx.onerror = () => reject(tx.error);
+      tx.onabort = () => reject(tx.error);
+    });
+  } finally {
+    db.close();
+  }
+}
+
+async function rememberKey(s: Session): Promise<void> {
+  try {
+    await idbRun('readwrite', (st) => st.put({ key: s.key, salt: s.salt, iterations: s.iterations }, KEY_RECORD_ID));
+  } catch (err) {
+    console.warn('Could not persist unlock key; vault will lock on reload.', err);
+  }
+}
+
+async function forgetKey(): Promise<void> {
+  try {
+    await idbRun('readwrite', (st) => st.delete(KEY_RECORD_ID));
+  } catch {
+    /* nothing to forget */
+  }
+}
+
+async function loadRememberedKey(): Promise<Session | null> {
+  try {
+    const rec = await idbRun<unknown>('readonly', (st) => st.get(KEY_RECORD_ID));
+    if (isObj(rec) && rec.key instanceof CryptoKey && typeof rec.salt === 'string' && typeof rec.iterations === 'number') {
+      return { key: rec.key, salt: rec.salt, iterations: rec.iterations };
+    }
+  } catch {
+    /* IndexedDB unavailable */
+  }
+  return null;
+}
+
+/* ------------------------------------------------------------------ */
+/* Reading                                                            */
+/* ------------------------------------------------------------------ */
+
+function readRaw(): unknown {
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw);
+  } catch {
+    throw new Error('本地保险箱数据已损坏，无法解析');
+  }
+}
+
+function isV2(p: unknown): p is VaultEnvelopeV2 {
+  return isObj(p) && p.v === 2 && isObj(p.kdf) && typeof p.salt === 'string' && isObj(p.payload);
+}
+
+function isV1(p: unknown): p is VaultEnvelopeV1 {
+  return isObj(p) && p.isEncrypted === true && typeof p.salt === 'string' && typeof p.payload === 'string';
+}
+
+async function decryptEnvelope(env: VaultEnvelopeV2 | VaultEnvelopeV1, key: CryptoKey): Promise<AppData> {
+  const blob: CipherBlob = isV2(env) ? env.payload : JSON.parse(env.payload);
+  const json = await decryptWithKey(blob, key);
+  return normalizeAppData(JSON.parse(json));
+}
+
+/**
+ * Inspect storage and try to resume with a remembered key.
+ * Never returns decrypted data unless a valid remembered key exists.
+ */
+export async function readVaultState(): Promise<VaultState> {
+  const parsed = readRaw();
+  if (parsed === null) return { kind: 'empty' };
+
+  if (isV2(parsed) || isV1(parsed)) {
+    const remembered = await loadRememberedKey();
+    // Only v2 vaults can be resumed; a remembered key is bound to the current salt.
+    if (remembered && isV2(parsed) && remembered.salt === parsed.salt && remembered.iterations === parsed.kdf.iterations) {
+      try {
+        const data = await decryptEnvelope(parsed, remembered.key);
+        session = remembered;
+        return { kind: 'unlocked', data };
+      } catch {
+        await forgetKey();
+      }
+    }
+    return { kind: 'locked' };
+  }
+
+  // Pre-encryption data written by older versions.
+  try {
+    return { kind: 'legacy-plain', data: normalizeAppData(parsed) };
+  } catch {
+    throw new Error('本地保险箱数据格式无法识别');
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Writing (serialised so concurrent updates cannot interleave)       */
+/* ------------------------------------------------------------------ */
+
+let writeQueue: Promise<void> = Promise.resolve();
+
+async function writeEnvelope(data: AppData, s: Session): Promise<void> {
+  const payload = await encryptWithKey(JSON.stringify(data), s.key);
+  const envelope: VaultEnvelopeV2 = {
+    v: 2,
+    kdf: { name: 'PBKDF2', hash: 'SHA-256', iterations: s.iterations },
+    salt: s.salt,
+    payload,
+  };
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(envelope));
+}
+
+/** Encrypt and persist. Resolves when this snapshot (and all earlier ones) are written. */
+export function persistVault(data: AppData): Promise<void> {
+  const snapshot = structuredClone(data); // later mutations can't leak into a queued write
+  const run = writeQueue.then(async () => {
+    if (!session) throw new Error('保险箱已锁定，无法保存');
+    await writeEnvelope(snapshot, session);
+  });
+  writeQueue = run.catch(() => undefined); // keep the chain alive after a failure
+  return run;
+}
+
+/* ------------------------------------------------------------------ */
+/* Lifecycle                                                          */
+/* ------------------------------------------------------------------ */
+
+async function newSession(password: string): Promise<Session> {
+  const salt = generateSalt();
+  const key = await deriveKey(password, salt, CURRENT_KDF_ITERATIONS);
+  return { key, salt, iterations: CURRENT_KDF_ITERATIONS };
+}
+
+/** Create (or re-encrypt) the vault under a new master password. */
+export async function setupVault(data: AppData, password: string, remember: boolean): Promise<AppData> {
+  const next: AppData = { ...data, settings: { ...data.settings, isConfigured: true, rememberUnlocked: remember } };
+  const s = await newSession(password);
+  await writeEnvelope(next, s);
+  session = s;
+  if (remember) await rememberKey(s);
+  else await forgetKey();
+  return next;
+}
+
+/** Unlock with the master password. Throws WrongPasswordError on a bad password. */
+export async function unlockVault(password: string, remember: boolean): Promise<AppData> {
+  const parsed = readRaw();
+  if (!isV2(parsed) && !isV1(parsed)) throw new Error('未找到加密的保险箱数据');
+
+  const iterations = isV2(parsed) ? parsed.kdf.iterations : LEGACY_KDF_ITERATIONS;
+  const key = await deriveKey(password, parsed.salt, iterations);
+  const data = await decryptEnvelope(parsed, key); // throws WrongPasswordError
+
+  if (isV2(parsed) && iterations >= CURRENT_KDF_ITERATIONS) {
+    session = { key, salt: parsed.salt, iterations };
+  } else {
+    // Migrate legacy / weaker vaults: fresh salt + current work factor.
+    session = await newSession(password);
+    await writeEnvelope(data, session);
+  }
+  data.settings.rememberUnlocked = remember;
+  if (remember) await rememberKey(session);
+  else await forgetKey();
+  return data;
+}
+
+/** Drop the key from memory and from IndexedDB. */
+export async function lockVault(): Promise<void> {
+  session = null;
+  await forgetKey();
+}
+
+export function hasActiveSession(): boolean {
+  return session !== null;
+}
+
+/* ------------------------------------------------------------------ */
+/* Backups                                                            */
+/* ------------------------------------------------------------------ */
+
+const BACKUP_FORMAT = 'vsmat-backup';
+
+interface BackupFileV2 {
+  format: typeof BACKUP_FORMAT;
+  v: 2;
+  kdf: VaultEnvelopeV2['kdf'];
+  salt: string;
+  payload: CipherBlob;
+}
+
+/**
+ * Export an encrypted backup. It is encrypted under the vault's own key, so it
+ * opens with the current master password and never contains plaintext secrets.
+ */
+export async function exportBackup(data: AppData, filename?: string): Promise<void> {
+  if (!session) throw new Error('保险箱已锁定，无法导出');
+  const backup: BackupFileV2 = {
+    format: BACKUP_FORMAT,
+    v: 2,
+    kdf: { name: 'PBKDF2', hash: 'SHA-256', iterations: session.iterations },
+    salt: session.salt,
+    payload: await encryptWithKey(JSON.stringify(data), session.key),
+  };
+  const name = filename ?? `vsmat-backup-${new Date().toLocaleDateString('sv-SE')}.vsmat.json`;
+  const blob = new Blob([JSON.stringify(backup)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = name;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+export type BackupProbe =
+  | { kind: 'encrypted'; needsPassword: boolean }
+  | { kind: 'plain' };
+
+function parseBackupText(text: string): unknown {
+  try {
+    return JSON.parse(text);
+  } catch {
+    throw new Error('解析备份文件失败：不是有效的 JSON');
+  }
+}
+
+function isBackupV2(p: unknown): p is BackupFileV2 {
+  return isObj(p) && p.format === BACKUP_FORMAT && p.v === 2 && isObj(p.kdf) && typeof p.salt === 'string' && isObj(p.payload);
+}
+
+/** Identify a backup file without decrypting it. */
+export function probeBackup(text: string): BackupProbe {
+  const parsed = parseBackupText(text);
+  if (isBackupV2(parsed)) {
+    // Same salt as the open vault => same key, no password prompt needed.
+    return { kind: 'encrypted', needsPassword: !session || session.salt !== parsed.salt };
+  }
+  normalizeAppData(parsed); // throws a descriptive error if it is neither format
+  return { kind: 'plain' };
+}
+
+/**
+ * Parse + validate a backup. Nothing is applied here; the caller decides
+ * whether to replace the current vault after confirming with the user.
+ */
+export async function parseBackup(text: string, password?: string): Promise<AppData> {
+  const parsed = parseBackupText(text);
+  if (!isBackupV2(parsed)) return normalizeAppData(parsed);
+
+  let key: CryptoKey;
+  if (session && session.salt === parsed.salt && session.iterations === parsed.kdf.iterations) {
+    key = session.key;
+  } else {
+    if (!password) throw new WrongPasswordError();
+    key = await deriveKey(password, parsed.salt, parsed.kdf.iterations);
+  }
+  return normalizeAppData(JSON.parse(await decryptWithKey(parsed.payload, key)));
 }
 
 /**
@@ -333,20 +440,4 @@ export function advanceBillingDate(currentDateStr: string, cycle: string): strin
   const month = String(d.getMonth() + 1).padStart(2, '0');
   const day = String(d.getDate()).padStart(2, '0');
   return `${year}-${month}-${day}`;
-}
-
-/**
- * Export backup as downloadable JSON
- */
-export function exportBackup(data: AppData, filename = 'vsmat-backup.json') {
-  const jsonStr = JSON.stringify(data, null, 2);
-  const blob = new Blob([jsonStr], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
 }

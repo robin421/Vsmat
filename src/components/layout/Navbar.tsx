@@ -24,7 +24,7 @@ interface NavbarProps {
   onLockVault: () => void;
   isLocked: boolean;
   appData: AppData;
-  onImportBackup: (importedData: AppData) => void;
+  onImportBackup: (fileText: string) => void | Promise<void>;
   preferredCurrency: 'CNY' | 'USD';
   onToggleCurrency: () => void;
   searchQuery: string;
@@ -49,30 +49,22 @@ export const Navbar: React.FC<NavbarProps> = ({
   const [showBackupMenu, setShowBackupMenu] = useState(false);
 
   const handleExport = () => {
-    exportBackup(appData);
+    exportBackup(appData).catch((err) => window.alert(err instanceof Error ? err.message : '导出失败'));
     setShowBackupMenu(false);
   };
 
   const handleImportFile = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+    const input = e.target;
+    const file = input.files?.[0];
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = (event) => {
-      try {
-        const text = event.target?.result as string;
-        const parsed = JSON.parse(text);
-        if (parsed.tokens && parsed.subscriptions) {
-          onImportBackup(parsed);
-          alert('数据备份已成功导入！');
-        } else {
-          alert('备份文件格式不正确');
-        }
-      } catch {
-        alert('解析备份文件失败');
-      }
+    reader.onload = () => {
+      void onImportBackup(String(reader.result ?? ''));
     };
+    reader.onerror = () => window.alert('读取备份文件失败');
     reader.readAsText(file);
+    input.value = ''; // allow re-selecting the same file
     setShowBackupMenu(false);
   };
 
