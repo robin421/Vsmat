@@ -210,16 +210,16 @@ export function App() {
       <div className="min-h-screen flex items-center justify-center p-6 text-center">
         <div className="max-w-md space-y-2">
           <AlertCircle className="w-8 h-8 text-rose-600 mx-auto" />
-          <p className="font-bold text-[#222222]">无法加载保险箱</p>
-          <p className="text-sm text-[#717171]">{loadError}</p>
-          <p className="text-xs text-[#717171]">为避免覆盖你的数据，应用已停止。请先从备份恢复或检查浏览器存储。</p>
+          <p className="font-semibold text-ink">无法加载保险箱</p>
+          <p className="text-sm text-muted">{loadError}</p>
+          <p className="text-xs text-muted">为避免覆盖你的数据，应用已停止。请先从备份恢复或检查浏览器存储。</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-white text-[#222222] flex flex-col font-sans selection:bg-[#18181B] selection:text-white antialiased">
+    <div className="min-h-screen bg-canvas text-ink flex flex-col font-sans antialiased">
       <Navbar
         activeTab={activeTab}
         onTabChange={setActiveTab}
@@ -354,22 +354,22 @@ export function App() {
       </Suspense>
 
       {/* Executive Clean Footer with Security & Privacy Guarantee */}
-      <footer className="mt-auto py-8 border-t border-[#EBEBEB] text-center text-xs text-[#717171] bg-white">
+      <footer className="mt-auto py-8 border-t border-line text-center text-xs text-muted bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <ShieldCheck className="w-4 h-4 text-emerald-600" />
-            <span className="font-bold text-[#000000]">Vsmat 本地加密金库</span>
-            <span className="text-[#888888]">· 100% 纯前端离线架构 · 无后端服务器 · 零云端数据库</span>
+            <span className="font-semibold text-black">Vsmat 本地加密金库</span>
+            <span className="text-subtle">· 100% 纯前端离线架构 · 无后端服务器 · 零云端数据库</span>
           </div>
           <div className="flex items-center gap-4">
             <button
               onClick={() => setIsSecurityModalOpen(true)}
-              className="text-[#000000] hover:text-[#555555] underline decoration-[#DDDDDD] hover:decoration-[#000000] transition font-medium"
+              className="text-black hover:text-ink-soft underline decoration-line-strong hover:decoration-black transition font-medium"
             >
               数据安全与隐私白皮书
             </button>
             <span>·</span>
-            <span className="font-mono text-[#888888]">AES-256-GCM 本地加密</span>
+            <span className="font-mono text-subtle">AES-256-GCM 本地加密</span>
           </div>
         </div>
       </footer>

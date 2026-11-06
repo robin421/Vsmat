@@ -34,7 +34,7 @@ export const TokenCard: React.FC<TokenCardProps> = ({ token, onEdit, onDelete })
   return (
     <div
       onClick={() => onEdit(token)}
-      className="group relative rounded-3xl bg-white p-5 sm:p-6 flex flex-col justify-between transition-all duration-200 airbnb-card border border-[#EBEBEB] hover:border-[#DDDDDD] cursor-pointer"
+      className="group relative rounded-2xl p-5 flex flex-col justify-between surface-card cursor-pointer"
     >
       <div>
         {/* Header */}
@@ -42,10 +42,10 @@ export const TokenCard: React.FC<TokenCardProps> = ({ token, onEdit, onDelete })
           <div className="flex items-center gap-3 min-w-0">
             <BrandBadge serviceKey={token.serviceKey} name={token.name} size="md" />
             <div className="min-w-0">
-              <h3 className="text-base font-bold text-[#222222] tracking-tight truncate leading-snug">
+              <h3 className="text-base font-semibold text-black tracking-tight truncate leading-snug">
                 {token.name}
               </h3>
-              <p className="text-xs text-[#717171] font-mono mt-0.5 break-all select-all" title={token.accountEmail || preset.name}>
+              <p className="text-xs text-muted font-mono mt-1 break-all select-all" title={token.accountEmail || preset.name}>
                 {token.accountEmail || preset.name}
               </p>
             </div>
@@ -57,7 +57,7 @@ export const TokenCard: React.FC<TokenCardProps> = ({ token, onEdit, onDelete })
                 href={safeHttpUrl(token.consoleUrl)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-8 h-8 rounded-full text-[#717171] hover:text-[#222222] hover:bg-[#F7F7F7] flex items-center justify-center transition"
+                className="w-8 h-8 rounded-lg text-muted hover:text-black hover:bg-inset flex items-center justify-center transition-colors"
                 title="打开官方控制台"
               >
                 <ExternalLink className="w-3.5 h-3.5" />
@@ -67,7 +67,7 @@ export const TokenCard: React.FC<TokenCardProps> = ({ token, onEdit, onDelete })
             <button
               type="button"
               onClick={() => onEdit(token)}
-              className="w-8 h-8 rounded-full text-[#717171] hover:text-[#222222] hover:bg-[#F7F7F7] flex items-center justify-center transition"
+              className="w-8 h-8 rounded-lg text-muted hover:text-black hover:bg-inset flex items-center justify-center transition-colors"
               title="编辑密钥"
             >
               <Edit2 className="w-3.5 h-3.5" />
@@ -78,7 +78,7 @@ export const TokenCard: React.FC<TokenCardProps> = ({ token, onEdit, onDelete })
               <button
                 type="button"
                 onClick={() => setShowMenu(!showMenu)}
-                className="w-8 h-8 rounded-full text-[#717171] hover:text-[#222222] hover:bg-[#F7F7F7] flex items-center justify-center transition"
+                className="w-8 h-8 rounded-lg text-muted hover:text-black hover:bg-inset flex items-center justify-center transition-colors"
                 title="更多操作"
               >
                 <MoreHorizontal className="w-4 h-4" />
@@ -86,7 +86,7 @@ export const TokenCard: React.FC<TokenCardProps> = ({ token, onEdit, onDelete })
 
               {showMenu && (
                 <div
-                  className="absolute right-0 mt-1 w-36 rounded-2xl bg-white border border-[#EBEBEB] p-2 airbnb-card z-20 text-xs animate-fadeIn"
+                  className="absolute right-0 mt-1 w-40 rounded-xl surface-pop p-1.5 z-20 text-sm animate-fadeIn"
                   onClick={(e) => e.stopPropagation()}
                 >
                   <button
@@ -94,9 +94,9 @@ export const TokenCard: React.FC<TokenCardProps> = ({ token, onEdit, onDelete })
                       onEdit(token);
                       setShowMenu(false);
                     }}
-                    className="w-full text-left px-3 py-2 rounded-xl hover:bg-[#F7F7F7] text-[#222222] font-medium flex items-center gap-2"
+                    className="w-full text-left px-3 py-2 rounded-lg hover:bg-inset text-ink font-medium flex items-center gap-2"
                   >
-                    <Edit2 className="w-3.5 h-3.5 text-[#717171]" />
+                    <Edit2 className="w-3.5 h-3.5 text-muted" />
                     <span>编辑密钥</span>
                   </button>
                   <button
@@ -106,7 +106,7 @@ export const TokenCard: React.FC<TokenCardProps> = ({ token, onEdit, onDelete })
                       }
                       setShowMenu(false);
                     }}
-                    className="w-full text-left px-3 py-2 rounded-xl hover:bg-rose-50 text-rose-700 font-medium flex items-center gap-2"
+                    className="w-full text-left px-3 py-2 rounded-lg hover:bg-rose-50 text-rose-700 font-medium flex items-center gap-2"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                     <span>删除密钥</span>
@@ -118,13 +118,13 @@ export const TokenCard: React.FC<TokenCardProps> = ({ token, onEdit, onDelete })
         </div>
 
         {/* Token Key Value Strip (Airbnb Vault Style) */}
-        <div className="bg-[#F7F7F7] border border-[#EBEBEB] rounded-2xl p-3.5 mb-3" onClick={(e) => e.stopPropagation()}>
-          <div className="flex items-center justify-between text-[11px] text-[#717171] mb-1.5 font-medium">
-            <span className="tracking-wide uppercase text-[10px] font-bold">API Token 密钥</span>
+        <div className="rounded-xl border border-line px-3.5 py-3 mb-3" onClick={(e) => e.stopPropagation()}>
+          <div className="flex items-center justify-between text-xs text-muted mb-2">
+            <span className="font-medium">API Token 密钥</span>
             <button
               type="button"
               onClick={() => setShowKey(!showKey)}
-              className="text-[#717171] hover:text-[#222222] transition flex items-center gap-1 text-[11px]"
+              className="text-muted hover:text-black transition-colors flex items-center gap-1 text-xs"
             >
               {showKey ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
               <span>{showKey ? '隐藏' : '显示'}</span>
@@ -132,7 +132,7 @@ export const TokenCard: React.FC<TokenCardProps> = ({ token, onEdit, onDelete })
           </div>
 
           <div className="flex items-center justify-between gap-2">
-            <span className="font-mono text-xs text-[#222222] font-bold truncate select-all tracking-tight">
+            <span className="font-mono text-[13px] text-ink font-medium truncate select-all">
               {showKey ? token.token : maskedToken}
             </span>
           </div>
@@ -140,22 +140,22 @@ export const TokenCard: React.FC<TokenCardProps> = ({ token, onEdit, onDelete })
 
         {/* Base URL (if present) */}
         {token.baseUrl && (
-          <div className="text-xs text-[#717171] font-mono truncate flex items-center gap-1.5 mb-2 px-1">
-            <Globe className="w-3.5 h-3.5 text-[#717171] shrink-0" />
+          <div className="text-xs text-muted font-mono truncate flex items-center gap-2 mb-4 px-0.5">
+            <Globe className="w-3.5 h-3.5 text-muted shrink-0" />
             <span className="truncate">{token.baseUrl}</span>
           </div>
         )}
       </div>
 
       {/* Copy Action & Balance Footer */}
-      <div className="pt-3 border-t border-[#EBEBEB] flex items-center justify-between" onClick={(e) => e.stopPropagation()}>
-        <span className="text-xs text-[#717171] font-mono truncate max-w-[150px] font-medium">
+      <div className="pt-1 flex items-center justify-between gap-3" onClick={(e) => e.stopPropagation()}>
+        <span className="text-xs text-ink-soft font-mono truncate">
           {token.balance || '状态正常'}
         </span>
         <button
           type="button"
           onClick={handleCopyKey}
-          className="h-10 px-4 rounded-xl btn-rausch text-white font-semibold text-xs transition flex items-center gap-1.5 shadow-sm active:scale-[0.98]"
+          className="h-10 px-4 rounded-lg btn-primary font-semibold text-sm flex items-center gap-1.5 shrink-0"
         >
           {copiedKey ? <Check className="w-3.5 h-3.5 text-white" /> : <Copy className="w-3.5 h-3.5" />}
           <span>{copiedKey ? '已复制' : '复制密钥'}</span>

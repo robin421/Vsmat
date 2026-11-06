@@ -96,24 +96,24 @@ export const TokenModal: React.FC<TokenModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-fadeIn">
-      <div className="w-full max-w-lg rounded-3xl bg-white border border-[#EBEBEB] p-6 sm:p-7 airbnb-card overflow-y-auto max-h-[92vh] text-[#222222]">
-        <div className="flex items-center justify-between pb-4 border-b border-[#EBEBEB]">
+      <div className="w-full max-w-lg rounded-3xl bg-white border border-line p-6 sm:p-7 surface-card overflow-y-auto max-h-[92vh] text-ink">
+        <div className="flex items-center justify-between pb-4 border-b border-line">
           <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-2xl bg-[#000000] text-white border border-black/10 flex items-center justify-center shadow-2xs">
+            <div className="w-10 h-10 rounded-2xl bg-black text-white border border-black/10 flex items-center justify-center">
               <Key className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-[#222222]">
+              <h3 className="text-base font-semibold text-ink">
                 {initialData ? '编辑 API Token 密钥' : '添加新 API Token 密钥'}
               </h3>
-              <p className="text-xs text-[#717171]">
+              <p className="text-xs text-muted">
                 端到端强加密保存开发凭证与调用 Endpoint
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full border border-[#DDDDDD] hover:border-[#222222] text-[#717171] hover:text-[#222222] hover:bg-[#F7F7F7] flex items-center justify-center transition"
+            className="w-8 h-8 rounded-full border border-line-strong hover:border-ink text-muted hover:text-ink hover:bg-inset flex items-center justify-center transition"
           >
             <X className="w-4 h-4" />
           </button>
@@ -122,13 +122,13 @@ export const TokenModal: React.FC<TokenModalProps> = ({
         <form onSubmit={handleSubmit} className="mt-4 space-y-4 text-sm">
           {/* Preset selector */}
           <div>
-            <label className="block text-xs font-medium text-[#222222] font-semibold mb-1.5">
+            <label className="block text-xs font-medium text-ink font-semibold mb-1.5">
               快速预填服务模板
             </label>
             <select
               value={serviceKey}
               onChange={(e) => handleServiceChange(e.target.value)}
-              className="w-full h-10 bg-[#F7F7F7] border border-[#DDDDDD] rounded-xl px-3 text-zinc-800 outline-none focus:bg-white focus:border-[#222222] shadow-2xs text-xs"
+              className="w-full h-10 bg-inset border border-line-strong rounded-lg px-3 text-ink outline-none focus:border-ink text-sm"
             >
               <option value="custom">-- 自定义服务 (自行输入) --</option>
               {PRESET_SERVICES.map((p) => (
@@ -142,7 +142,7 @@ export const TokenModal: React.FC<TokenModalProps> = ({
           {/* Name & Token */}
           <div className="space-y-3">
             <div>
-              <label className="block text-xs font-medium text-[#222222] font-semibold mb-1.5">
+              <label className="block text-xs font-medium text-ink font-semibold mb-1.5">
                 密钥标识名称 <span className="text-rose-500">*</span>
               </label>
               <input
@@ -151,12 +151,12 @@ export const TokenModal: React.FC<TokenModalProps> = ({
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="例如: OpenAI 主主力 Key / DeepSeek 生产环境"
-                className="w-full h-10 bg-[#F7F7F7] border border-[#DDDDDD] rounded-xl px-3 text-[#222222] outline-none focus:bg-white focus:border-[#222222] shadow-2xs text-xs"
+                className="w-full h-10 bg-inset border border-line-strong rounded-lg px-3 text-ink outline-none focus:border-ink text-sm"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-[#222222] font-semibold mb-1.5">
+              <label className="block text-xs font-medium text-ink font-semibold mb-1.5">
                 API Token / 密钥明文 <span className="text-rose-500">*</span>
               </label>
               <input
@@ -165,14 +165,14 @@ export const TokenModal: React.FC<TokenModalProps> = ({
                 value={token}
                 onChange={(e) => setToken(e.target.value)}
                 placeholder="sk-proj-..."
-                className="w-full h-10 bg-[#F7F7F7] border border-[#DDDDDD] rounded-xl px-3 font-mono text-xs text-[#222222] outline-none focus:bg-white focus:border-[#222222] shadow-2xs"
+                className="w-full h-10 bg-inset border border-line-strong rounded-lg px-3 font-mono text-sm text-ink outline-none focus:border-ink"
               />
             </div>
           </div>
 
           {/* Base URL */}
           <div>
-            <label className="block text-xs font-medium text-[#222222] font-semibold mb-1.5">
+            <label className="block text-xs font-medium text-ink font-semibold mb-1.5">
               API Base URL (中转 / 代理反代地址)
             </label>
             <input
@@ -180,14 +180,14 @@ export const TokenModal: React.FC<TokenModalProps> = ({
               value={baseUrl}
               onChange={(e) => setBaseUrl(e.target.value)}
               placeholder="https://api.openai.com/v1"
-              className="w-full h-10 bg-[#F7F7F7] border border-[#DDDDDD] rounded-xl px-3 font-mono text-xs text-[#222222] outline-none focus:bg-white focus:border-[#222222] shadow-2xs"
+              className="w-full h-10 bg-inset border border-line-strong rounded-lg px-3 font-mono text-sm text-ink outline-none focus:border-ink"
             />
           </div>
 
           {/* Account & Org */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-medium text-[#222222] font-semibold mb-1.5">
+              <label className="block text-xs font-medium text-ink font-semibold mb-1.5">
                 归属账号 / 邮箱
               </label>
               <input
@@ -195,11 +195,11 @@ export const TokenModal: React.FC<TokenModalProps> = ({
                 value={accountEmail}
                 onChange={(e) => setAccountEmail(e.target.value)}
                 placeholder="developer@example.com"
-                className="w-full h-10 bg-[#F7F7F7] border border-[#DDDDDD] rounded-xl px-3 font-mono text-xs text-[#222222] outline-none focus:bg-white focus:border-[#222222] shadow-2xs"
+                className="w-full h-10 bg-inset border border-line-strong rounded-lg px-3 font-mono text-sm text-ink outline-none focus:border-ink"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-[#222222] font-semibold mb-1.5">
+              <label className="block text-xs font-medium text-ink font-semibold mb-1.5">
                 Organization / Project ID
               </label>
               <input
@@ -207,14 +207,14 @@ export const TokenModal: React.FC<TokenModalProps> = ({
                 value={organizationId}
                 onChange={(e) => setOrganizationId(e.target.value)}
                 placeholder="org-..."
-                className="w-full h-10 bg-[#F7F7F7] border border-[#DDDDDD] rounded-xl px-3 font-mono text-xs text-[#222222] outline-none focus:bg-white focus:border-[#222222] shadow-2xs"
+                className="w-full h-10 bg-inset border border-line-strong rounded-lg px-3 font-mono text-sm text-ink outline-none focus:border-ink"
               />
             </div>
           </div>
 
           {/* Balance & Status */}
           <div>
-            <label className="block text-xs font-medium text-[#222222] font-semibold mb-1.5">
+            <label className="block text-xs font-medium text-ink font-semibold mb-1.5">
               额度与余额备忘
             </label>
             <input
@@ -222,13 +222,13 @@ export const TokenModal: React.FC<TokenModalProps> = ({
               value={balance}
               onChange={(e) => setBalance(e.target.value)}
               placeholder="例如: 剩余 $48.50 (有效期至 2026-12)"
-              className="w-full h-10 bg-[#F7F7F7] border border-[#DDDDDD] rounded-xl px-3 text-xs text-[#222222] outline-none focus:bg-white focus:border-[#222222] shadow-2xs"
+              className="w-full h-10 bg-inset border border-line-strong rounded-lg px-3 text-sm text-ink outline-none focus:border-ink"
             />
           </div>
 
           {/* Tags */}
           <div>
-            <label className="block text-xs font-medium text-[#222222] font-semibold mb-1.5">
+            <label className="block text-xs font-medium text-ink font-semibold mb-1.5">
               标签 (逗号分隔)
             </label>
             <input
@@ -236,20 +236,20 @@ export const TokenModal: React.FC<TokenModalProps> = ({
               value={tagsStr}
               onChange={(e) => setTagsStr(e.target.value)}
               placeholder="生产环境, GPT-4, 个人自用"
-              className="w-full h-10 bg-[#F7F7F7] border border-[#DDDDDD] rounded-xl px-3 text-xs text-[#222222] outline-none focus:bg-white focus:border-[#222222] shadow-2xs"
+              className="w-full h-10 bg-inset border border-line-strong rounded-lg px-3 text-sm text-ink outline-none focus:border-ink"
             />
           </div>
 
           {/* Console URL */}
           <div>
-            <label className="block text-xs font-medium text-[#222222] font-semibold mb-1.5 flex items-center justify-between">
+            <label className="block text-xs font-medium text-ink font-semibold mb-1.5 flex items-center justify-between">
               <span>官方控制台链接</span>
               {consoleUrl && (
                 <a
                   href={safeHttpUrl(consoleUrl)}
                   target="_blank"
                   rel="noreferrer"
-                  className="text-zinc-600 text-xs flex items-center gap-1 hover:text-[#222222] font-normal"
+                  className="text-muted text-xs flex items-center gap-1 hover:text-ink font-normal"
                 >
                   测试跳转 <ExternalLink className="w-3 h-3" />
                 </a>
@@ -260,13 +260,13 @@ export const TokenModal: React.FC<TokenModalProps> = ({
               value={consoleUrl}
               onChange={(e) => setConsoleUrl(e.target.value)}
               placeholder="https://platform.openai.com/api-keys"
-              className="w-full h-10 bg-[#F7F7F7] border border-[#DDDDDD] rounded-xl px-3 font-mono text-xs text-[#222222] outline-none focus:bg-white focus:border-[#222222] shadow-2xs"
+              className="w-full h-10 bg-inset border border-line-strong rounded-lg px-3 font-mono text-sm text-ink outline-none focus:border-ink"
             />
           </div>
 
           {/* Notes */}
           <div>
-            <label className="block text-xs font-medium text-[#222222] font-semibold mb-1.5">
+            <label className="block text-xs font-medium text-ink font-semibold mb-1.5">
               安全备忘与说明
             </label>
             <textarea
@@ -274,22 +274,22 @@ export const TokenModal: React.FC<TokenModalProps> = ({
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="例如: 绑定的信用卡、重置周期或组织成员说明..."
-              className="w-full bg-[#F7F7F7] border border-[#DDDDDD] rounded-xl p-3 text-xs text-[#222222] outline-none focus:bg-white focus:border-[#222222] shadow-2xs"
+              className="w-full bg-inset border border-line-strong rounded-xl p-3 text-xs text-ink outline-none focus:border-ink"
             />
           </div>
 
           {/* Buttons */}
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-[#EBEBEB]">
+          <div className="flex items-center justify-end gap-3 pt-4 border-t border-line">
             <button
               type="button"
               onClick={onClose}
-              className="px-5 py-2.5 rounded-xl bg-white hover:bg-[#F7F7F7] text-[#222222] border border-[#DDDDDD] hover:border-[#222222] transition text-xs font-semibold"
+              className="px-5 py-2.5 rounded-xl bg-white hover:bg-inset text-ink border border-line-strong hover:border-ink transition text-xs font-semibold"
             >
               取消
             </button>
             <button
               type="submit"
-              className="px-6 py-2.5 rounded-xl btn-rausch text-white font-bold transition text-xs flex items-center gap-1.5 shadow-md active:scale-95"
+              className="h-10 px-5 rounded-lg btn-rausch text-white font-semibold transition text-xs flex items-center gap-1.5 active:scale-95"
             >
               <span>保存到加密保险箱</span>
             </button>

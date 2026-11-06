@@ -81,24 +81,24 @@ export const VoucherModal: React.FC<VoucherModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-fadeIn">
-      <div className="w-full max-w-md rounded-3xl bg-white border border-[#EBEBEB] p-6 sm:p-7 airbnb-card overflow-y-auto max-h-[90vh] text-[#222222]">
-        <div className="flex items-center justify-between pb-4 border-b border-[#EBEBEB]">
+      <div className="w-full max-w-md rounded-3xl bg-white border border-line p-6 sm:p-7 surface-card overflow-y-auto max-h-[90vh] text-ink">
+        <div className="flex items-center justify-between pb-4 border-b border-line">
           <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-2xl bg-[#FFF4EB] text-[#FC642D] border border-[#FFE0D3] flex items-center justify-center shadow-2xs">
+            <div className="w-10 h-10 rounded-2xl bg-inset text-ink-soft flex items-center justify-center">
               <Gift className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-[#222222]">
+              <h3 className="text-base font-semibold text-ink">
                 {initialData ? '编辑礼品卡券' : '存入新礼品卡券'}
               </h3>
-              <p className="text-xs text-[#717171]">
+              <p className="text-xs text-muted">
                 加密存放充值卡密，支持一键直达充值
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full border border-[#DDDDDD] hover:border-[#222222] text-[#717171] hover:text-[#222222] hover:bg-[#F7F7F7] flex items-center justify-center transition"
+            className="w-8 h-8 rounded-full border border-line-strong hover:border-ink text-muted hover:text-ink hover:bg-inset flex items-center justify-center transition"
           >
             <X className="w-4 h-4" />
           </button>
@@ -107,7 +107,7 @@ export const VoucherModal: React.FC<VoucherModalProps> = ({
         <form onSubmit={handleSubmit} className="mt-4 space-y-4 text-sm">
           {/* Voucher Code */}
           <div>
-            <label className="block text-xs font-medium text-[#222222] font-semibold mb-1.5">
+            <label className="block text-xs font-medium text-ink font-semibold mb-1.5">
               卡券密文 / 代码 <span className="text-rose-500">*</span>
             </label>
             <input
@@ -116,19 +116,19 @@ export const VoucherModal: React.FC<VoucherModalProps> = ({
               value={code}
               onChange={(e) => handleCodeChange(e.target.value)}
               placeholder="例如: X89A-24B8-90CD-EF12"
-              className="w-full h-10 bg-[#F7F7F7] border border-[#DDDDDD] rounded-xl px-3 font-mono text-xs text-[#222222] outline-none focus:bg-white focus:border-[#222222] shadow-2xs"
+              className="w-full h-10 bg-inset border border-line-strong rounded-lg px-3 font-mono text-sm text-ink outline-none focus:border-ink"
             />
           </div>
 
           {/* Service Selector */}
           <div>
-            <label className="block text-xs font-medium text-[#222222] font-semibold mb-1.5">
+            <label className="block text-xs font-medium text-ink font-semibold mb-1.5">
               目标服务渠道
             </label>
             <select
               value={serviceKey}
               onChange={(e) => handleServiceChange(e.target.value)}
-              className="w-full h-10 bg-[#F7F7F7] border border-[#DDDDDD] rounded-xl px-3 text-xs text-zinc-800 outline-none focus:bg-white focus:border-[#222222] shadow-2xs"
+              className="w-full h-10 bg-inset border border-line-strong rounded-lg px-3 text-sm text-ink outline-none focus:border-ink"
             >
               {PRESET_SERVICES.map((p) => (
                 <option key={p.key} value={p.key}>
@@ -141,7 +141,7 @@ export const VoucherModal: React.FC<VoucherModalProps> = ({
 
           {/* Service Name */}
           <div>
-            <label className="block text-xs font-medium text-[#222222] font-semibold mb-1.5">
+            <label className="block text-xs font-medium text-ink font-semibold mb-1.5">
               卡券显示名称
             </label>
             <input
@@ -149,14 +149,14 @@ export const VoucherModal: React.FC<VoucherModalProps> = ({
               value={serviceName}
               onChange={(e) => setServiceName(e.target.value)}
               placeholder="例如: 美区 Apple App Store 充值卡"
-              className="w-full h-10 bg-[#F7F7F7] border border-[#DDDDDD] rounded-xl px-3 text-xs text-[#222222] outline-none focus:bg-white focus:border-[#222222] shadow-2xs"
+              className="w-full h-10 bg-inset border border-line-strong rounded-lg px-3 text-sm text-ink outline-none focus:border-ink"
             />
           </div>
 
           {/* Amount & Currency */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-medium text-[#222222] font-semibold mb-1.5">
+              <label className="block text-xs font-medium text-ink font-semibold mb-1.5">
                 面值金额
               </label>
               <input
@@ -165,17 +165,17 @@ export const VoucherModal: React.FC<VoucherModalProps> = ({
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 placeholder="25"
-                className="w-full h-10 bg-[#F7F7F7] border border-[#DDDDDD] rounded-xl px-3 font-mono text-xs text-[#222222] outline-none focus:bg-white focus:border-[#222222] shadow-2xs"
+                className="w-full h-10 bg-inset border border-line-strong rounded-lg px-3 font-mono text-sm text-ink outline-none focus:border-ink"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-[#222222] font-semibold mb-1.5">
+              <label className="block text-xs font-medium text-ink font-semibold mb-1.5">
                 币种
               </label>
               <select
                 value={currency}
                 onChange={(e) => setCurrency(e.target.value)}
-                className="w-full h-10 bg-[#F7F7F7] border border-[#DDDDDD] rounded-xl px-2 text-xs text-[#222222] outline-none focus:bg-white focus:border-[#222222] shadow-2xs font-medium"
+                className="w-full h-10 bg-inset border border-line-strong rounded-lg px-2 text-sm text-ink outline-none focus:border-ink font-medium"
               >
                 <optgroup label="🔥 热门低价与跨区充值 (aisubdeal 榜单)">
                   {SUPPORTED_CURRENCIES.filter(c => c.popularRank < 20).map(c => (
@@ -197,7 +197,7 @@ export const VoucherModal: React.FC<VoucherModalProps> = ({
 
           {/* Notes */}
           <div>
-            <label className="block text-xs font-medium text-[#222222] font-semibold mb-1.5">
+            <label className="block text-xs font-medium text-ink font-semibold mb-1.5">
               备注备忘
             </label>
             <input
@@ -205,22 +205,22 @@ export const VoucherModal: React.FC<VoucherModalProps> = ({
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="例如: 淘宝购买美区卡、打折券..."
-              className="w-full h-10 bg-[#F7F7F7] border border-[#DDDDDD] rounded-xl px-3 text-xs text-[#222222] outline-none focus:bg-white focus:border-[#222222] shadow-2xs"
+              className="w-full h-10 bg-inset border border-line-strong rounded-lg px-3 text-sm text-ink outline-none focus:border-ink"
             />
           </div>
 
           {/* Action buttons */}
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-[#EBEBEB]">
+          <div className="flex items-center justify-end gap-3 pt-4 border-t border-line">
             <button
               type="button"
               onClick={onClose}
-              className="px-5 py-2.5 rounded-xl bg-white hover:bg-[#F7F7F7] text-[#222222] border border-[#DDDDDD] hover:border-[#222222] text-xs font-semibold transition"
+              className="px-5 py-2.5 rounded-xl bg-white hover:bg-inset text-ink border border-line-strong hover:border-ink text-xs font-semibold transition"
             >
               取消
             </button>
             <button
               type="submit"
-              className="px-6 py-2.5 rounded-xl bg-[#000000] hover:bg-[#222222] text-white font-bold text-xs flex items-center gap-1.5 shadow-md transition active:scale-95"
+              className="h-10 px-5 rounded-lg bg-black hover:bg-ink text-white font-semibold text-xs flex items-center gap-1.5 transition active:scale-95"
             >
               <span>存入券包</span>
             </button>

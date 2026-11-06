@@ -314,25 +314,25 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/50 backdrop-blur-sm animate-fadeIn">
-      <div className="w-full max-w-xl rounded-3xl bg-white border border-[#EBEBEB] p-5 sm:p-7 shadow-2xl overflow-y-auto max-h-[92vh] text-[#222222] airbnb-card">
+      <div className="w-full max-w-xl rounded-3xl bg-white border border-line p-5 sm:p-7 shadow-pop overflow-y-auto max-h-[92vh] text-ink surface-card">
         {/* Header */}
-        <div className="flex items-center justify-between pb-3.5 border-b border-[#EBEBEB]">
+        <div className="flex items-center justify-between pb-3.5 border-b border-line">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-[#000000] text-white border border-black/10 flex items-center justify-center shadow-2xs">
+            <div className="w-10 h-10 rounded-2xl bg-black text-white border border-black/10 flex items-center justify-center">
               <CreditCard className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-[#222222]">
+              <h3 className="text-base font-semibold text-ink">
                 {initialData ? '编辑订阅详情' : '新建订阅'}
               </h3>
-              <p className="text-xs text-[#717171]">
+              <p className="text-xs text-muted">
                 {initialData ? '修改账号、金额、到期时间与登录备忘' : '选择智能识别提取或手动填表录入'}
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="w-9 h-9 rounded-full border border-[#DDDDDD] hover:bg-[#F7F7F7] flex items-center justify-center text-[#717171] hover:text-[#222222] transition"
+            className="w-9 h-9 rounded-full border border-line-strong hover:bg-inset flex items-center justify-center text-muted hover:text-ink transition"
           >
             <X className="w-4 h-4" />
           </button>
@@ -340,41 +340,41 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
 
         {/* Unified Mode Selection Tabs (智能识别 / 手动填表) */}
         {!initialData && (
-          <div className="grid grid-cols-2 gap-1.5 p-1 bg-[#F7F7F7] border border-[#EBEBEB] rounded-2xl mt-4">
+          <div className="grid grid-cols-2 gap-1.5 p-1 bg-inset border border-line rounded-2xl mt-4">
             <button
               type="button"
               onClick={() => setEntryMode('smart')}
-              className={`py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition ${
+              className={`py-2 px-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition ${
                 entryMode === 'smart'
-                  ? 'bg-white text-[#222222] shadow-2xs border border-[#DDDDDD]'
-                  : 'text-[#717171] hover:text-[#222222]'
+                  ? 'bg-white text-ink border border-line-strong'
+                  : 'text-muted hover:text-ink'
               }`}
             >
-              <Sparkles className="w-3.5 h-3.5 text-[#000000]" />
+              <Sparkles className="w-3.5 h-3.5 text-black" />
               <span>智能识别 (截图/发货单)</span>
             </button>
             <button
               type="button"
               onClick={() => setEntryMode('manual')}
-              className={`py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition ${
+              className={`py-2 px-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition ${
                 entryMode === 'manual'
-                  ? 'bg-white text-[#222222] shadow-2xs border border-[#DDDDDD]'
-                  : 'text-[#717171] hover:text-[#222222]'
+                  ? 'bg-white text-ink border border-line-strong'
+                  : 'text-muted hover:text-ink'
               }`}
             >
-              <Edit3 className="w-3.5 h-3.5 text-[#222222]" />
+              <Edit3 className="w-3.5 h-3.5 text-ink" />
               <span>手动填写表单</span>
             </button>
           </div>
         )}
 
         {/* Local Security & Privacy Assurance Strip */}
-        <div className="mt-3.5 flex items-center justify-between p-2.5 rounded-xl bg-emerald-50/70 border border-emerald-200/80 text-[11px] text-emerald-900 font-medium">
+        <div className="mt-3.5 flex items-center justify-between p-2.5 rounded-xl bg-emerald-50/70 border border-emerald-200/80 text-xs text-emerald-900 font-medium">
           <div className="flex items-center gap-2 min-w-0">
             <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
             <span className="truncate sm:whitespace-normal">100% 纯本地离线解析与加密存储，所有截图与账号密码绝不离开您的设备。</span>
           </div>
-          <span className="font-mono text-[10px] text-emerald-700 bg-white px-2 py-0.5 rounded-md border border-emerald-200 shrink-0 hidden sm:inline">
+          <span className="font-mono text-[11px] text-emerald-700 bg-white px-2 py-0.5 rounded-md border border-emerald-200 shrink-0 hidden sm:inline">
             无云端上传
           </span>
         </div>
@@ -392,8 +392,8 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
                   onClick={() => setSmartTab('image')}
                   className={`px-3 py-1.5 rounded-lg font-semibold flex items-center gap-1.5 transition ${
                     smartTab === 'image'
-                      ? 'bg-[#222222] text-white shadow-2xs'
-                      : 'bg-[#F7F7F7] text-[#717171] hover:text-[#222222] border border-[#EBEBEB]'
+                      ? 'bg-ink text-white'
+                      : 'bg-inset text-muted hover:text-ink border border-line'
                   }`}
                 >
                   <ImageIcon className="w-3.5 h-3.5" />
@@ -404,8 +404,8 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
                   onClick={() => setSmartTab('text')}
                   className={`px-3 py-1.5 rounded-lg font-semibold flex items-center gap-1.5 transition ${
                     smartTab === 'text'
-                      ? 'bg-[#222222] text-white shadow-2xs'
-                      : 'bg-[#F7F7F7] text-[#717171] hover:text-[#222222] border border-[#EBEBEB]'
+                      ? 'bg-ink text-white'
+                      : 'bg-inset text-muted hover:text-ink border border-line'
                   }`}
                 >
                   <Copy className="w-3.5 h-3.5" />
@@ -417,7 +417,7 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
               {smartTab === 'image' && (
                 <div
                   onClick={() => fileInputRef.current?.click()}
-                  className="relative rounded-2xl border-2 border-dashed border-[#DDDDDD] hover:border-[#222222] bg-[#F7F7F7] hover:bg-white p-5 text-center cursor-pointer transition group"
+                  className="relative rounded-2xl border-2 border-dashed border-line-strong hover:border-ink bg-inset hover:bg-white p-5 text-center cursor-pointer transition group"
                 >
                   <input
                     ref={fileInputRef}
@@ -435,21 +435,21 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
                       <img
                         src={previewImageUrl}
                         alt="截图预览"
-                        className="max-h-36 rounded-xl object-contain shadow-2xs border border-[#EBEBEB]"
+                        className="max-h-36 rounded-xl object-contain border border-line"
                       />
-                      <span className="text-xs text-zinc-600 font-medium group-hover:underline">
+                      <span className="text-xs text-muted font-medium group-hover:underline">
                         点击更换截图，或直接按 Cmd+V 粘贴新截图
                       </span>
                     </div>
                   ) : (
                     <div className="space-y-1.5">
-                      <div className="w-10 h-10 rounded-xl bg-white text-[#222222] border border-[#EBEBEB] flex items-center justify-center mx-auto shadow-2xs group-hover:scale-105 transition">
-                        <Upload className="w-5 h-5 text-[#000000]" />
+                      <div className="w-10 h-10 rounded-lg bg-white text-ink border border-line flex items-center justify-center mx-auto group-hover:scale-105 transition">
+                        <Upload className="w-5 h-5 text-black" />
                       </div>
-                      <p className="text-xs font-semibold text-zinc-900">
-                        点击上传 或 在此直接按 <kbd className="px-1.5 py-0.5 rounded bg-white border border-[#EBEBEB] font-mono text-[11px] shadow-2xs">Cmd+V</kbd> 粘贴截图
+                      <p className="text-xs font-semibold text-ink">
+                        点击上传 或 在此直接按 <kbd className="px-1.5 py-0.5 rounded bg-white border border-line font-mono text-xs">Cmd+V</kbd> 粘贴截图
                       </p>
-                      <p className="text-[11px] text-[#717171]">
+                      <p className="text-xs text-muted">
                         支持 iPhone 苹果订阅页面截图、SuperGrok、ChatGPT、Claude 账单，纯本地离线 OCR (零网络上传)
                       </p>
                     </div>
@@ -461,13 +461,13 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
               {smartTab === 'text' && (
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <label className="text-xs font-medium text-[#222222]">
+                    <label className="text-xs font-medium text-ink">
                       粘贴发票、邮件通知或账号文本：
                     </label>
                     <button
                       type="button"
                       onClick={handlePasteClipboardText}
-                      className="text-xs text-zinc-600 hover:text-zinc-900 flex items-center gap-1 font-medium transition"
+                      className="text-xs text-muted hover:text-ink flex items-center gap-1 font-medium transition"
                     >
                       <Copy className="w-3.5 h-3.5" />
                       <span>从剪贴板读取</span>
@@ -481,24 +481,24 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
 SuperGrok 印度区 700 INR/月
 扣费时间：2026-11-18
 账号：vip_user@gmail.com"
-                    className="w-full bg-[#F7F7F7] border border-[#DDDDDD] rounded-xl p-3 text-xs font-mono text-zinc-900 outline-none focus:bg-white focus:border-[#222222] shadow-2xs"
+                    className="w-full bg-inset border border-line-strong rounded-xl p-3 text-xs font-mono text-ink outline-none focus:border-ink"
                   />
                 </div>
               )}
 
               {/* OCR Progress Indicator */}
               {ocrLoading && (
-                <div className="p-3.5 rounded-2xl bg-[#F7F7F7] border border-[#DDDDDD] space-y-1.5 text-xs animate-fadeIn">
-                  <div className="flex items-center justify-between text-[#000000] font-semibold">
+                <div className="p-3.5 rounded-2xl bg-inset border border-line-strong space-y-1.5 text-xs animate-fadeIn">
+                  <div className="flex items-center justify-between text-black font-semibold">
                     <div className="flex items-center gap-2">
-                      <Loader2 className="w-4 h-4 text-[#000000] animate-spin" />
+                      <Loader2 className="w-4 h-4 text-black animate-spin" />
                       <span>{ocrStatus}</span>
                     </div>
                     <span className="font-mono">{ocrProgress}%</span>
                   </div>
-                  <div className="w-full h-1.5 bg-[#E5E7EB] rounded-full overflow-hidden">
+                  <div className="w-full h-1.5 bg-line rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-[#000000] transition-all duration-300"
+                      className="h-full bg-black transition-all duration-300"
                       style={{ width: `${ocrProgress}%` }}
                     />
                   </div>
@@ -510,9 +510,9 @@ SuperGrok 印度区 700 INR/月
           {/* ========================================================= */}
           {/* 核心录入信息区域（包含全部用户要求字段，支持手动编辑与补全账号） */}
           {/* ========================================================= */}
-          <div className="pt-2 border-t border-[#EBEBEB] space-y-3.5">
+          <div className="pt-2 border-t border-line space-y-3.5">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-zinc-900 flex items-center gap-1.5">
+              <span className="text-xs font-semibold text-ink flex items-center gap-1.5">
                 {entryMode === 'smart' && hasExtractedFromSmart ? (
                   <>
                     <Check className="w-4 h-4 text-emerald-600" />
@@ -520,13 +520,13 @@ SuperGrok 印度区 700 INR/月
                   </>
                 ) : (
                   <>
-                    <CreditCard className="w-4 h-4 text-[#000000]" />
+                    <CreditCard className="w-4 h-4 text-black" />
                     <span>订阅核心信息</span>
                   </>
                 )}
               </span>
               {numPrice > 0 && (
-                <span className="text-[11px] font-mono font-medium text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                <span className="text-xs font-mono font-medium text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
                   折合约 ${usdConverted.toFixed(2)} USD
                 </span>
               )}
@@ -535,15 +535,15 @@ SuperGrok 印度区 700 INR/月
             {/* 1. 服务名称 */}
             <div>
               <div className="flex items-center justify-between mb-1">
-                <label className="text-xs font-bold text-[#222222] flex items-center gap-1">
+                <label className="text-xs font-semibold text-ink flex items-center gap-1">
                   服务名称 <span className="text-rose-500">*</span>
                 </label>
                 <div className="flex items-center gap-1">
-                  <span className="text-[11px] text-[#717171]">快捷模板:</span>
+                  <span className="text-xs text-muted">快捷模板:</span>
                   <select
                     value={serviceKey}
                     onChange={(e) => handleServiceChange(e.target.value)}
-                    className="text-[11px] bg-[#F7F7F7] border border-[#DDDDDD] rounded-lg px-1.5 py-0.5 text-[#222222] outline-none"
+                    className="text-xs bg-inset border border-line-strong rounded-lg px-1.5 py-0.5 text-ink outline-none"
                   >
                     <option value="custom">自定义 / 手输</option>
                     {PRESET_SERVICES.map((p) => (
@@ -560,20 +560,20 @@ SuperGrok 印度区 700 INR/月
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="例如: SuperGrok / ChatGPT Plus / Claude Pro"
-                className="w-full h-10 bg-[#F7F7F7] border border-[#DDDDDD] focus:border-[#222222] focus:bg-white rounded-xl px-3 text-xs font-bold text-[#222222] outline-none transition shadow-2xs"
+                className="w-full h-10 bg-inset border border-line-strong focus:border-ink focus:bg-white rounded-lg px-3 text-sm font-semibold text-ink outline-none transition"
               />
             </div>
 
             {/* 2. 续费金额与币种 (含折算 USD 实时统计) */}
-            <div className="p-3 rounded-2xl bg-[#F7F7F7] border border-[#EBEBEB] space-y-2">
+            <div className="p-3 rounded-2xl bg-inset border border-line space-y-2">
               <div className="flex items-center justify-between">
-                <label className="text-xs font-bold text-[#222222] flex items-center gap-1">
-                  <DollarSign className="w-3.5 h-3.5 text-[#000000]" />
+                <label className="text-xs font-semibold text-ink flex items-center gap-1">
+                  <DollarSign className="w-3.5 h-3.5 text-black" />
                   <span>续费金额与币种</span>
                 </label>
                 {currency !== 'USD' && numPrice > 0 && (
-                  <span className="text-[11px] text-[#717171] font-mono">
-                    折合约 <strong className="text-[#000000]">${usdConverted.toFixed(2)} USD</strong>，按全局汇率自动统计
+                  <span className="text-xs text-muted font-mono">
+                    折合约 <strong className="text-black">${usdConverted.toFixed(2)} USD</strong>，按全局汇率自动统计
                   </span>
                 )}
               </div>
@@ -584,7 +584,7 @@ SuperGrok 印度区 700 INR/月
                   <select
                     value={currency}
                     onChange={(e) => setCurrency(e.target.value)}
-                    className="w-full h-10 bg-white border border-[#DDDDDD] focus:border-[#222222] rounded-xl px-2 text-xs font-medium text-[#222222] outline-none shadow-2xs"
+                    className="w-full h-10 bg-white border border-line-strong focus:border-ink rounded-lg px-2 text-sm font-medium text-ink outline-none"
                   >
                     <optgroup label="🔥 热门低价与跨区订阅 (aisubdeal 推荐)">
                       {SUPPORTED_CURRENCIES.filter((c) => c.popularRank < 20).map((c) => (
@@ -612,7 +612,7 @@ SuperGrok 印度区 700 INR/月
                     value={price}
                     onChange={(e) => setPrice(e.target.value)}
                     placeholder="700"
-                    className="w-full h-10 bg-white border border-[#DDDDDD] focus:border-[#222222] rounded-xl px-3 font-mono font-bold text-xs text-[#222222] outline-none shadow-2xs"
+                    className="w-full h-10 bg-white border border-line-strong focus:border-ink rounded-lg px-3 font-mono font-semibold text-sm text-ink outline-none"
                   />
                 </div>
 
@@ -621,7 +621,7 @@ SuperGrok 印度区 700 INR/月
                   <select
                     value={cycle}
                     onChange={(e) => setCycle(e.target.value as BillingCycle)}
-                    className="w-full h-10 bg-white border border-[#DDDDDD] focus:border-[#222222] rounded-xl px-2 text-xs text-[#222222] outline-none shadow-2xs font-medium"
+                    className="w-full h-10 bg-white border border-line-strong focus:border-ink rounded-lg px-2 text-sm text-ink outline-none font-medium"
                   >
                     <option value="monthly">/月</option>
                     <option value="quarterly">/季</option>
@@ -637,18 +637,18 @@ SuperGrok 印度区 700 INR/月
             {/* 3. 扣费时间与倒计时 */}
             <div>
               <div className="flex items-center justify-between mb-1">
-                <label className="text-xs font-bold text-[#222222] flex items-center gap-1">
-                  <Calendar className="w-3.5 h-3.5 text-[#000000]" />
+                <label className="text-xs font-semibold text-ink flex items-center gap-1">
+                  <Calendar className="w-3.5 h-3.5 text-black" />
                   <span>扣费时间 (更新日) <span className="text-rose-500">*</span></span>
                 </label>
                 {nextBillingDate && (
                   <span
-                    className={`text-[11px] font-mono px-2 py-0.5 rounded-full font-bold ${
+                    className={`text-xs font-mono px-2 py-0.5 rounded-full font-semibold ${
                       daysUntil <= 0
                         ? 'bg-rose-50 text-rose-800 border border-rose-200'
                         : daysUntil <= 7
                         ? 'bg-amber-50 text-amber-900 border border-amber-200'
-                        : 'bg-[#F7F7F7] text-[#222222] border border-[#DDDDDD]'
+                        : 'bg-inset text-ink border border-line-strong'
                     }`}
                   >
                     {daysUntil <= 0 ? '今日或已逾期' : `还剩 ${daysUntil} 天`}
@@ -660,13 +660,13 @@ SuperGrok 印度区 700 INR/月
                 required
                 value={nextBillingDate}
                 onChange={(e) => setNextBillingDate(e.target.value)}
-                className="w-full h-10 bg-[#F7F7F7] border border-[#DDDDDD] focus:border-[#222222] focus:bg-white rounded-xl px-3 font-mono font-bold text-xs text-[#222222] outline-none transition shadow-2xs"
+                className="w-full h-10 bg-inset border border-line-strong focus:border-ink focus:bg-white rounded-lg px-3 font-mono font-semibold text-sm text-ink outline-none transition"
               />
             </div>
 
             {/* 4. 支付渠道 (快捷建议与自填) */}
             <div>
-              <label className="block text-xs font-bold text-[#222222] mb-1">
+              <label className="block text-xs font-semibold text-ink mb-1">
                 支付渠道
               </label>
               <input
@@ -674,7 +674,7 @@ SuperGrok 印度区 700 INR/月
                 value={paymentMethod}
                 onChange={(e) => setPaymentMethod(e.target.value)}
                 placeholder="例如: Apple 订阅 (印区) / 美区礼品卡 / 虚拟卡"
-                className="w-full h-10 bg-[#F7F7F7] border border-[#DDDDDD] focus:border-[#222222] focus:bg-white rounded-xl px-3 text-xs font-medium text-[#222222] outline-none transition shadow-2xs"
+                className="w-full h-10 bg-inset border border-line-strong focus:border-ink focus:bg-white rounded-lg px-3 text-sm font-medium text-ink outline-none transition"
               />
               {/* Quick suggestion chips */}
               <div className="flex flex-wrap gap-1.5 mt-1.5">
@@ -683,10 +683,10 @@ SuperGrok 印度区 700 INR/月
                     key={m}
                     type="button"
                     onClick={() => setPaymentMethod(m)}
-                    className={`text-[11px] px-2 py-0.5 rounded-lg border transition ${
+                    className={`text-xs px-2 py-0.5 rounded-lg border transition ${
                       paymentMethod === m
-                        ? 'bg-[#222222] text-white border-[#222222]'
-                        : 'bg-white text-[#717171] hover:text-[#222222] border-[#DDDDDD]'
+                        ? 'bg-ink text-white border-ink'
+                        : 'bg-white text-muted hover:text-ink border-line-strong'
                     }`}
                   >
                     {m}
@@ -696,19 +696,19 @@ SuperGrok 印度区 700 INR/月
             </div>
 
             {/* 5. 账号 (若截图未识别到，清晰提示并支持手动输入) */}
-            <div className="p-3 rounded-2xl bg-white border border-[#EBEBEB] space-y-1.5 shadow-2xs">
+            <div className="p-3 rounded-2xl bg-white border border-line space-y-1.5">
               <div className="flex items-center justify-between">
-                <label className="text-xs font-bold text-[#222222] flex items-center gap-1.5">
-                  <Mail className="w-3.5 h-3.5 text-[#222222]" />
+                <label className="text-xs font-semibold text-ink flex items-center gap-1.5">
+                  <Mail className="w-3.5 h-3.5 text-ink" />
                   <span>服务账号 / 登录邮箱</span>
                 </label>
                 {!accountEmail.trim() ? (
-                  <span className="text-[11px] text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full font-medium flex items-center gap-1">
+                  <span className="text-xs text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full font-medium flex items-center gap-1">
                     <AlertCircle className="w-3 h-3 text-amber-600" />
                     未从截图识别到，可在此手动添加
                   </span>
                 ) : (
-                  <span className="text-[11px] text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full font-medium flex items-center gap-1">
+                  <span className="text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full font-medium flex items-center gap-1">
                     <Check className="w-3 h-3 text-emerald-600" />
                     已录入
                   </span>
@@ -719,10 +719,10 @@ SuperGrok 印度区 700 INR/月
                 value={accountEmail}
                 onChange={(e) => setAccountEmail(e.target.value)}
                 placeholder="请输入登录邮箱或账号 (例如: user@gmail.com)"
-                className={`w-full h-10 rounded-xl px-3 font-mono text-xs text-[#222222] outline-none transition shadow-2xs ${
+                className={`w-full h-10 rounded-xl px-3 font-mono text-xs text-ink outline-none transition ${
                   !accountEmail.trim()
-                    ? 'bg-amber-50/40 border border-amber-300 focus:border-[#222222] focus:bg-white'
-                    : 'bg-[#F7F7F7] border border-[#DDDDDD] focus:border-[#222222] focus:bg-white'
+                    ? 'bg-amber-50/40 border border-amber-300 focus:border-ink focus:bg-white'
+                    : 'bg-inset border border-line-strong focus:border-ink focus:bg-white'
                 }`}
               />
             </div>
@@ -732,22 +732,22 @@ SuperGrok 印度区 700 INR/月
               <button
                 type="button"
                 onClick={() => setShowAdvanced(!showAdvanced)}
-                className="text-xs text-[#717171] hover:text-[#222222] font-semibold flex items-center gap-1 transition"
+                className="text-xs text-muted hover:text-ink font-semibold flex items-center gap-1 transition"
               >
                 <span>{showAdvanced ? '收起高级设置' : '展开高级选项 (密码备忘、分类、直达链接)'}</span>
                 {showAdvanced ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
               </button>
 
               {showAdvanced && (
-                <div className="mt-2.5 p-3.5 rounded-2xl bg-[#F7F7F7] border border-[#EBEBEB] space-y-3 animate-fadeIn text-xs">
+                <div className="mt-2.5 p-3.5 rounded-2xl bg-inset border border-line space-y-3 animate-fadeIn text-xs">
                   {/* Category & Password */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                     <div>
-                      <label className="block text-xs font-semibold text-[#222222] mb-1">所属分类</label>
+                      <label className="block text-xs font-semibold text-ink mb-1">所属分类</label>
                       <select
                         value={category}
                         onChange={(e) => setCategory(e.target.value as ServiceCategory)}
-                        className="w-full h-9 bg-white border border-[#DDDDDD] rounded-xl px-2.5 text-xs text-[#222222] outline-none"
+                        className="w-full h-9 bg-white border border-line-strong rounded-xl px-2.5 text-xs text-ink outline-none"
                       >
                         <option value="ai">AI 智能模型</option>
                         <option value="developer">开发工具与托管</option>
@@ -759,13 +759,13 @@ SuperGrok 印度区 700 INR/月
                     </div>
 
                     <div>
-                      <label className="block text-xs font-semibold text-[#222222] mb-1">密码备忘 (本地加密)</label>
+                      <label className="block text-xs font-semibold text-ink mb-1">密码备忘 (本地加密)</label>
                       <input
                         type="text"
                         value={passwordNote}
                         onChange={(e) => setPasswordNote(e.target.value)}
                         placeholder="登录密码备忘"
-                        className="w-full h-9 bg-white border border-[#DDDDDD] rounded-xl px-2.5 font-mono text-xs text-[#222222] outline-none"
+                        className="w-full h-9 bg-white border border-line-strong rounded-xl px-2.5 font-mono text-xs text-ink outline-none"
                       />
                     </div>
                   </div>
@@ -773,36 +773,36 @@ SuperGrok 印度区 700 INR/月
                   {/* Portal & Recharge URLs */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                     <div>
-                      <label className="block text-xs font-semibold text-[#222222] mb-1">官方管理后台 URL</label>
+                      <label className="block text-xs font-semibold text-ink mb-1">官方管理后台 URL</label>
                       <input
                         type="text"
                         value={portalUrl}
                         onChange={(e) => setPortalUrl(e.target.value)}
                         placeholder="https://..."
-                        className="w-full h-9 bg-white border border-[#DDDDDD] rounded-xl px-2.5 font-mono text-xs text-[#222222] outline-none"
+                        className="w-full h-9 bg-white border border-line-strong rounded-xl px-2.5 font-mono text-xs text-ink outline-none"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-semibold text-[#222222] mb-1">充值兑换直达 URL</label>
+                      <label className="block text-xs font-semibold text-ink mb-1">充值兑换直达 URL</label>
                       <input
                         type="text"
                         value={rechargeUrl}
                         onChange={(e) => setRechargeUrl(e.target.value)}
                         placeholder="https://..."
-                        className="w-full h-9 bg-white border border-[#DDDDDD] rounded-xl px-2.5 font-mono text-xs text-[#222222] outline-none"
+                        className="w-full h-9 bg-white border border-line-strong rounded-xl px-2.5 font-mono text-xs text-ink outline-none"
                       />
                     </div>
                   </div>
 
                   {/* Notes */}
                   <div>
-                    <label className="block text-xs font-semibold text-[#222222] mb-1">备注说明</label>
+                    <label className="block text-xs font-semibold text-ink mb-1">备注说明</label>
                     <input
                       type="text"
                       value={notes}
                       onChange={(e) => setNotes(e.target.value)}
                       placeholder="家庭组共享、续费信用卡绑定说明等..."
-                      className="w-full h-9 bg-white border border-[#DDDDDD] rounded-xl px-2.5 text-xs text-[#222222] outline-none"
+                      className="w-full h-9 bg-white border border-line-strong rounded-xl px-2.5 text-xs text-ink outline-none"
                     />
                   </div>
                 </div>
@@ -811,7 +811,7 @@ SuperGrok 印度区 700 INR/月
           </div>
 
           {/* Action Footer */}
-          <div className="flex items-center justify-between pt-4 border-t border-[#EBEBEB]">
+          <div className="flex items-center justify-between pt-4 border-t border-line">
             {initialData && onDelete ? (
               <button
                 type="button"
@@ -821,13 +821,13 @@ SuperGrok 印度区 700 INR/月
                     onClose();
                   }
                 }}
-                className="px-3.5 py-2 rounded-xl text-rose-700 hover:bg-rose-50 text-xs font-bold flex items-center gap-1.5 transition active:scale-95"
+                className="px-3.5 py-2 rounded-xl text-rose-700 hover:bg-rose-50 text-xs font-semibold flex items-center gap-1.5 transition active:scale-95"
               >
                 <Trash2 className="w-3.5 h-3.5" />
                 <span>删除订阅</span>
               </button>
             ) : (
-              <div className="text-[11px] text-[#717171] flex items-center gap-1">
+              <div className="text-xs text-muted flex items-center gap-1">
                 <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
                 <span>端到端 AES-256 本地加密存储</span>
               </div>
@@ -837,14 +837,14 @@ SuperGrok 印度区 700 INR/月
               <button
                 type="button"
                 onClick={onClose}
-                className="px-5 py-2.5 rounded-xl bg-white hover:bg-[#F7F7F7] text-[#222222] border border-[#DDDDDD] text-xs font-semibold transition"
+                className="px-5 py-2.5 rounded-xl bg-white hover:bg-inset text-ink border border-line-strong text-xs font-semibold transition"
               >
                 取消
               </button>
               <button
                 type="submit"
                 disabled={ocrLoading || !name.trim()}
-                className="px-6 py-2.5 rounded-xl bg-[#000000] hover:bg-[#222222] disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition active:scale-95"
+                className="h-10 px-5 rounded-lg bg-black hover:bg-ink disabled:opacity-40 disabled:cursor-not-allowed text-white font-semibold text-xs flex items-center gap-1.5 transition active:scale-95"
               >
                 <span>{initialData ? '保存修改' : '确认并录入订阅'}</span>
                 <ArrowRight className="w-3.5 h-3.5 text-white" />

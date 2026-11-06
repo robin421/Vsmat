@@ -69,43 +69,43 @@ export const SubscriptionList: React.FC<SubscriptionListProps> = ({
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3.5 pb-1">
         {/* Left: Category Switcher (Airbnb Experiences Bar) */}
         <div className="flex flex-wrap items-center gap-2">
-          <div className="flex items-center p-1 rounded-full bg-[#F7F7F7] border border-[#EBEBEB] text-xs">
+          <div className="flex items-center p-0.5 rounded-lg bg-inset border border-line text-sm max-w-full overflow-x-auto">
             <button
               onClick={() => setSelectedCategory('all')}
-              className={`px-4 py-2 rounded-full transition font-semibold select-none ${
+              className={`px-3.5 h-8 rounded-md transition-colors font-medium select-none whitespace-nowrap ${
                 selectedCategory === 'all'
-                  ? 'bg-white text-[#222222] shadow-xs font-bold border border-[#DDDDDD]/70'
-                  : 'text-[#717171] hover:text-[#222222]'
+                  ? 'bg-white text-black font-semibold'
+                  : 'text-muted hover:text-black'
               }`}
             >
               全部 ({subscriptions.length})
             </button>
             <button
               onClick={() => setSelectedCategory('ai')}
-              className={`px-4 py-2 rounded-full transition font-semibold select-none ${
+              className={`px-3.5 h-8 rounded-md transition-colors font-medium select-none whitespace-nowrap ${
                 selectedCategory === 'ai'
-                  ? 'bg-white text-[#222222] shadow-xs font-bold border border-[#DDDDDD]/70'
-                  : 'text-[#717171] hover:text-[#222222]'
+                  ? 'bg-white text-black font-semibold'
+                  : 'text-muted hover:text-black'
               }`}
             >
               AI 智能
             </button>
             <button
               onClick={() => setSelectedCategory('developer')}
-              className={`px-4 py-2 rounded-full transition font-semibold select-none ${
+              className={`px-3.5 h-8 rounded-md transition-colors font-medium select-none whitespace-nowrap ${
                 selectedCategory === 'developer'
-                  ? 'bg-white text-[#222222] shadow-xs font-bold border border-[#DDDDDD]/70'
-                  : 'text-[#717171] hover:text-[#222222]'
+                  ? 'bg-white text-black font-semibold'
+                  : 'text-muted hover:text-black'
               }`}
             >
               开发与工具
             </button>
             <button
               onClick={() => setSelectedCategory('server')}
-              className={`px-4 py-2 rounded-full transition font-semibold select-none ${
+              className={`px-3.5 h-8 rounded-md transition-colors font-medium select-none whitespace-nowrap ${
                 selectedCategory === 'server'
-                  ? 'bg-white text-[#222222] shadow-xs font-bold border border-[#DDDDDD]/70'
-                  : 'text-[#717171] hover:text-[#222222]'
+                  ? 'bg-white text-black font-semibold'
+                  : 'text-muted hover:text-black'
               }`}
             >
               服务器网络
@@ -115,10 +115,10 @@ export const SubscriptionList: React.FC<SubscriptionListProps> = ({
           {/* Urgent Filter Toggle */}
           <button
             onClick={() => setFilterUrgentOnly(!filterUrgentOnly)}
-            className={`px-4 py-2 rounded-full text-xs font-semibold border transition active:scale-[0.98] ${
+            className={`px-3.5 h-9 rounded-lg text-sm font-medium border transition-colors active:scale-[0.985] ${
               filterUrgentOnly
-                ? 'bg-[#000000] text-white border-[#000000] shadow-sm'
-                : 'bg-white text-[#222222] hover:bg-[#F7F7F7] border-[#DDDDDD] hover:border-[#222222] shadow-2xs'
+                ? 'bg-black text-white border-black'
+                : 'bg-white text-ink hover:bg-inset border-line-strong hover:border-ink'
             }`}
           >
             仅待续费 (≤7天)
@@ -129,18 +129,18 @@ export const SubscriptionList: React.FC<SubscriptionListProps> = ({
         <div className="flex items-center gap-2.5 flex-wrap sm:flex-nowrap">
           {/* Quick Search Input */}
           <div className="relative flex-1 sm:w-60">
-            <Search className="w-3.5 h-3.5 text-[#717171] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <Search className="w-3.5 h-3.5 text-muted absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
               type="text"
               value={localSearch}
               onChange={(e) => setLocalSearch(e.target.value)}
               placeholder="搜索订阅名称或账号..."
-              className="w-full h-10 pl-9 pr-8 rounded-full bg-white border border-[#DDDDDD] text-xs font-medium text-[#222222] placeholder:text-[#717171] outline-none airbnb-search-shadow transition"
+              className="field w-full h-9 pl-9 pr-8 rounded-lg text-sm text-ink placeholder:text-muted outline-none"
             />
             {localSearch && (
               <button
                 onClick={() => setLocalSearch('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#717171] hover:text-[#222222] text-xs"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-ink text-xs"
               >
                 <X className="w-3.5 h-3.5" />
               </button>
@@ -150,7 +150,7 @@ export const SubscriptionList: React.FC<SubscriptionListProps> = ({
           {/* Add New Subscription (Executive Primary CTA) */}
           <button
             onClick={onAddNew}
-            className="h-10 px-5 rounded-full bg-[#000000] hover:bg-[#222222] text-white font-bold text-xs transition flex items-center justify-center gap-1.5 shadow-sm active:scale-[0.98] shrink-0"
+            className="h-9 px-4 rounded-lg btn-primary font-semibold text-sm flex items-center justify-center gap-1.5 shrink-0"
             title="新建订阅（支持截图智能识别与手动录入）"
           >
             <Plus className="w-4 h-4 text-white stroke-[2.5]" />
@@ -174,20 +174,20 @@ export const SubscriptionList: React.FC<SubscriptionListProps> = ({
           ))}
         </div>
       ) : (
-        <div className="text-center py-16 px-4 rounded-3xl border border-dashed border-[#DDDDDD] bg-white airbnb-card">
-          <div className="w-14 h-14 rounded-2xl bg-[#000000] text-white border border-black/10 flex items-center justify-center mx-auto mb-3.5 shadow-2xs">
+        <div className="text-center py-16 px-4 rounded-2xl border border-dashed border-line-strong bg-white">
+          <div className="w-12 h-12 rounded-lg bg-black text-white flex items-center justify-center mx-auto mb-4">
             <CreditCard className="w-6 h-6" />
           </div>
-          <h4 className="text-base font-bold text-[#222222] mb-1">
+          <h4 className="text-base font-semibold text-black mb-1">
             {effectiveSearch || filterUrgentOnly ? '没有符合条件的订阅记录' : '暂无订阅记录'}
           </h4>
-          <p className="text-xs text-[#717171] max-w-sm mx-auto mb-5">
+          <p className="text-sm text-muted max-w-sm mx-auto mb-5">
             点击下方“新建订阅”录入你的第一个服务，支持账单截图智能识别或手动填表。
           </p>
           <div className="flex items-center justify-center gap-3">
             <button
               onClick={onAddNew}
-              className="px-6 py-2.5 rounded-full bg-[#000000] hover:bg-[#222222] text-white font-bold text-xs transition inline-flex items-center gap-1.5 shadow-sm active:scale-[0.98]"
+              className="h-10 px-5 rounded-lg btn-primary font-semibold text-sm inline-flex items-center gap-1.5"
             >
               <Plus className="w-4 h-4" />
               <span>新建订阅</span>

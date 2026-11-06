@@ -234,7 +234,7 @@ export const BrandBadge: React.FC<BrandBadgeProps> = ({
   // 3. xAI Grok / SuperGrok (Official Black & White Vector)
   if (normalizedKey.includes('grok') || lowerName.includes('grok') || lowerName.includes('supergrok') || lowerName.includes('xai')) {
     return (
-      <div className={`${baseSquircle} bg-[#000000] border border-black/20 text-white shadow-xs`} title="xAI Grok / SuperGrok">
+      <div className={`${baseSquircle} bg-black border border-black/20 text-white shadow-xs`} title="xAI Grok / SuperGrok">
         <GrokIcon className={iconSizes[size]} />
       </div>
     );
@@ -270,7 +270,7 @@ export const BrandBadge: React.FC<BrandBadgeProps> = ({
   // 7. Cursor AI (Official Isometric Cube)
   if (normalizedKey.includes('cursor') || lowerName.includes('cursor')) {
     return (
-      <div className={`${baseSquircle} bg-[#000000] border border-black/20 text-white shadow-xs`} title="Cursor AI">
+      <div className={`${baseSquircle} bg-black border border-black/20 text-white shadow-xs`} title="Cursor AI">
         <CursorIcon className={iconSizes[size]} />
       </div>
     );
@@ -369,7 +369,7 @@ export const BrandBadge: React.FC<BrandBadgeProps> = ({
   // 18. v0.dev (Vercel)
   if (normalizedKey.includes('v0') || lowerName.includes('v0')) {
     return (
-      <div className={`${baseSquircle} bg-[#000000] border border-black/20 text-white`} title="v0.dev">
+      <div className={`${baseSquircle} bg-black border border-black/20 text-white`} title="v0.dev">
         <V0Icon className={iconSizes[size]} />
       </div>
     );
@@ -387,7 +387,7 @@ export const BrandBadge: React.FC<BrandBadgeProps> = ({
   // 20. Apple App Store
   if (normalizedKey.includes('apple') || lowerName.includes('apple') || lowerName.includes('icloud') || lowerName.includes('ios')) {
     return (
-      <div className={`${baseSquircle} bg-[#000000] border border-black/20 text-white`} title="Apple">
+      <div className={`${baseSquircle} bg-black border border-black/20 text-white`} title="Apple">
         <AppleIcon className={iconSizes[size]} />
       </div>
     );
@@ -405,7 +405,7 @@ export const BrandBadge: React.FC<BrandBadgeProps> = ({
   // 22. Netflix
   if (normalizedKey.includes('netflix') || lowerName.includes('netflix')) {
     return (
-      <div className={`${baseSquircle} bg-[#000000] border border-black/20 text-[#E50914]`} title="Netflix">
+      <div className={`${baseSquircle} bg-black border border-black/20 text-[#E50914]`} title="Netflix">
         <NetflixIcon className={iconSizes[size]} />
       </div>
     );
@@ -443,7 +443,7 @@ export const BrandBadge: React.FC<BrandBadgeProps> = ({
   // ========================================================
   if (lowerName.includes('ai') || lowerName.includes('bot') || lowerName.includes('model') || lowerName.includes('chat') || lowerName.includes('智能')) {
     return (
-      <div className={`${baseSquircle} bg-[#000000] border border-black/10 text-white`} title={name}>
+      <div className={`${baseSquircle} bg-black border border-black/10 text-white`} title={name}>
         <Sparkles className={iconSizes[size]} />
       </div>
     );
@@ -459,7 +459,7 @@ export const BrandBadge: React.FC<BrandBadgeProps> = ({
 
   if (lowerName.includes('server') || lowerName.includes('cloud') || lowerName.includes('host') || lowerName.includes('vpn') || lowerName.includes('域名') || lowerName.includes('主机')) {
     return (
-      <div className={`${baseSquircle} bg-[#F3F4F6] border border-[#E5E7EB] text-[#374151]`} title={name}>
+      <div className={`${baseSquircle} bg-[#F3F4F6] border border-line text-[#374151]`} title={name}>
         <Server className={iconSizes[size]} />
       </div>
     );
@@ -499,7 +499,7 @@ export const BrandBadge: React.FC<BrandBadgeProps> = ({
 
   // 全局默认高质感图标：温暖质感 Airbnb squircle + Sparkles 徽章
   return (
-    <div className={`${baseSquircle} bg-[#F7F7F7] border border-[#EBEBEB] text-[#222222]`} title={name}>
+    <div className={`${baseSquircle} bg-inset border border-line text-ink`} title={name}>
       <Sparkles className={iconSizes[size]} />
     </div>
   );

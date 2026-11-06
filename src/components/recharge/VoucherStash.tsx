@@ -66,33 +66,33 @@ export const VoucherStash: React.FC<VoucherStashProps> = ({
       {/* Header & Filter */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3.5">
         <div className="flex items-center gap-2">
-          <div className="flex items-center p-1 rounded-full bg-[#F7F7F7] border border-[#EBEBEB] text-xs">
+          <div className="flex items-center p-0.5 rounded-lg bg-inset border border-line text-sm max-w-full overflow-x-auto">
             <button
               onClick={() => setFilter('unredeemed')}
-              className={`px-4 py-2 rounded-full transition select-none font-semibold ${
+              className={`px-3.5 h-8 rounded-md transition-colors select-none font-medium whitespace-nowrap ${
                 filter === 'unredeemed'
-                  ? 'bg-white text-[#222222] shadow-xs font-bold border border-[#DDDDDD]/70'
-                  : 'text-[#717171] hover:text-[#222222]'
+                  ? 'bg-white text-black font-semibold'
+                  : 'text-muted hover:text-black'
               }`}
             >
               待使用 ({vouchers.filter(v => v.status === 'unredeemed').length})
             </button>
             <button
               onClick={() => setFilter('redeemed')}
-              className={`px-4 py-2 rounded-full transition select-none font-semibold ${
+              className={`px-3.5 h-8 rounded-md transition-colors select-none font-medium whitespace-nowrap ${
                 filter === 'redeemed'
-                  ? 'bg-white text-[#222222] shadow-xs font-bold border border-[#DDDDDD]/70'
-                  : 'text-[#717171] hover:text-[#222222]'
+                  ? 'bg-white text-black font-semibold'
+                  : 'text-muted hover:text-black'
               }`}
             >
               已核销 ({vouchers.filter(v => v.status === 'redeemed').length})
             </button>
             <button
               onClick={() => setFilter('all')}
-              className={`px-4 py-2 rounded-full transition select-none font-semibold ${
+              className={`px-3.5 h-8 rounded-md transition-colors select-none font-medium whitespace-nowrap ${
                 filter === 'all'
-                  ? 'bg-white text-[#222222] shadow-xs font-bold border border-[#DDDDDD]/70'
-                  : 'text-[#717171] hover:text-[#222222]'
+                  ? 'bg-white text-black font-semibold'
+                  : 'text-muted hover:text-black'
               }`}
             >
               全部 ({vouchers.length})
@@ -102,7 +102,7 @@ export const VoucherStash: React.FC<VoucherStashProps> = ({
 
         <button
           onClick={onAddNew}
-          className="h-10 px-5 rounded-full bg-[#000000] hover:bg-[#222222] text-white font-bold text-xs transition flex items-center justify-center gap-1.5 shadow-md shrink-0 active:scale-[0.98]"
+          className="h-9 px-4 rounded-lg btn-primary font-semibold text-sm flex items-center justify-center gap-1.5 shrink-0"
         >
           <Plus className="w-4 h-4 text-white stroke-[2.5]" />
           <span>存入礼品卡券</span>
@@ -118,10 +118,8 @@ export const VoucherStash: React.FC<VoucherStashProps> = ({
             return (
               <div
                 key={voucher.id}
-                className={`group p-6 rounded-3xl flex flex-col justify-between transition-all duration-200 airbnb-card border ${
-                  isRedeemed
-                    ? 'border-[#EBEBEB] opacity-60 bg-[#F7F7F7]'
-                    : 'border-[#EBEBEB] hover:border-[#DDDDDD] bg-white'
+                className={`group p-5 rounded-2xl flex flex-col justify-between surface-card ${
+                  isRedeemed ? 'opacity-60 !bg-inset' : ''
                 }`}
               >
                 <div>
@@ -129,10 +127,10 @@ export const VoucherStash: React.FC<VoucherStashProps> = ({
                     <div className="flex items-center gap-3">
                       <BrandBadge serviceKey={voucher.serviceKey} name={voucher.serviceName} size="sm" />
                       <div>
-                        <h4 className="text-sm font-bold text-[#222222] leading-tight">
+                        <h4 className="text-sm font-semibold text-black leading-snug">
                           {voucher.serviceName}
                         </h4>
-                        <span className="text-[11px] font-mono text-[#717171]">
+                        <span className="text-xs font-mono text-muted">
                           {voucher.createdAt} 录入
                         </span>
                       </div>
@@ -140,21 +138,21 @@ export const VoucherStash: React.FC<VoucherStashProps> = ({
 
                     {/* Amount badge */}
                     {voucher.amount ? (
-                      <span className="text-xs px-2.5 py-0.5 rounded-full bg-[#F7F7F7] text-[#000000] font-mono font-bold border border-[#DDDDDD]">
+                      <span className="text-xs px-2 py-0.5 rounded-md bg-inset text-ink font-mono font-semibold border border-line">
                         {voucher.currency} {voucher.amount}
                       </span>
                     ) : null}
                   </div>
 
                   {/* Code box */}
-                  <div className="flex items-center justify-between p-3 rounded-2xl bg-[#F7F7F7] border border-[#EBEBEB] font-mono text-xs mb-3.5">
-                    <span className="truncate text-[#222222] font-bold select-all tracking-tight">
+                  <div className="flex items-center justify-between px-3.5 py-3 rounded-xl border border-dashed border-line-strong font-mono text-[13px] mb-3.5">
+                    <span className="truncate text-ink font-medium select-all">
                       {voucher.code}
                     </span>
                     <button
                       type="button"
                       onClick={() => handleCopy(voucher.id, voucher.code)}
-                      className="hover:text-[#000000] text-[#717171] ml-2 text-[11px] flex items-center gap-1 shrink-0 transition"
+                      className="hover:text-black text-muted ml-2 w-7 h-7 -mr-1.5 rounded-md hover:bg-inset text-xs flex items-center justify-center shrink-0 transition-colors"
                       title="复制卡密"
                     >
                       {copiedId === voucher.id ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
@@ -162,19 +160,19 @@ export const VoucherStash: React.FC<VoucherStashProps> = ({
                   </div>
 
                   {voucher.notes && (
-                    <p className="text-xs text-[#717171] mb-3 truncate px-1">
+                    <p className="text-sm text-muted mb-3 truncate">
                       {voucher.notes}
                     </p>
                   )}
                 </div>
 
                 {/* Card footer */}
-                <div className="pt-3 border-t border-[#EBEBEB] flex items-center justify-between gap-2.5">
+                <div className="pt-1 flex items-center justify-between gap-2">
                   {!isRedeemed ? (
                     <button
                       type="button"
                       onClick={() => handle1ClickRecharge(voucher)}
-                      className="flex-1 h-10 px-4 rounded-xl bg-[#000000] hover:bg-[#222222] text-white font-bold text-xs transition flex items-center justify-center gap-1.5 shadow-sm active:scale-[0.98]"
+                      className="flex-1 h-10 px-4 rounded-lg btn-primary font-semibold text-sm flex items-center justify-center gap-1.5"
                     >
                       <Zap className="w-3.5 h-3.5" />
                       <span>一键充值使用</span>
@@ -183,7 +181,7 @@ export const VoucherStash: React.FC<VoucherStashProps> = ({
                     <button
                       type="button"
                       onClick={() => onUpdateStatus(voucher.id, 'unredeemed')}
-                      className="flex-1 h-10 px-4 rounded-xl bg-[#F7F7F7] hover:bg-[#EBEBEB] text-[#717171] text-xs font-semibold transition"
+                      className="flex-1 h-10 px-4 rounded-lg bg-white hover:bg-line text-muted text-sm font-semibold transition-colors border border-line"
                     >
                       撤销核销
                     </button>
@@ -196,7 +194,7 @@ export const VoucherStash: React.FC<VoucherStashProps> = ({
                         onDelete(voucher.id);
                       }
                     }}
-                    className="w-10 h-10 rounded-xl text-[#717171] hover:text-rose-700 hover:bg-rose-50 flex items-center justify-center transition"
+                    className="w-10 h-10 rounded-lg text-muted hover:text-rose-700 hover:bg-rose-50 flex items-center justify-center transition-colors"
                     title="删除"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -207,19 +205,19 @@ export const VoucherStash: React.FC<VoucherStashProps> = ({
           })}
         </div>
       ) : (
-        <div className="text-center py-16 px-4 rounded-3xl border border-dashed border-[#DDDDDD] bg-white airbnb-card">
-          <div className="w-14 h-14 rounded-2xl bg-[#000000] text-white border border-black/10 flex items-center justify-center mx-auto mb-3.5 shadow-2xs">
+        <div className="text-center py-16 px-4 rounded-2xl border border-dashed border-line-strong bg-white">
+          <div className="w-12 h-12 rounded-lg bg-black text-white flex items-center justify-center mx-auto mb-4">
             <Gift className="w-6 h-6" />
           </div>
-          <h4 className="text-base font-bold text-[#222222] mb-1">
+          <h4 className="text-base font-semibold text-black mb-1">
             {filter === 'redeemed' ? '暂无已核销的卡券' : '卡券包暂为空'}
           </h4>
-          <p className="text-xs text-[#717171] max-w-sm mx-auto mb-5">
+          <p className="text-sm text-muted max-w-sm mx-auto mb-5">
             把购买的 Apple 礼品卡、Steam 充值码或各类 AI 服务代金券存进这里，随时一键直达充值使用。
           </p>
           <button
             onClick={onAddNew}
-            className="px-5 py-2.5 rounded-full bg-[#000000] hover:bg-[#222222] text-white font-bold text-xs transition inline-flex items-center gap-1.5 shadow-md active:scale-[0.98]"
+            className="h-10 px-5 rounded-lg btn-primary font-semibold text-sm inline-flex items-center gap-1.5"
           >
             <Plus className="w-4 h-4" />
             <span>存入第一张礼品券</span>
