@@ -13,6 +13,7 @@ dist-ssr
 *.zip
 *.local
 *.traineddata
+!public/tessdata/*.traineddata
 
 # Editor directories and files
 .vscode/*

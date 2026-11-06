@@ -1,97 +1,81 @@
-const CACHE_NAME = 'vsmat-cache-v1';
-const PRECACHE_ASSETS = [
-  '/',
-  '/index.html',
-  '/manifest.webmanifest',
-  '/icon.svg',
-  '/icon-192.png',
-  '/icon-512.png',
-  '/apple-touch-icon.png',
-  '/favicon.png'
-];
+/* eslint-disable no-restricted-globals */
+// __VSMAT_VERSION__ and __VSMAT_PRECACHE__ are substituted at build time by
+// the `vsmat-sw-manifest` plugin in vite.config.ts. In dev the SW is not registered.
+const VERSION = '__VSMAT_VERSION__';
+const CACHE_NAME = `vsmat-cache-${VERSION}`;
+const PRECACHE_ASSETS = '__VSMAT_PRECACHE__';
 
-// Install: precache core shell
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(PRECACHE_ASSETS);
-    }).then(() => self.skipWaiting())
+    caches
+      .open(CACHE_NAME)
+      .then((cache) => cache.addAll(PRECACHE_ASSETS))
+      .then(() => self.skipWaiting())
   );
 });
 
-// Activate: purge old caches
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames
-          .filter((name) => name !== CACHE_NAME)
-          .map((name) => caches.delete(name))
-      );
-    }).then(() => self.clients.claim())
+    caches
+      .keys()
+      .then((names) =>
+        Promise.all(names.filter((n) => n.startsWith('vsmat-cache-') && n !== CACHE_NAME).map((n) => caches.delete(n)))
+      )
+      .then(() => self.clients.claim())
   );
 });
 
-// Fetch: Network first with Cache fallback for navigation, Cache first for hashed static assets
+async function putInCache(request, response) {
+  if (response && response.status === 200 && response.type === 'basic') {
+    const cache = await caches.open(CACHE_NAME);
+    await cache.put(request, response);
+  }
+}
+
 self.addEventListener('fetch', (event) => {
   const request = event.request;
-  
-  // Only handle GET requests
   if (request.method !== 'GET') return;
 
   const url = new URL(request.url);
+  if (url.origin !== self.location.origin) return; // never touch cross-origin requests
 
-  // For same-origin requests
-  if (url.origin === self.location.origin) {
-    // Static assets (like /assets/...) have content hashes, use Cache First
-    if (url.pathname.startsWith('/assets/')) {
-      event.respondWith(
-        caches.match(request).then((cachedResponse) => {
-          if (cachedResponse) return cachedResponse;
-          return fetch(request).then((networkResponse) => {
-            if (networkResponse.status === 200) {
-              const responseToCache = networkResponse.clone();
-              caches.open(CACHE_NAME).then((cache) => {
-                cache.put(request, responseToCache);
-              });
-            }
-            return networkResponse;
-          });
-        })
-      );
-      return;
-    }
-
-    // HTML Navigation requests: Stale-while-revalidate or Network first
-    if (request.mode === 'navigate') {
-      event.respondWith(
-        fetch(request)
-          .then((networkResponse) => {
-            if (networkResponse.status === 200) {
-              const responseToCache = networkResponse.clone();
-              caches.open(CACHE_NAME).then((cache) => {
-                cache.put(request, responseToCache);
-              });
-            }
-            return networkResponse;
+  // Content-hashed build output and OCR language data: cache first, fill on demand.
+  if (url.pathname.startsWith('/assets/') || url.pathname.startsWith('/tessdata/') || url.pathname.startsWith('/tesseract/')) {
+    event.respondWith(
+      caches.match(request).then(
+        (cached) =>
+          cached ||
+          fetch(request).then((response) => {
+            event.waitUntil(putInCache(request, response.clone()));
+            return response;
           })
-          .catch(() => {
-            return caches.match('/index.html') || caches.match('/');
-          })
-      );
-      return;
-    }
+      )
+    );
+    return;
   }
 
-  // Fallback default fetch strategy
+  // Page navigations: network first (to pick up new deploys), cached shell when offline.
+  if (request.mode === 'navigate') {
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          event.waitUntil(putInCache('/index.html', response.clone()));
+          return response;
+        })
+        .catch(async () => (await caches.match('/index.html')) || (await caches.match('/')) || Response.error())
+    );
+    return;
+  }
+
+  // Everything else same-origin (icons, manifest): cache first, then network.
   event.respondWith(
-    caches.match(request).then((cachedResponse) => {
-      return cachedResponse || fetch(request).catch(() => {
-        // Return offline fallback if available
-        if (request.mode === 'navigate') {
-          return caches.match('/index.html');
-        }
-      });
-    })
+    caches.match(request).then(
+      (cached) =>
+        cached ||
+        fetch(request).then((response) => {
+          event.waitUntil(putInCache(request, response.clone()));
+          return response;
+        })
+    )
   );
 });
