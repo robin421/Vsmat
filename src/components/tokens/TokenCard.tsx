@@ -44,7 +44,7 @@ export const TokenCard: React.FC<TokenCardProps> = ({ token, onEdit, onDelete })
               <h3 className="text-base font-bold text-[#222222] tracking-tight truncate leading-snug">
                 {token.name}
               </h3>
-              <p className="text-xs text-[#717171] font-mono truncate mt-0.5 max-w-[190px]">
+              <p className="text-xs text-[#717171] font-mono mt-0.5 break-all select-all" title={token.accountEmail || preset.name}>
                 {token.accountEmail || preset.name}
               </p>
             </div>

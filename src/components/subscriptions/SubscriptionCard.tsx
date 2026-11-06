@@ -13,7 +13,8 @@ import {
   Calendar,
   MoreHorizontal,
   ArrowUpRight,
-  CreditCard
+  CreditCard,
+  AlertCircle
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { SubscriptionItem } from '../../types';
@@ -85,6 +86,15 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
     lifetime: '终身',
   };
 
+  const categoryLabelMap: Record<string, string> = {
+    ai: 'AI 智能应用',
+    developer: '开发工具平台',
+    server: '服务器与网络',
+    productivity: '生产力办公',
+    entertainment: '流媒体娱乐',
+    other: '订阅服务',
+  };
+
   return (
     <div
       onClick={() => onEdit(subscription)}
@@ -98,25 +108,17 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
     >
       <div>
         {/* Top Header Row (Airbnb Listing Style) */}
-        <div className="flex items-start justify-between gap-3 mb-4">
+        <div className="flex items-center justify-between gap-3 mb-3.5">
           <div className="flex items-center gap-3 min-w-0">
             <BrandBadge serviceKey={subscription.serviceKey} name={subscription.name} size="md" />
             <div className="min-w-0">
-              <h3 className="text-base font-bold text-[#222222] tracking-tight truncate leading-snug">
+              <h3 className="text-base font-bold text-[#222222] tracking-tight leading-snug truncate" title={subscription.name}>
                 {subscription.name}
               </h3>
-              <div className="flex items-center gap-1.5 text-xs text-[#717171] font-mono mt-0.5">
-                <span className="truncate max-w-[150px] sm:max-w-[190px]">{subscription.accountEmail || '未录入账号'}</span>
-                {subscription.accountEmail && (
-                  <button
-                    type="button"
-                    onClick={handleCopyEmail}
-                    className="hover:text-[#FF385C] text-[#717171] p-0.5 transition"
-                    title="复制账号"
-                  >
-                    {copiedEmail ? <Check className="w-3.5 h-3.5 text-[#FF385C]" /> : <Copy className="w-3.5 h-3.5" />}
-                  </button>
-                )}
+              <div className="flex items-center gap-1.5 mt-0.5">
+                <span className="text-[11px] font-medium text-[#717171]">
+                  {categoryLabelMap[subscription.category] || '订阅服务'}
+                </span>
               </div>
             </div>
           </div>
@@ -208,6 +210,50 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
           </div>
         </div>
 
+        {/* ========================================================= */}
+        {/* Full-width Dedicated Account Email Strip (100% 完整显示账号，绝不截断) */}
+        {/* ========================================================= */}
+        <div
+          className="flex items-center justify-between py-2 px-3 rounded-2xl bg-[#F7F7F7] border border-[#EBEBEB] mb-3 text-xs font-mono text-[#222222] group/account hover:border-[#DDDDDD] transition"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="flex items-center gap-2 min-w-0 pr-2">
+            <Mail className="w-3.5 h-3.5 text-[#717171] shrink-0" />
+            <span
+              className="font-medium text-[#222222] select-all break-all leading-normal"
+              title={subscription.accountEmail || '未录入账号'}
+            >
+              {subscription.accountEmail || (
+                <span className="text-[#888888] font-normal italic font-sans text-[11px] flex items-center gap-1">
+                  <AlertCircle className="w-3 h-3 text-amber-500 shrink-0" />
+                  <span>未绑定账号（点击卡片可补充）</span>
+                </span>
+              )}
+            </span>
+          </div>
+
+          {subscription.accountEmail && (
+            <button
+              type="button"
+              onClick={handleCopyEmail}
+              className="h-6 px-2 rounded-lg bg-white border border-[#DDDDDD] hover:border-[#222222] text-[#717171] hover:text-[#222222] text-[11px] font-sans font-medium flex items-center gap-1 transition shrink-0 shadow-2xs"
+              title="一键复制完整账号"
+            >
+              {copiedEmail ? (
+                <>
+                  <Check className="w-3 h-3 text-emerald-600" />
+                  <span className="text-emerald-600 font-bold">已复制</span>
+                </>
+              ) : (
+                <>
+                  <Copy className="w-3 h-3" />
+                  <span>复制</span>
+                </>
+              )}
+            </button>
+          )}
+        </div>
+
         {/* Clean Middle Strip: Date & Price */}
         <div className="flex items-center justify-between py-3 px-4 rounded-2xl bg-[#F7F7F7] border border-[#EBEBEB] mb-3">
           <div className="flex items-center gap-1.5 text-xs text-[#717171] font-medium whitespace-nowrap">
@@ -233,15 +279,15 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
 
         {/* Payment Method & Notes (if any) */}
         {(subscription.paymentMethod || subscription.notes) && (
-          <div className="flex items-center justify-between gap-2 text-[11px] text-[#717171] mb-3 px-1 truncate">
+          <div className="flex items-center justify-between gap-2 text-[11px] text-[#717171] mb-3 px-1">
             {subscription.paymentMethod && (
-              <span className="flex items-center gap-1 truncate text-[#717171]">
+              <span className="flex items-center gap-1 truncate text-[#717171]" title={subscription.paymentMethod}>
                 <CreditCard className="w-3 h-3 text-[#717171] shrink-0" />
                 <span className="truncate">{subscription.paymentMethod}</span>
               </span>
             )}
             {subscription.notes && (
-              <span className="text-[#717171] truncate max-w-[150px]" title={subscription.notes}>
+              <span className="text-[#717171] truncate max-w-[170px] text-right" title={subscription.notes}>
                 {subscription.notes}
               </span>
             )}
@@ -251,7 +297,7 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
         {/* Password Strip (Airbnb Vault Style) */}
         {subscription.passwordNote && (
           <div
-            className="flex items-center justify-between text-xs py-2 px-3.5 rounded-xl bg-[#F7F7F7] border border-[#EBEBEB] mb-3.5 font-mono text-[#222222]"
+            className="flex items-center justify-between text-xs py-2 px-3 rounded-2xl bg-[#F7F7F7] border border-[#EBEBEB] mb-3.5 font-mono text-[#222222]"
             onClick={(e) => e.stopPropagation()}
           >
             <span className="flex items-center gap-1.5 truncate">
@@ -270,10 +316,10 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
               <button
                 type="button"
                 onClick={handleCopyPassword}
-                className="hover:text-[#FF385C] text-[#717171] flex items-center gap-1 font-sans text-[11px] font-medium transition"
+                className="h-6 px-2 rounded-lg bg-white border border-[#DDDDDD] hover:border-[#222222] text-[#717171] hover:text-[#222222] flex items-center gap-1 font-sans text-[11px] font-medium transition shadow-2xs"
               >
-                {copiedPassword ? <Check className="w-3.5 h-3.5 text-[#FF385C]" /> : <Copy className="w-3.5 h-3.5" />}
-                <span>{copiedPassword ? '已复制' : '复制密码'}</span>
+                {copiedPassword ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
+                <span>{copiedPassword ? '已复制' : '复制'}</span>
               </button>
             </div>
           </div>
@@ -294,8 +340,7 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
         <button
           type="button"
           onClick={handleRenew}
-          className="h-10 px-3 rounded-xl bg-white hover:bg-[#F7F7F7] text-[#222222] font-semibold text-xs border border-[#DDDDDD] hover:border-[#222222] transition flex items-center justify-center gap-1.5 shadow-2xs active:scale-[0.98]"
-          title="点击将下期扣费时间自动顺延一个周期"
+          className="h-10 px-3 rounded-xl bg-white hover:bg-[#F7F7F7] border border-[#DDDDDD] hover:border-[#222222] text-[#222222] font-semibold text-xs transition flex items-center justify-center gap-1.5 shadow-2xs active:scale-[0.98]"
         >
           <RefreshCw className="w-3.5 h-3.5 text-[#717171]" />
           <span>我已续费</span>
