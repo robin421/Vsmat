@@ -443,7 +443,7 @@ export const BrandBadge: React.FC<BrandBadgeProps> = ({
   // ========================================================
   if (lowerName.includes('ai') || lowerName.includes('bot') || lowerName.includes('model') || lowerName.includes('chat') || lowerName.includes('智能')) {
     return (
-      <div className={`${baseSquircle} bg-[#FFF0F2] border border-[#FFCCD3] text-[#FF385C]`} title={name}>
+      <div className={`${baseSquircle} bg-[#000000] border border-black/10 text-white`} title={name}>
         <Sparkles className={iconSizes[size]} />
       </div>
     );

@@ -232,7 +232,7 @@ export function App() {
   };
 
   return (
-    <div className="min-h-screen bg-white text-[#222222] flex flex-col font-sans selection:bg-[#FFE0E4] selection:text-[#FF385C] antialiased">
+    <div className="min-h-screen bg-white text-[#222222] flex flex-col font-sans selection:bg-[#18181B] selection:text-white antialiased">
       <Navbar
         activeTab={activeTab}
         onTabChange={setActiveTab}

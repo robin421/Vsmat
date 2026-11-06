@@ -54,7 +54,7 @@ export const OverviewStats: React.FC<OverviewStatsProps> = ({
       <div className="p-6 rounded-3xl bg-white border border-[#EBEBEB] airbnb-card transition-all flex flex-col justify-between">
         <div className="flex items-center justify-between text-xs text-[#717171] mb-2">
           <span className="font-semibold text-[#222222]">预估月度总支出</span>
-          <div className="w-9 h-9 rounded-2xl bg-[#FFF0F2] text-[#FF385C] border border-[#FFCCD3] flex items-center justify-center shadow-2xs">
+          <div className="w-9 h-9 rounded-2xl bg-[#000000] text-white border border-black/10 flex items-center justify-center shadow-2xs">
             <DollarSign className="w-4 h-4" />
           </div>
         </div>

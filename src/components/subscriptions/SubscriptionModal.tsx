@@ -317,7 +317,7 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
         {/* Header */}
         <div className="flex items-center justify-between pb-3.5 border-b border-[#EBEBEB]">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-[#FFF0F2] text-[#FF385C] border border-[#FFCCD3] flex items-center justify-center shadow-2xs">
+            <div className="w-10 h-10 rounded-2xl bg-[#000000] text-white border border-black/10 flex items-center justify-center shadow-2xs">
               <CreditCard className="w-5 h-5" />
             </div>
             <div>
@@ -349,7 +349,7 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
                   : 'text-[#717171] hover:text-[#222222]'
               }`}
             >
-              <Sparkles className="w-3.5 h-3.5 text-[#FF385C]" />
+              <Sparkles className="w-3.5 h-3.5 text-[#000000]" />
               <span>智能识别 (截图/发货单)</span>
             </button>
             <button
@@ -432,7 +432,7 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
                   ) : (
                     <div className="space-y-1.5">
                       <div className="w-10 h-10 rounded-xl bg-white text-[#222222] border border-[#EBEBEB] flex items-center justify-center mx-auto shadow-2xs group-hover:scale-105 transition">
-                        <Upload className="w-5 h-5 text-[#FF385C]" />
+                        <Upload className="w-5 h-5 text-[#000000]" />
                       </div>
                       <p className="text-xs font-semibold text-zinc-900">
                         点击上传 或 在此直接按 <kbd className="px-1.5 py-0.5 rounded bg-white border border-[#EBEBEB] font-mono text-[11px] shadow-2xs">Cmd+V</kbd> 粘贴截图
@@ -476,17 +476,17 @@ SuperGrok 印度区 700 INR/月
 
               {/* OCR Progress Indicator */}
               {ocrLoading && (
-                <div className="p-3.5 rounded-2xl bg-[#FFF0F2] border border-[#FFCCD3] space-y-1.5 text-xs animate-fadeIn">
-                  <div className="flex items-center justify-between text-[#FF385C] font-semibold">
+                <div className="p-3.5 rounded-2xl bg-[#F7F7F7] border border-[#DDDDDD] space-y-1.5 text-xs animate-fadeIn">
+                  <div className="flex items-center justify-between text-[#000000] font-semibold">
                     <div className="flex items-center gap-2">
-                      <Loader2 className="w-4 h-4 text-[#FF385C] animate-spin" />
+                      <Loader2 className="w-4 h-4 text-[#000000] animate-spin" />
                       <span>{ocrStatus}</span>
                     </div>
                     <span className="font-mono">{ocrProgress}%</span>
                   </div>
-                  <div className="w-full h-1.5 bg-[#FFE2E6] rounded-full overflow-hidden">
+                  <div className="w-full h-1.5 bg-[#E5E7EB] rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-[#FF385C] transition-all duration-300"
+                      className="h-full bg-[#000000] transition-all duration-300"
                       style={{ width: `${ocrProgress}%` }}
                     />
                   </div>
@@ -508,7 +508,7 @@ SuperGrok 印度区 700 INR/月
                   </>
                 ) : (
                   <>
-                    <CreditCard className="w-4 h-4 text-[#FF385C]" />
+                    <CreditCard className="w-4 h-4 text-[#000000]" />
                     <span>订阅核心信息</span>
                   </>
                 )}
@@ -524,7 +524,7 @@ SuperGrok 印度区 700 INR/月
             <div>
               <div className="flex items-center justify-between mb-1">
                 <label className="text-xs font-bold text-[#222222] flex items-center gap-1">
-                  服务名称 <span className="text-[#FF385C]">*</span>
+                  服务名称 <span className="text-rose-500">*</span>
                 </label>
                 <div className="flex items-center gap-1">
                   <span className="text-[11px] text-[#717171]">快捷模板:</span>
@@ -556,12 +556,12 @@ SuperGrok 印度区 700 INR/月
             <div className="p-3 rounded-2xl bg-[#F7F7F7] border border-[#EBEBEB] space-y-2">
               <div className="flex items-center justify-between">
                 <label className="text-xs font-bold text-[#222222] flex items-center gap-1">
-                  <DollarSign className="w-3.5 h-3.5 text-[#FF385C]" />
+                  <DollarSign className="w-3.5 h-3.5 text-[#000000]" />
                   <span>续费金额与币种</span>
                 </label>
                 {currency !== 'USD' && numPrice > 0 && (
                   <span className="text-[11px] text-[#717171] font-mono">
-                    折合约 <strong className="text-[#222222]">${usdConverted.toFixed(2)} USD</strong>，按全局汇率自动统计
+                    折合约 <strong className="text-[#000000]">${usdConverted.toFixed(2)} USD</strong>，按全局汇率自动统计
                   </span>
                 )}
               </div>
@@ -626,16 +626,16 @@ SuperGrok 印度区 700 INR/月
             <div>
               <div className="flex items-center justify-between mb-1">
                 <label className="text-xs font-bold text-[#222222] flex items-center gap-1">
-                  <Calendar className="w-3.5 h-3.5 text-[#FF385C]" />
-                  <span>扣费时间 (更新日) <span className="text-[#FF385C]">*</span></span>
+                  <Calendar className="w-3.5 h-3.5 text-[#000000]" />
+                  <span>扣费时间 (更新日) <span className="text-rose-500">*</span></span>
                 </label>
                 {nextBillingDate && (
                   <span
                     className={`text-[11px] font-mono px-2 py-0.5 rounded-full font-bold ${
                       daysUntil <= 0
-                        ? 'bg-[#c13515] text-white'
+                        ? 'bg-rose-50 text-rose-800 border border-rose-200'
                         : daysUntil <= 7
-                        ? 'bg-[#FFF0F2] text-[#FF385C] border border-[#FFCCD3]'
+                        ? 'bg-amber-50 text-amber-900 border border-amber-200'
                         : 'bg-[#F7F7F7] text-[#222222] border border-[#DDDDDD]'
                     }`}
                   >
@@ -809,7 +809,7 @@ SuperGrok 印度区 700 INR/月
                     onClose();
                   }
                 }}
-                className="px-3.5 py-2 rounded-xl text-[#c13515] hover:bg-[#FFF0F2] text-xs font-bold flex items-center gap-1.5 transition active:scale-95"
+                className="px-3.5 py-2 rounded-xl text-rose-700 hover:bg-rose-50 text-xs font-bold flex items-center gap-1.5 transition active:scale-95"
               >
                 <Trash2 className="w-3.5 h-3.5" />
                 <span>删除订阅</span>
@@ -832,7 +832,7 @@ SuperGrok 印度区 700 INR/月
               <button
                 type="submit"
                 disabled={ocrLoading || !name.trim()}
-                className="px-6 py-2.5 rounded-xl btn-rausch disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold text-xs flex items-center gap-1.5 shadow-md transition active:scale-95"
+                className="px-6 py-2.5 rounded-xl bg-[#000000] hover:bg-[#222222] disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition active:scale-95"
               >
                 <span>{initialData ? '保存修改' : '确认并录入订阅'}</span>
                 <ArrowRight className="w-3.5 h-3.5 text-white" />

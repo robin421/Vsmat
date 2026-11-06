@@ -61,7 +61,7 @@ export const MasterPasswordModal: React.FC<MasterPasswordModalProps> = ({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-fadeIn">
       <div className="w-full max-w-md rounded-3xl bg-white border border-[#EBEBEB] p-7 airbnb-card text-[#222222]">
         <div className="text-center mb-6">
-          <div className="w-12 h-12 rounded-2xl bg-[#FFF0F2] text-[#FF385C] border border-[#FFCCD3] flex items-center justify-center mx-auto mb-3 shadow-2xs">
+          <div className="w-12 h-12 rounded-2xl bg-[#000000] text-white border border-black/10 flex items-center justify-center mx-auto mb-3 shadow-2xs">
             <Lock className="w-6 h-6" />
           </div>
           <h2 className="text-lg font-bold text-[#222222]">
@@ -111,15 +111,15 @@ export const MasterPasswordModal: React.FC<MasterPasswordModalProps> = ({
                 type="checkbox"
                 checked={remember}
                 onChange={(e) => setRemember(e.target.checked)}
-                className="w-4 h-4 rounded border-[#DDDDDD] bg-white accent-[#FF385C]"
+                className="w-4 h-4 rounded border-[#DDDDDD] bg-white accent-[#000000]"
               />
               <span>记住解锁状态 (本机信任免密，日常使用无需反复输入)</span>
             </label>
           </div>
 
           {error && (
-            <div className="p-3 rounded-xl bg-[#FFF0F2] border border-[#FFCCD3] text-xs text-[#FF385C] font-semibold flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 text-[#FF385C] shrink-0" />
+            <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-700 font-semibold flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
               <span>{error}</span>
             </div>
           )}
@@ -127,7 +127,7 @@ export const MasterPasswordModal: React.FC<MasterPasswordModalProps> = ({
           <button
             type="submit"
             disabled={loading}
-            className="w-full h-11 rounded-xl btn-rausch text-white font-bold text-sm transition shadow-md flex items-center justify-center gap-2 mt-2 active:scale-95 disabled:opacity-40"
+            className="w-full h-11 rounded-xl bg-[#000000] hover:bg-[#222222] text-white font-bold text-sm transition shadow-md flex items-center justify-center gap-2 mt-2 active:scale-95 disabled:opacity-40"
           >
             <KeyRound className="w-4 h-4" />
             <span>{loading ? '处理中...' : isInitialSetup ? '完成设置并开启保险箱' : '立即解锁'}</span>

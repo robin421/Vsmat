@@ -98,7 +98,7 @@ export const TokenModal: React.FC<TokenModalProps> = ({
       <div className="w-full max-w-lg rounded-3xl bg-white border border-[#EBEBEB] p-6 sm:p-7 airbnb-card overflow-y-auto max-h-[92vh] text-[#222222]">
         <div className="flex items-center justify-between pb-4 border-b border-[#EBEBEB]">
           <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-2xl bg-[#FFF0F2] text-[#FF385C] border border-[#FFCCD3] flex items-center justify-center shadow-2xs">
+            <div className="w-10 h-10 rounded-2xl bg-[#000000] text-white border border-black/10 flex items-center justify-center shadow-2xs">
               <Key className="w-5 h-5" />
             </div>
             <div>
@@ -142,7 +142,7 @@ export const TokenModal: React.FC<TokenModalProps> = ({
           <div className="space-y-3">
             <div>
               <label className="block text-xs font-medium text-[#222222] font-semibold mb-1.5">
-                密钥标识名称 <span className="text-[#FF385C]">*</span>
+                密钥标识名称 <span className="text-rose-500">*</span>
               </label>
               <input
                 type="text"
@@ -156,7 +156,7 @@ export const TokenModal: React.FC<TokenModalProps> = ({
 
             <div>
               <label className="block text-xs font-medium text-[#222222] font-semibold mb-1.5">
-                API Token / 密钥明文 <span className="text-[#FF385C]">*</span>
+                API Token / 密钥明文 <span className="text-rose-500">*</span>
               </label>
               <input
                 type="text"

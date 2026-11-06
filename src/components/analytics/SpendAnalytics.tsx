@@ -14,14 +14,14 @@ export const SpendAnalytics: React.FC<SpendAnalyticsProps> = ({
   preferredCurrency,
   usdToCnyRate,
 }) => {
-  // Airbnb inspired palette: Rausch Red hero accent + Babu Teal + warm tones
+  // Executive Business Palette: Obsidian Black primary + Babu Teal + warm neutrals
   const categoryNames: Record<ServiceCategory, { label: string; color: string; dot: string }> = {
-    ai: { label: 'AI 大模型与服务', color: 'bg-[#FF385C]', dot: 'bg-[#FF385C] ring-[#FFCCD3]' },
+    ai: { label: 'AI 大模型与服务', color: 'bg-[#000000]', dot: 'bg-[#000000] ring-neutral-300' },
     developer: { label: '开发者工具与平台', color: 'bg-[#008489]', dot: 'bg-[#008489] ring-[#B2DFDB]' },
     server: { label: '服务器 / VPS / 域名', color: 'bg-[#484848]', dot: 'bg-[#484848] ring-[#EBEBEB]' },
-    productivity: { label: '生产力办公工具', color: 'bg-[#FFB400]', dot: 'bg-[#FFB400] ring-[#FFE082]' },
-    entertainment: { label: '流媒体影音娱乐', color: 'bg-[#FC642D]', dot: 'bg-[#FC642D] ring-[#FFCCBC]' },
-    other: { label: '其他杂项', color: 'bg-[#B0B0B0]', dot: 'bg-[#B0B0B0] ring-[#F7F7F7]' },
+    productivity: { label: '生产力办公工具', color: 'bg-[#D97706]', dot: 'bg-[#D97706] ring-[#FDE68A]' },
+    entertainment: { label: '流媒体影音娱乐', color: 'bg-[#4F46E5]', dot: 'bg-[#4F46E5] ring-[#C7D2FE]' },
+    other: { label: '其他杂项', color: 'bg-[#717171]', dot: 'bg-[#717171] ring-[#EBEBEB]' },
   };
 
   const getMonthlyAmountInUSD = (sub: SubscriptionItem): number => {
@@ -62,7 +62,7 @@ export const SpendAnalytics: React.FC<SpendAnalyticsProps> = ({
       <div className="p-6 sm:p-8 rounded-3xl bg-white border border-[#EBEBEB] airbnb-card">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3.5">
-            <div className="w-11 h-11 rounded-2xl bg-[#FFF0F2] text-[#FF385C] border border-[#FFCCD3] flex items-center justify-center shadow-2xs">
+            <div className="w-11 h-11 rounded-2xl bg-[#000000] text-white border border-black/10 flex items-center justify-center shadow-2xs">
               <PieChart className="w-5 h-5" />
             </div>
             <div>

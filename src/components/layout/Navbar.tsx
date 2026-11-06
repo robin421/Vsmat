@@ -92,15 +92,15 @@ export const Navbar: React.FC<NavbarProps> = ({
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-[#EBEBEB] transition-all">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between gap-3 lg:gap-6">
         
-        {/* Brand Area (Airbnb Rausch Coral Accent) */}
+        {/* Brand Area (Executive Obsidian Monochrome) */}
         <div className="flex items-center gap-2.5 shrink-0">
-          <div className="w-10 h-10 rounded-2xl bg-[#FFF0F2] border border-[#FFCCD3] flex items-center justify-center text-[#FF385C] shadow-2xs">
-            <ShieldCheck className="w-6 h-6 fill-[#FF385C]/15" />
+          <div className="w-10 h-10 rounded-2xl bg-[#000000] border border-black/10 flex items-center justify-center text-white shadow-2xs">
+            <ShieldCheck className="w-5 h-5" />
           </div>
           <div className="flex flex-col">
             <div className="flex items-center gap-1.5">
-              <span className="font-extrabold text-lg tracking-tight text-[#222222] font-sans">Vsmat</span>
-              <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#F7F7F7] text-[#717171] font-semibold border border-[#EBEBEB] tracking-wide font-mono">
+              <span className="font-extrabold text-lg tracking-tight text-[#000000] font-sans">Vsmat</span>
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#F7F7F7] text-[#555555] font-semibold border border-[#EBEBEB] tracking-wide font-mono">
                 AES-256
               </span>
             </div>
@@ -110,7 +110,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
         </div>
 
-        {/* Airbnb Iconic Floating Search Pill */}
+        {/* Minimalist Floating Search Pill */}
         <div className="relative flex-1 max-w-sm md:max-w-md hidden md:flex items-center h-12 rounded-full bg-white border border-[#DDDDDD] airbnb-search-shadow px-3.5 transition-all">
           <div className="flex items-center gap-2 flex-1 min-w-0">
             <input
@@ -133,13 +133,13 @@ export const Navbar: React.FC<NavbarProps> = ({
               ⌘K
             </kbd>
           )}
-          {/* Circular Coral Search Icon Button */}
-          <div className="w-8 h-8 rounded-full bg-[#FF385C] flex items-center justify-center text-white shrink-0 shadow-sm cursor-pointer hover:bg-[#E00B41] transition">
+          {/* Circular Obsidian Search Icon Button */}
+          <div className="w-8 h-8 rounded-full bg-[#000000] flex items-center justify-center text-white shrink-0 shadow-sm cursor-pointer hover:bg-[#222222] transition">
             <Search className="w-3.5 h-3.5 stroke-[2.5]" />
           </div>
         </div>
 
-        {/* Airbnb Style Rounded Navigation Tabs */}
+        {/* Rounded Navigation Tabs (Executive Style) */}
         <nav className="flex items-center p-1 rounded-full bg-[#F7F7F7] border border-[#EBEBEB]">
           {navItems.map(item => {
             const Icon = item.icon;
@@ -150,15 +150,15 @@ export const Navbar: React.FC<NavbarProps> = ({
                 onClick={() => onTabChange(item.key)}
                 className={`relative flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs transition-all duration-200 select-none ${
                   isActive
-                    ? 'bg-white text-[#222222] shadow-[0_1px_4px_rgba(0,0,0,0.1)] font-bold'
-                    : 'text-[#717171] hover:text-[#222222] hover:bg-white/60 font-medium'
+                    ? 'bg-white text-[#000000] shadow-[0_1px_4px_rgba(0,0,0,0.12)] font-bold'
+                    : 'text-[#717171] hover:text-[#000000] hover:bg-white/60 font-medium'
                 }`}
               >
-                <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-[#FF385C]' : 'text-[#717171]'}`} />
+                <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-[#000000]' : 'text-[#717171]'}`} />
                 <span className="hidden sm:inline">{item.label}</span>
                 {item.count !== undefined && item.count > 0 && (
                   <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded-full leading-tight font-bold ${
-                    isActive ? 'bg-[#FFF0F2] text-[#FF385C]' : 'bg-[#EBEBEB] text-[#717171]'
+                    isActive ? 'bg-[#000000] text-white' : 'bg-[#EBEBEB] text-[#717171]'
                   }`}>
                     {item.count}
                   </span>
@@ -170,10 +170,10 @@ export const Navbar: React.FC<NavbarProps> = ({
 
         {/* Action Controls & Utilities */}
         <div className="flex items-center gap-2 shrink-0">
-          {/* Unified Add Subscription CTA (Airbnb Rausch) */}
+          {/* Unified Add Subscription CTA (Executive Obsidian Monochrome) */}
           <button
             onClick={onNewSubscription}
-            className="h-10 px-4 rounded-full btn-rausch font-bold text-xs flex items-center gap-1.5 shadow-sm active:scale-[0.98] transition-all"
+            className="h-10 px-4 rounded-full bg-[#000000] hover:bg-[#222222] text-white font-bold text-xs flex items-center gap-1.5 shadow-sm active:scale-[0.98] transition-all"
             title="新建订阅（支持截图智能识别与手动录入）"
           >
             <Plus className="w-4 h-4 text-white stroke-[2.5]" />
@@ -209,11 +209,11 @@ export const Navbar: React.FC<NavbarProps> = ({
                   onClick={handleExport}
                   className="w-full text-left px-3 py-2.5 rounded-xl hover:bg-[#F7F7F7] text-[#222222] font-medium flex items-center gap-2 transition"
                 >
-                  <Download className="w-4 h-4 text-[#FF385C]" />
+                  <Download className="w-4 h-4 text-[#000000]" />
                   <span>导出本地备份 (.json)</span>
                 </button>
                 <label className="w-full text-left px-3 py-2.5 rounded-xl hover:bg-[#F7F7F7] text-[#222222] font-medium flex items-center gap-2 cursor-pointer transition">
-                  <Upload className="w-4 h-4 text-[#FF385C]" />
+                  <Upload className="w-4 h-4 text-[#000000]" />
                   <span>导入本地备份 (.json)</span>
                   <input
                     type="file"
@@ -231,12 +231,12 @@ export const Navbar: React.FC<NavbarProps> = ({
             onClick={onLockVault}
             className={`h-10 w-10 rounded-full border flex items-center justify-center transition active:scale-[0.98] shadow-2xs ${
               isLocked
-                ? 'bg-[#FFF0F2] border-[#FFCCD3] text-[#FF385C]'
+                ? 'bg-amber-50 border-amber-200 text-amber-700'
                 : 'bg-white hover:bg-[#F7F7F7] border-[#DDDDDD] hover:border-[#222222] text-[#222222]'
             }`}
             title={isLocked ? '保险箱已锁定' : '立即锁定保险箱'}
           >
-            {isLocked ? <Lock className="w-4 h-4 text-[#FF385C]" /> : <Unlock className="w-4 h-4 text-[#222222]" />}
+            {isLocked ? <Lock className="w-4 h-4 text-amber-700" /> : <Unlock className="w-4 h-4 text-[#222222]" />}
           </button>
         </div>
       </div>

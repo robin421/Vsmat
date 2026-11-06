@@ -165,7 +165,7 @@ export const SmartAccountModal: React.FC<SmartAccountModalProps> = ({
         {/* Header */}
         <div className="flex items-center justify-between pb-4 border-b border-[#EBEBEB]">
           <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-2xl bg-[#FFF0F2] text-[#FF385C] border border-[#FFCCD3] flex items-center justify-center shadow-2xs">
+            <div className="w-10 h-10 rounded-2xl bg-[#000000] text-white border border-black/10 flex items-center justify-center shadow-2xs">
               <Sparkles className="w-5 h-5" />
             </div>
             <div>
@@ -195,7 +195,7 @@ export const SmartAccountModal: React.FC<SmartAccountModalProps> = ({
                 : 'text-[#717171] hover:text-[#222222]'
             }`}
           >
-            <ImageIcon className={`w-3.5 h-3.5 ${activeTab === 'image' ? 'text-[#FF385C]' : 'text-[#717171]'}`} />
+            <ImageIcon className={`w-3.5 h-3.5 ${activeTab === 'image' ? 'text-[#000000]' : 'text-[#717171]'}`} />
             <span>📸 截图识别 (按 Cmd+V 直接粘贴)</span>
           </button>
 
@@ -262,17 +262,17 @@ export const SmartAccountModal: React.FC<SmartAccountModalProps> = ({
 
             {/* OCR Progress Indicator */}
             {ocrLoading && (
-              <div className="p-3.5 rounded-2xl bg-[#FFF0F2] border border-[#FFCCD3] space-y-1.5 text-xs animate-fadeIn">
-                <div className="flex items-center justify-between text-[#FF385C] font-semibold">
+              <div className="p-3.5 rounded-2xl bg-[#F7F7F7] border border-[#DDDDDD] space-y-1.5 text-xs animate-fadeIn">
+                <div className="flex items-center justify-between text-[#000000] font-semibold">
                   <div className="flex items-center gap-2">
-                    <Loader2 className="w-4 h-4 text-[#FF385C] animate-spin" />
+                    <Loader2 className="w-4 h-4 text-[#000000] animate-spin" />
                     <span>{ocrStatus}</span>
                   </div>
                   <span className="font-mono">{ocrProgress}%</span>
                 </div>
-                <div className="w-full h-1.5 bg-[#FFE2E6] rounded-full overflow-hidden">
+                <div className="w-full h-1.5 bg-[#E5E7EB] rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-[#FF385C] transition-all duration-300"
+                    className="h-full bg-[#000000] transition-all duration-300"
                     style={{ width: `${ocrProgress}%` }}
                   />
                 </div>

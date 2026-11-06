@@ -70,15 +70,15 @@ export const QuickRechargeBar: React.FC<QuickRechargeBarProps> = ({
     <div className="relative overflow-hidden rounded-3xl bg-white border border-[#EBEBEB] p-6 sm:p-7 airbnb-card">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-5">
         <div className="flex items-center gap-3.5">
-          <div className="w-12 h-12 rounded-2xl bg-[#FFF0F2] border border-[#FFCCD3] flex items-center justify-center text-[#FF385C] shadow-2xs shrink-0">
-            <Zap className="w-6 h-6 fill-[#FF385C]/20" />
+          <div className="w-12 h-12 rounded-2xl bg-[#000000] text-white flex items-center justify-center shadow-2xs shrink-0">
+            <Zap className="w-6 h-6 fill-white" />
           </div>
           <div>
             <div className="flex items-center gap-2">
               <h2 className="text-lg font-bold text-[#222222] tracking-tight">
                 粘贴礼品券一键充值
               </h2>
-              <span className="text-[11px] px-2.5 py-0.5 rounded-full bg-[#FFF0F2] text-[#FF385C] font-bold border border-[#FFCCD3]">
+              <span className="text-[11px] px-2.5 py-0.5 rounded-full bg-[#F7F7F7] text-[#000000] font-bold border border-[#DDDDDD]">
                 极速直达
               </span>
             </div>
@@ -144,7 +144,7 @@ export const QuickRechargeBar: React.FC<QuickRechargeBarProps> = ({
           <button
             type="submit"
             disabled={!code.trim()}
-            className="h-12 px-6 rounded-2xl font-bold text-xs text-white btn-rausch disabled:opacity-40 disabled:cursor-not-allowed shadow-md transition flex items-center justify-center gap-2 shrink-0 active:scale-[0.98]"
+            className="h-12 px-6 rounded-2xl font-bold text-xs text-white bg-[#000000] hover:bg-[#222222] disabled:opacity-40 disabled:cursor-not-allowed shadow-md transition flex items-center justify-center gap-2 shrink-0 active:scale-[0.98]"
           >
             {isCopied ? (
               <>
@@ -167,11 +167,11 @@ export const QuickRechargeBar: React.FC<QuickRechargeBarProps> = ({
             {effectiveService.name}
           </span>
           {effectiveService.key === 'apple' ? (
-            <span className="text-[#FF385C] font-semibold flex items-center gap-1">
+            <span className="text-[#000000] font-semibold flex items-center gap-1">
               ✓ 专享【网页端免退号】独立兑换通道
             </span>
           ) : effectiveService.directRedeemUrlPattern ? (
-            <span className="text-[#FF385C] font-semibold flex items-center gap-1">
+            <span className="text-[#000000] font-semibold flex items-center gap-1">
               ✓ 支持带码直达自动兑换
             </span>
           ) : (
@@ -184,8 +184,8 @@ export const QuickRechargeBar: React.FC<QuickRechargeBarProps> = ({
 
       {/* Feedback alert toast */}
       {toastMessage && (
-        <div className="mt-4 p-3.5 rounded-2xl bg-[#FFF0F2] border border-[#FFCCD3] text-xs text-[#222222] font-medium flex items-start gap-2.5 animate-fadeIn shadow-2xs">
-          <ExternalLink className="w-4 h-4 text-[#FF385C] shrink-0 mt-0.5" />
+        <div className="mt-4 p-3.5 rounded-2xl bg-[#F7F7F7] border border-[#DDDDDD] text-xs text-[#222222] font-medium flex items-start gap-2.5 animate-fadeIn shadow-2xs">
+          <ExternalLink className="w-4 h-4 text-[#000000] shrink-0 mt-0.5" />
           <div className="flex-1 leading-relaxed">{toastMessage}</div>
           <button
             onClick={() => setToastMessage(null)}

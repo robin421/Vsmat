@@ -117,7 +117,7 @@ export const SubscriptionList: React.FC<SubscriptionListProps> = ({
             onClick={() => setFilterUrgentOnly(!filterUrgentOnly)}
             className={`px-4 py-2 rounded-full text-xs font-semibold border transition active:scale-[0.98] ${
               filterUrgentOnly
-                ? 'bg-[#FF385C] text-white border-[#FF385C] shadow-sm'
+                ? 'bg-[#000000] text-white border-[#000000] shadow-sm'
                 : 'bg-white text-[#222222] hover:bg-[#F7F7F7] border-[#DDDDDD] hover:border-[#222222] shadow-2xs'
             }`}
           >
@@ -125,7 +125,7 @@ export const SubscriptionList: React.FC<SubscriptionListProps> = ({
           </button>
         </div>
 
-        {/* Right: Search & Action Buttons (Airbnb Floating Style) */}
+        {/* Right: Search & Action Buttons (Executive Monochrome Style) */}
         <div className="flex items-center gap-2.5 flex-wrap sm:flex-nowrap">
           {/* Quick Search Input */}
           <div className="relative flex-1 sm:w-60">
@@ -147,10 +147,10 @@ export const SubscriptionList: React.FC<SubscriptionListProps> = ({
             )}
           </div>
 
-          {/* Add New Subscription (Airbnb Rausch Primary CTA) */}
+          {/* Add New Subscription (Executive Primary CTA) */}
           <button
             onClick={onAddNew}
-            className="h-10 px-5 rounded-full btn-rausch font-bold text-xs transition flex items-center justify-center gap-1.5 shadow-md active:scale-[0.98] shrink-0"
+            className="h-10 px-5 rounded-full bg-[#000000] hover:bg-[#222222] text-white font-bold text-xs transition flex items-center justify-center gap-1.5 shadow-sm active:scale-[0.98] shrink-0"
             title="新建订阅（支持截图智能识别与手动录入）"
           >
             <Plus className="w-4 h-4 text-white stroke-[2.5]" />
@@ -175,7 +175,7 @@ export const SubscriptionList: React.FC<SubscriptionListProps> = ({
         </div>
       ) : (
         <div className="text-center py-16 px-4 rounded-3xl border border-dashed border-[#DDDDDD] bg-white airbnb-card">
-          <div className="w-14 h-14 rounded-2xl bg-[#FFF0F2] text-[#FF385C] border border-[#FFCCD3] flex items-center justify-center mx-auto mb-3.5 shadow-2xs">
+          <div className="w-14 h-14 rounded-2xl bg-[#000000] text-white border border-black/10 flex items-center justify-center mx-auto mb-3.5 shadow-2xs">
             <CreditCard className="w-6 h-6" />
           </div>
           <h4 className="text-base font-bold text-[#222222] mb-1">
@@ -187,7 +187,7 @@ export const SubscriptionList: React.FC<SubscriptionListProps> = ({
           <div className="flex items-center justify-center gap-3">
             <button
               onClick={onAddNew}
-              className="px-6 py-2.5 rounded-full btn-rausch font-bold text-xs transition inline-flex items-center gap-1.5 shadow-md active:scale-[0.98]"
+              className="px-6 py-2.5 rounded-full bg-[#000000] hover:bg-[#222222] text-white font-bold text-xs transition inline-flex items-center gap-1.5 shadow-sm active:scale-[0.98]"
             >
               <Plus className="w-4 h-4" />
               <span>新建订阅</span>

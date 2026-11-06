@@ -37,7 +37,7 @@ export const UrgentReminderBanner: React.FC<UrgentReminderBannerProps> = ({
       <div className="flex flex-col sm:flex-row items-center justify-between p-5 rounded-2xl bg-white border border-[#EBEBEB] text-xs text-[#717171] gap-3 airbnb-card">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-full bg-[#F7F7F7] border border-[#EBEBEB] text-[#222222] flex items-center justify-center">
-            <ShieldCheck className="w-4 h-4 text-[#FF385C]" />
+            <ShieldCheck className="w-4 h-4 text-[#000000]" />
           </div>
           <span className="font-medium text-[#222222]">AirCover 智能守护中：未来 7 天内无临期待续费项目，所有服务运转良好。</span>
         </div>
@@ -47,7 +47,7 @@ export const UrgentReminderBanner: React.FC<UrgentReminderBannerProps> = ({
             className="px-4 py-2 rounded-full bg-white hover:bg-[#F7F7F7] text-[#222222] border border-[#DDDDDD] hover:border-[#222222] transition flex items-center gap-1.5 font-semibold text-xs shadow-2xs active:scale-[0.98]"
             title="一键将全部订阅生成系统日历事件，导入 Mac / iPhone 闹钟"
           >
-            <Calendar className="w-3.5 h-3.5 text-[#FF385C]" />
+            <Calendar className="w-3.5 h-3.5 text-[#000000]" />
             <span>导出到系统日历 (.ics)</span>
           </button>
         </div>
@@ -81,13 +81,13 @@ export const UrgentReminderBanner: React.FC<UrgentReminderBannerProps> = ({
       {/* Top Header Row (Airbnb AirCover Style) */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[#EBEBEB]">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-[#FFF0F2] border border-[#FFCCD3] text-[#FF385C] flex items-center justify-center shrink-0 shadow-2xs">
+          <div className="w-10 h-10 rounded-2xl bg-amber-50 border border-amber-200 text-amber-700 flex items-center justify-center shrink-0 shadow-2xs">
             <ShieldAlert className="w-5 h-5" />
           </div>
           <div>
             <div className="flex items-center gap-2">
               <h3 className="text-base font-bold text-[#222222] tracking-tight">充值与续费提醒</h3>
-              <span className="text-[11px] px-2.5 py-0.5 rounded-full bg-[#FFF0F2] text-[#FF385C] font-bold border border-[#FFCCD3]">
+              <span className="text-[11px] px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-800 font-bold border border-amber-200">
                 {urgentSubs.length} 项待处理
               </span>
             </div>
@@ -104,7 +104,7 @@ export const UrgentReminderBanner: React.FC<UrgentReminderBannerProps> = ({
             className="text-xs px-3.5 py-2 rounded-full bg-white hover:bg-[#F7F7F7] active:scale-[0.98] text-[#222222] border border-[#DDDDDD] hover:border-[#222222] transition flex items-center gap-1.5 font-semibold shadow-2xs"
             title="把所有续费日程导入 Mac / iPhone 日历，提前1天和3天响铃提醒"
           >
-            <Calendar className="w-3.5 h-3.5 text-[#FF385C]" />
+            <Calendar className="w-3.5 h-3.5 text-[#000000]" />
             <span>一键同步日历 (.ics)</span>
           </button>
 
@@ -113,14 +113,14 @@ export const UrgentReminderBanner: React.FC<UrgentReminderBannerProps> = ({
             className="text-xs px-3.5 py-2 rounded-full bg-white hover:bg-[#F7F7F7] active:scale-[0.98] text-[#222222] border border-[#DDDDDD] hover:border-[#222222] transition flex items-center gap-1.5 font-semibold shadow-2xs"
             title="开启网页桌面系统通知"
           >
-            <Bell className="w-3.5 h-3.5 text-[#FF385C]" />
+            <Bell className="w-3.5 h-3.5 text-[#000000]" />
             <span>桌面通知</span>
           </button>
         </div>
       </div>
 
       {notificationStatus && (
-        <div className="mt-3 py-1.5 px-3.5 rounded-xl bg-[#FFF0F2] border border-[#FFCCD3] text-xs text-[#FF385C] font-semibold animate-fadeIn">
+        <div className="mt-3 py-1.5 px-3.5 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-800 font-semibold animate-fadeIn">
           {notificationStatus}
         </div>
       )}
@@ -146,8 +146,8 @@ export const UrgentReminderBanner: React.FC<UrgentReminderBannerProps> = ({
                         isOverdue
                           ? 'bg-[#c13515] text-white'
                           : isToday
-                          ? 'bg-[#FF385C] text-white'
-                          : 'bg-[#FFF0F2] text-[#FF385C] border border-[#FFCCD3]'
+                          ? 'bg-[#000000] text-white'
+                          : 'bg-amber-50 text-amber-800 border border-amber-200'
                       }`}
                     >
                       {isOverdue ? `已逾期 ${Math.abs(days)}d` : isToday ? '今日到期' : `还剩 ${days}d`}

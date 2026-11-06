@@ -100,19 +100,19 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
       onClick={() => onEdit(subscription)}
       className={`group relative rounded-3xl bg-white p-5 sm:p-6 flex flex-col justify-between transition-all duration-200 airbnb-card border cursor-pointer ${
         isOverdue
-          ? 'border-[#FFCCD3] ring-1 ring-[#FF385C]/30'
+          ? 'border-rose-300 ring-1 ring-rose-400/20'
           : isExpiringSoon || isToday
-          ? 'border-[#FFCCD3]'
-          : 'border-[#EBEBEB] hover:border-[#DDDDDD]'
+          ? 'border-amber-300'
+          : 'border-[#EBEBEB] hover:border-[#222222]'
       }`}
     >
       <div>
-        {/* Top Header Row (Airbnb Listing Style) */}
-        <div className="flex items-center justify-between gap-3 mb-3.5">
-          <div className="flex items-center gap-3 min-w-0">
+        {/* Top Header Row (Executive Business Style) */}
+        <div className="flex items-start justify-between gap-3 mb-3.5">
+          <div className="flex items-center gap-3 min-w-0 flex-1">
             <BrandBadge serviceKey={subscription.serviceKey} name={subscription.name} size="md" />
-            <div className="min-w-0">
-              <h3 className="text-base font-bold text-[#222222] tracking-tight leading-snug truncate" title={subscription.name}>
+            <div className="min-w-0 flex-1">
+              <h3 className="text-base font-bold text-[#000000] tracking-tight leading-snug break-words" title={subscription.name}>
                 {subscription.name}
               </h3>
               <div className="flex items-center gap-1.5 mt-0.5">
@@ -128,11 +128,11 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
             <span
               className={`text-xs px-2.5 py-0.5 rounded-full font-bold whitespace-nowrap font-mono tracking-tight ${
                 isOverdue
-                  ? 'bg-[#c13515] text-white'
+                  ? 'bg-rose-50 text-rose-800 border border-rose-200'
                   : isToday
-                  ? 'bg-[#FF385C] text-white'
+                  ? 'bg-[#000000] text-white'
                   : isExpiringSoon
-                  ? 'bg-[#FFF0F2] text-[#FF385C] border border-[#FFCCD3]'
+                  ? 'bg-amber-50 text-amber-900 border border-amber-200'
                   : 'bg-[#F7F7F7] text-[#222222] border border-[#DDDDDD]'
               }`}
             >
@@ -187,7 +187,7 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
                       rel="noreferrer"
                       className="w-full text-left px-3 py-2 rounded-xl hover:bg-[#F7F7F7] text-[#222222] font-medium flex items-center gap-2"
                     >
-                      <ExternalLink className="w-3.5 h-3.5 text-[#FF385C]" />
+                      <ExternalLink className="w-3.5 h-3.5 text-[#000000]" />
                       <span>官方后台</span>
                     </a>
                   )}
@@ -199,7 +199,7 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
                       }
                       setShowMenu(false);
                     }}
-                    className="w-full text-left px-3 py-2 rounded-xl hover:bg-[#FFF0F2] text-[#c13515] font-medium flex items-center gap-2"
+                    className="w-full text-left px-3 py-2 rounded-xl hover:bg-rose-50 text-rose-700 font-medium flex items-center gap-2"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                     <span>删除订阅</span>
@@ -257,14 +257,14 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
         {/* Clean Middle Strip: Date & Price */}
         <div className="flex items-center justify-between py-3 px-4 rounded-2xl bg-[#F7F7F7] border border-[#EBEBEB] mb-3">
           <div className="flex items-center gap-1.5 text-xs text-[#717171] font-medium whitespace-nowrap">
-            <Calendar className="w-4 h-4 text-[#FF385C] shrink-0" />
+            <Calendar className="w-4 h-4 text-[#000000] shrink-0" />
             <span>下期:</span>
-            <span className="font-bold text-[#222222] font-mono tracking-tight">{subscription.nextBillingDate}</span>
+            <span className="font-bold text-[#000000] font-mono tracking-tight">{subscription.nextBillingDate}</span>
           </div>
 
           <div className="text-right">
             <div className="flex items-baseline justify-end gap-1">
-              <span className="text-base font-extrabold text-[#222222] font-mono">
+              <span className="text-base font-extrabold text-[#000000] font-mono">
                 {subscription.currency} {subscription.price}
               </span>
               <span className="text-xs text-[#717171] font-medium">/{cycleTextMap[subscription.cycle] || '期'}</span>
@@ -326,12 +326,12 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
         )}
       </div>
 
-      {/* Dual Action Buttons (Airbnb Signature Styling: Primary Coral + Crisp Outline) */}
+      {/* Dual Action Buttons (Executive Monochrome Primary + Crisp Outline) */}
       <div className="grid grid-cols-2 gap-2.5 pt-3 border-t border-[#EBEBEB]" onClick={(e) => e.stopPropagation()}>
         <button
           type="button"
           onClick={() => onQuickRecharge(subscription.serviceKey, subscription)}
-          className="h-10 px-3 rounded-xl btn-rausch font-semibold text-xs transition flex items-center justify-center gap-1.5 shadow-xs active:scale-[0.98]"
+          className="h-10 px-3 rounded-xl bg-[#000000] hover:bg-[#222222] text-white font-semibold text-xs transition flex items-center justify-center gap-1.5 shadow-sm active:scale-[0.98]"
         >
           <ArrowUpRight className="w-3.5 h-3.5 text-white" />
           <span>去充值</span>
@@ -340,9 +340,9 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
         <button
           type="button"
           onClick={handleRenew}
-          className="h-10 px-3 rounded-xl bg-white hover:bg-[#F7F7F7] border border-[#DDDDDD] hover:border-[#222222] text-[#222222] font-semibold text-xs transition flex items-center justify-center gap-1.5 shadow-2xs active:scale-[0.98]"
+          className="h-10 px-3 rounded-xl bg-white hover:bg-[#F7F7F7] border border-[#DDDDDD] hover:border-[#000000] text-[#000000] font-semibold text-xs transition flex items-center justify-center gap-1.5 shadow-2xs active:scale-[0.98]"
         >
-          <RefreshCw className="w-3.5 h-3.5 text-[#717171]" />
+          <RefreshCw className="w-3.5 h-3.5 text-[#555555]" />
           <span>我已续费</span>
         </button>
       </div>

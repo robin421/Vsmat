@@ -105,7 +105,7 @@ export const TokenCard: React.FC<TokenCardProps> = ({ token, onEdit, onDelete })
                       }
                       setShowMenu(false);
                     }}
-                    className="w-full text-left px-3 py-2 rounded-xl hover:bg-[#FFF0F2] text-[#c13515] font-medium flex items-center gap-2"
+                    className="w-full text-left px-3 py-2 rounded-xl hover:bg-rose-50 text-rose-700 font-medium flex items-center gap-2"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                     <span>删除密钥</span>

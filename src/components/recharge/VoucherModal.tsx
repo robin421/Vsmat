@@ -108,7 +108,7 @@ export const VoucherModal: React.FC<VoucherModalProps> = ({
           {/* Voucher Code */}
           <div>
             <label className="block text-xs font-medium text-[#222222] font-semibold mb-1.5">
-              卡券密文 / 代码 <span className="text-[#FF385C]">*</span>
+              卡券密文 / 代码 <span className="text-rose-500">*</span>
             </label>
             <input
               type="text"
@@ -220,7 +220,7 @@ export const VoucherModal: React.FC<VoucherModalProps> = ({
             </button>
             <button
               type="submit"
-              className="px-6 py-2.5 rounded-xl btn-rausch text-white font-bold text-xs flex items-center gap-1.5 shadow-md transition active:scale-95"
+              className="px-6 py-2.5 rounded-xl bg-[#000000] hover:bg-[#222222] text-white font-bold text-xs flex items-center gap-1.5 shadow-md transition active:scale-95"
             >
               <span>存入券包</span>
             </button>

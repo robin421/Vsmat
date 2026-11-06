@@ -97,7 +97,7 @@ export const AppleWebRedeemModal: React.FC<AppleWebRedeemModalProps> = ({
         {/* Header */}
         <div className="flex items-start justify-between pb-4 border-b border-[#EBEBEB]">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-[#FFF0F2] border border-[#FFCCD3] flex items-center justify-center text-[#FF385C] shadow-2xs">
+            <div className="w-10 h-10 rounded-2xl bg-[#000000] border border-black/10 flex items-center justify-center text-white shadow-2xs">
               <ShieldCheck className="w-6 h-6" />
             </div>
             <div>
@@ -105,7 +105,7 @@ export const AppleWebRedeemModal: React.FC<AppleWebRedeemModalProps> = ({
                 <h3 className="text-base font-bold text-[#222222]">
                   Apple 礼品卡网页充值助手
                 </h3>
-                <span className="text-[11px] px-2.5 py-0.5 rounded-full bg-[#FFF0F2] text-[#FF385C] font-semibold border border-[#FFCCD3]">
+                <span className="text-[11px] px-2.5 py-0.5 rounded-full bg-[#F7F7F7] text-[#000000] font-semibold border border-[#DDDDDD]">
                   免退系统号
                 </span>
               </div>
@@ -221,8 +221,8 @@ export const AppleWebRedeemModal: React.FC<AppleWebRedeemModalProps> = ({
           >
             {copiedUrl ? (
               <>
-                <Check className="w-3.5 h-3.5 text-[#FF385C]" />
-                <span className="text-[#FF385C] font-semibold">直达链接已复制！去浏览器按 Cmd+Shift+N 打开无痕窗口即可粘贴！</span>
+                <Check className="w-3.5 h-3.5 text-emerald-600" />
+                <span className="text-emerald-700 font-semibold">直达链接已复制！去浏览器按 Cmd+Shift+N 打开无痕窗口即可粘贴！</span>
               </>
             ) : (
               <>
@@ -239,9 +239,9 @@ export const AppleWebRedeemModal: React.FC<AppleWebRedeemModalProps> = ({
           <button
             type="button"
             onClick={handleComplete}
-            className="px-4 py-2 rounded-xl bg-[#FFF0F2] hover:bg-[#FFE2E6] text-[#FF385C] font-bold border border-[#FFCCD3] transition flex items-center gap-1.5 active:scale-95 shadow-2xs"
+            className="px-4 py-2 rounded-xl bg-[#000000] hover:bg-[#222222] text-white font-bold transition flex items-center gap-1.5 active:scale-95 shadow-2xs"
           >
-            <CheckCircle2 className="w-3.5 h-3.5 text-[#FF385C]" />
+            <CheckCircle2 className="w-3.5 h-3.5 text-white" />
             <span>我已完成充值 (自动顺延下期续费)</span>
           </button>
         </div>
