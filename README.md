@@ -84,10 +84,23 @@ pnpm run deploy:cf
 ## 💻 本地开发与调试
 
 ```bash
-cd "/Volumes/T7 Shield/MyDocument/Vsmat"
-pnpm dev
+pnpm install
+pnpm dev          # http://localhost:5173
+pnpm typecheck    # tsc --noEmit
+pnpm lint         # ESLint
+pnpm test         # Vitest（加密、存储迁移、日期、券码识别、解析器）
+pnpm build        # 类型检查 + 生产构建（同时生成 Service Worker 预缓存清单）
 ```
-启动后在浏览器访问 `http://localhost:5173`。
+
+## 🔐 加密与威胁模型
+
+- **加密范围**：Token、订阅账号、礼品券、设置——整个数据库作为一个 AES-256-GCM 密文存入 `localStorage`（格式 v2）。
+- **密钥派生**：主密码 → PBKDF2-HMAC-SHA256（600,000 次，随机盐）→ **不可导出**的 AES-GCM 密钥。没有单独存储的密码哈希；密码是否正确由 GCM 认证结果决定。
+- **主密码从不落盘**，也不放入 `sessionStorage`。勾选“记住解锁状态”时，仅把派生出的不可导出密钥存入 IndexedDB；手动锁定或空闲超时（默认 30 分钟）后立即清除。
+- **备份**：导出文件同样是加密的（用当前主密码解开）；导入会校验结构、二次确认，并先自动下载一份当前数据的加密备份。
+- **旧版本升级**：旧的加密库首次解锁时自动迁移到 v2；旧的明文库会在你设置主密码时被加密。
+- **不能防护**：已被恶意软件控制的设备、同源 XSS（已用严格 CSP 降低风险）、**忘记主密码（无法恢复）**。
+- **完全离线**：字体、OCR 引擎与语言包均同源托管，CSP 为 `connect-src 'self'`，应用本身不会向任何第三方发请求。
 
 ---
 
@@ -100,14 +113,17 @@ Vsmat/
 ├── vite.config.ts               # Vite 构建配置
 ├── tailwind.config.js           # 样式配置
 ├── src/
-│   ├── App.tsx                  # 主应用路由与状态管理
+│   ├── App.tsx                  # 主应用界面与业务操作
+│   ├── hooks/useVault.ts        # 保险箱生命周期：解锁/锁定/自动锁定/串行保存
 │   ├── main.tsx                 # React DOM 挂载入口
 │   ├── types/
 │   │   ├── index.ts             # 数据模型定义
 │   │   └── presets.ts           # 预置主流服务数据库
 │   ├── lib/
 │   │   ├── crypto.ts            # AES-256-GCM + PBKDF2 Web Crypto 算法
-│   │   ├── storage.ts           # 本地持久化与周期顺延
+│   │   ├── storage.ts           # 加密存储、迁移、备份导入导出、周期顺延
+│   │   ├── date.ts / url.ts     # 本地日期工具、http(s) 链接校验
+│   │   ├── ocrEngine.ts         # 本地 OCR（同源 worker/WASM/语言包）
 │   │   ├── parser.ts            # 智能文本粘贴解析引擎
 │   │   ├── rechargeEngines.ts   # 礼品券一键充值跳转引擎
 │   │   ├── calendar.ts          # .ics RFC 5545 日历闹钟生成器
@@ -123,6 +139,9 @@ Vsmat/
 │       ├── recharge/                     # 礼品券卡包
 │       ├── analytics/                    # 支出分类分析
 │       └── auth/                         # 主密码加密与锁屏
-└── scripts/
-    └── verify.ts                # 核心功能全自动化验证套件
+├── tests/                       # Vitest 用例（CI 中运行）
+└── public/
+    ├── sw.js                    # Service Worker（构建时注入预缓存清单）
+    ├── _headers                 # CSP 等安全响应头（Cloudflare Pages）
+    └── tessdata/                # OCR 语言包（eng / jpn）
 ```
