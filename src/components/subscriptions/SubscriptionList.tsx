@@ -7,7 +7,6 @@ import { getDaysUntil } from '../../lib/notifications';
 interface SubscriptionListProps {
   subscriptions: SubscriptionItem[];
   onAddNew: () => void;
-  onOpenSmartParser: () => void;
   onEdit: (sub: SubscriptionItem) => void;
   onDelete: (id: string) => void;
   onMarkRenewed: (id: string) => void;
@@ -18,7 +17,6 @@ interface SubscriptionListProps {
 export const SubscriptionList: React.FC<SubscriptionListProps> = ({
   subscriptions,
   onAddNew,
-  onOpenSmartParser,
   onEdit,
   onDelete,
   onMarkRenewed,
@@ -149,21 +147,11 @@ export const SubscriptionList: React.FC<SubscriptionListProps> = ({
             )}
           </div>
 
-          {/* Smart Paste (Secondary Action) */}
-          <button
-            onClick={onOpenSmartParser}
-            className="h-10 px-4 rounded-full bg-white hover:bg-[#F7F7F7] text-[#222222] font-semibold text-xs border border-[#DDDDDD] hover:border-[#222222] transition flex items-center justify-center gap-1.5 shadow-2xs active:scale-[0.98] shrink-0"
-            title="一键粘贴发货单或截图自动解析录入"
-          >
-            <Sparkles className="w-3.5 h-3.5 text-[#FF385C]" />
-            <span className="hidden sm:inline">智能解析</span>
-          </button>
-
           {/* Add New Subscription (Airbnb Rausch Primary CTA) */}
           <button
             onClick={onAddNew}
             className="h-10 px-5 rounded-full btn-rausch font-bold text-xs transition flex items-center justify-center gap-1.5 shadow-md active:scale-[0.98] shrink-0"
-            title="手动新建周期订阅"
+            title="新建订阅（支持截图智能识别与手动录入）"
           >
             <Plus className="w-4 h-4 text-white stroke-[2.5]" />
             <span>新建订阅</span>
@@ -194,22 +182,15 @@ export const SubscriptionList: React.FC<SubscriptionListProps> = ({
             {effectiveSearch || filterUrgentOnly ? '没有符合条件的订阅记录' : '暂无订阅记录'}
           </h4>
           <p className="text-xs text-[#717171] max-w-sm mx-auto mb-5">
-            点击下方“新建订阅”录入你的第一个服务，或使用“智能解析”上传账单截图自动提取。
+            点击下方“新建订阅”录入你的第一个服务，支持账单截图智能识别或手动填表。
           </p>
           <div className="flex items-center justify-center gap-3">
             <button
               onClick={onAddNew}
-              className="px-5 py-2.5 rounded-full btn-rausch font-bold text-xs transition inline-flex items-center gap-1.5 shadow-md active:scale-[0.98]"
+              className="px-6 py-2.5 rounded-full btn-rausch font-bold text-xs transition inline-flex items-center gap-1.5 shadow-md active:scale-[0.98]"
             >
               <Plus className="w-4 h-4" />
               <span>新建订阅</span>
-            </button>
-            <button
-              onClick={onOpenSmartParser}
-              className="px-5 py-2.5 rounded-full bg-white hover:bg-[#F7F7F7] text-[#222222] font-semibold text-xs border border-[#DDDDDD] hover:border-[#222222] transition inline-flex items-center gap-1.5 shadow-2xs active:scale-[0.98]"
-            >
-              <Sparkles className="w-4 h-4 text-[#FF385C]" />
-              <span>智能识别录入</span>
             </button>
           </div>
         </div>

@@ -57,9 +57,9 @@ export const SpendAnalytics: React.FC<SpendAnalyticsProps> = ({
   const symbol = preferredCurrency === 'CNY' ? '¥' : '$';
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       {/* Category breakdown card */}
-      <div className="p-6 sm:p-7 rounded-3xl bg-white border border-[#EBEBEB] airbnb-card">
+      <div className="p-6 sm:p-8 rounded-3xl bg-white border border-[#EBEBEB] airbnb-card">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3.5">
             <div className="w-11 h-11 rounded-2xl bg-[#FFF0F2] text-[#FF385C] border border-[#FFCCD3] flex items-center justify-center shadow-2xs">
@@ -96,7 +96,7 @@ export const SpendAnalytics: React.FC<SpendAnalyticsProps> = ({
         </div>
 
         {/* Breakdown grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
           {(Object.keys(totalsByCategory) as ServiceCategory[]).map(cat => {
             const amountUSD = totalsByCategory[cat];
             const amount = preferredCurrency === 'CNY' ? amountUSD * usdToCnyRate : amountUSD;

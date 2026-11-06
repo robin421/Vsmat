@@ -18,6 +18,7 @@ import {
 import confetti from 'canvas-confetti';
 import { SubscriptionItem } from '../../types';
 import { getDaysUntil } from '../../lib/notifications';
+import { convertToUSD } from '../../lib/currencies';
 import { BrandBadge } from '../common/BrandBadge';
 
 interface SubscriptionCardProps {
@@ -216,10 +217,17 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
           </div>
 
           <div className="text-right">
-            <span className="text-base font-extrabold text-[#222222] font-mono">
-              {subscription.currency} {subscription.price}
-            </span>
-            <span className="text-xs text-[#717171] font-medium ml-1">/{cycleTextMap[subscription.cycle] || '期'}</span>
+            <div className="flex items-baseline justify-end gap-1">
+              <span className="text-base font-extrabold text-[#222222] font-mono">
+                {subscription.currency} {subscription.price}
+              </span>
+              <span className="text-xs text-[#717171] font-medium">/{cycleTextMap[subscription.cycle] || '期'}</span>
+            </div>
+            {subscription.currency !== 'USD' && (
+              <div className="text-[10px] text-[#717171] font-mono tracking-tight mt-0.5" title="按全局汇率折算">
+                ≈ ${convertToUSD(subscription.price, subscription.currency).toFixed(2)} USD
+              </div>
+            )}
           </div>
         </div>
 

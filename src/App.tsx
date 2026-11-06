@@ -16,7 +16,6 @@ import { TokenList } from './components/tokens/TokenList';
 import { TokenModal } from './components/tokens/TokenModal';
 import { SubscriptionList } from './components/subscriptions/SubscriptionList';
 import { SubscriptionModal } from './components/subscriptions/SubscriptionModal';
-import { SmartAccountModal } from './components/subscriptions/SmartAccountModal';
 import { VoucherStash } from './components/recharge/VoucherStash';
 import { VoucherModal } from './components/recharge/VoucherModal';
 import { AppleWebRedeemModal } from './components/recharge/AppleWebRedeemModal';
@@ -32,7 +31,6 @@ export function App() {
   const [isInitialSetup, setIsInitialSetup] = useState(false);
 
   // Modals state
-  const [isSmartModalOpen, setIsSmartModalOpen] = useState(false);
   const [isTokenModalOpen, setIsTokenModalOpen] = useState(false);
   const [editingToken, setEditingToken] = useState<TokenItem | null>(null);
 
@@ -238,7 +236,10 @@ export function App() {
       <Navbar
         activeTab={activeTab}
         onTabChange={setActiveTab}
-        onOpenSmartParser={() => setIsSmartModalOpen(true)}
+        onNewSubscription={() => {
+          setEditingSub(null);
+          setIsSubModalOpen(true);
+        }}
         onLockVault={handleLockVault}
         isLocked={isLocked}
         appData={appData}
@@ -249,7 +250,7 @@ export function App() {
         onSearchChange={setSearchQuery}
       />
 
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 space-y-6">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
         {/* Tab 1: Subscriptions (Clean & Spacious) */}
         {activeTab === 'subscriptions' && (
           <div className="animate-fadeIn space-y-6">
@@ -273,7 +274,6 @@ export function App() {
                 setEditingSub(null);
                 setIsSubModalOpen(true);
               }}
-              onOpenSmartParser={() => setIsSmartModalOpen(true)}
               onEdit={(sub) => {
                 setEditingSub(sub);
                 setIsSubModalOpen(true);
@@ -338,7 +338,7 @@ export function App() {
 
         {/* Tab 4: Analytics */}
         {activeTab === 'analytics' && (
-          <div className="space-y-6 animate-fadeIn">
+          <div className="space-y-8 animate-fadeIn">
             <OverviewStats
               subscriptions={appData.subscriptions}
               tokens={appData.tokens}
@@ -373,10 +373,12 @@ export function App() {
         }}
       />
 
-      <SmartAccountModal
-        isOpen={isSmartModalOpen}
-        onClose={() => setIsSmartModalOpen(false)}
-        onSaveSubscription={handleSaveSubscription}
+      <SubscriptionModal
+        isOpen={isSubModalOpen}
+        onClose={() => setIsSubModalOpen(false)}
+        onSave={handleSaveSubscription}
+        onDelete={handleDeleteSubscription}
+        initialData={editingSub}
         onSaveToken={handleSaveToken}
       />
 
@@ -385,14 +387,6 @@ export function App() {
         onClose={() => setIsTokenModalOpen(false)}
         onSave={handleSaveToken}
         initialData={editingToken}
-      />
-
-      <SubscriptionModal
-        isOpen={isSubModalOpen}
-        onClose={() => setIsSubModalOpen(false)}
-        onSave={handleSaveSubscription}
-        onDelete={handleDeleteSubscription}
-        initialData={editingSub}
       />
 
       <VoucherModal

@@ -1,8 +1,33 @@
-import React, { useState, useEffect } from 'react';
-import { X, CreditCard, Trash2, ArrowUpRight } from 'lucide-react';
-import { SubscriptionItem, BillingCycle, ServiceCategory, CurrencyCode } from '../../types';
+import React, { useState, useEffect, useRef } from 'react';
+import {
+  X,
+  CreditCard,
+  Trash2,
+  Sparkles,
+  Edit3,
+  Upload,
+  Image as ImageIcon,
+  Check,
+  Copy,
+  Loader2,
+  Calendar,
+  DollarSign,
+  Mail,
+  Lock,
+  ArrowRight,
+  AlertCircle,
+  ExternalLink,
+  ShieldCheck,
+  ChevronDown,
+  ChevronUp
+} from 'lucide-react';
+import confetti from 'canvas-confetti';
+import { SubscriptionItem, BillingCycle, ServiceCategory, CurrencyCode, TokenItem } from '../../types';
 import { PRESET_SERVICES, getPresetByKey } from '../../types/presets';
-import { SUPPORTED_CURRENCIES } from '../../lib/currencies';
+import { SUPPORTED_CURRENCIES, convertToUSD } from '../../lib/currencies';
+import { getDaysUntil } from '../../lib/notifications';
+import { parseSmartText, ParsedSmartInput } from '../../lib/parser';
+import { recognizeSubscriptionScreenshot } from '../../lib/ocrEngine';
 
 interface SubscriptionModalProps {
   isOpen: boolean;
@@ -10,7 +35,19 @@ interface SubscriptionModalProps {
   onSave: (sub: Partial<SubscriptionItem>) => void;
   onDelete?: (id: string) => void;
   initialData?: SubscriptionItem | null;
+  onSaveToken?: (token: Partial<TokenItem>) => void;
 }
+
+const COMMON_PAYMENT_METHODS = [
+  'Apple 订阅 (印区)',
+  'Apple 订阅 (土区)',
+  'Apple 订阅 (菲区)',
+  'Apple 订阅 (巴区)',
+  'Apple 订阅 (美区)',
+  '虚拟信用卡',
+  '微信 / 支付宝',
+  '礼品卡直充',
+];
 
 export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
   isOpen,
@@ -18,7 +55,22 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
   onSave,
   onDelete,
   initialData,
+  onSaveToken,
 }) => {
+  // Mode selection: smart scanner or manual form
+  const [entryMode, setEntryMode] = useState<'smart' | 'manual'>('smart');
+  const [smartTab, setSmartTab] = useState<'image' | 'text'>('image');
+  const [smartText, setSmartText] = useState('');
+
+  // OCR state
+  const [ocrLoading, setOcrLoading] = useState(false);
+  const [ocrProgress, setOcrProgress] = useState(0);
+  const [ocrStatus, setOcrStatus] = useState('');
+  const [previewImageUrl, setPreviewImageUrl] = useState<string | null>(null);
+  const [hasExtractedFromSmart, setHasExtractedFromSmart] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  // Form Fields
   const [name, setName] = useState('');
   const [serviceKey, setServiceKey] = useState('custom');
   const [category, setCategory] = useState<ServiceCategory>('ai');
@@ -33,9 +85,14 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
   const [portalUrl, setPortalUrl] = useState('');
   const [rechargeUrl, setRechargeUrl] = useState('');
   const [notes, setNotes] = useState('');
+  const [extractedApiKey, setExtractedApiKey] = useState<string | undefined>(undefined);
+  const [alsoSaveToken, setAlsoSaveToken] = useState(true);
+  const [showAdvanced, setShowAdvanced] = useState(false);
 
+  // Initialize or reset form state on open/initialData changes
   useEffect(() => {
     if (initialData) {
+      setEntryMode('manual');
       setName(initialData.name);
       setServiceKey(initialData.serviceKey || 'custom');
       setCategory(initialData.category || 'ai');
@@ -50,7 +107,10 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
       setPortalUrl(initialData.portalUrl || '');
       setRechargeUrl(initialData.rechargeUrl || '');
       setNotes(initialData.notes || '');
+      setHasExtractedFromSmart(false);
+      setPreviewImageUrl(null);
     } else {
+      setEntryMode('smart');
       setName('');
       setServiceKey('custom');
       setCategory('ai');
@@ -70,15 +130,111 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
       setPortalUrl('');
       setRechargeUrl('');
       setNotes('');
+      setHasExtractedFromSmart(false);
+      setPreviewImageUrl(null);
+      setSmartText('');
+      setExtractedApiKey(undefined);
     }
   }, [initialData, isOpen]);
+
+  // Global paste listener for screenshot image (Cmd+V)
+  useEffect(() => {
+    if (!isOpen || entryMode !== 'smart' || smartTab !== 'image') return;
+
+    const handlePaste = (e: ClipboardEvent) => {
+      const items = e.clipboardData?.items;
+      if (!items) return;
+
+      for (let i = 0; i < items.length; i++) {
+        const item = items[i];
+        if (item.type.indexOf('image') !== -1) {
+          const file = item.getAsFile();
+          if (file) {
+            e.preventDefault();
+            handleProcessImage(file);
+            break;
+          }
+        }
+      }
+    };
+
+    window.addEventListener('paste', handlePaste);
+    return () => window.removeEventListener('paste', handlePaste);
+  }, [isOpen, entryMode, smartTab]);
+
+  const populateFromParsed = (parsed: ParsedSmartInput) => {
+    if (parsed.serviceName) setName(parsed.serviceName);
+    if (parsed.serviceKey) setServiceKey(parsed.serviceKey);
+    if (parsed.category) setCategory(parsed.category);
+    if (parsed.price !== undefined) setPrice(String(parsed.price));
+    if (parsed.currency) setCurrency(parsed.currency);
+    if (parsed.cycle) setCycle(parsed.cycle);
+    if (parsed.nextBillingDate) setNextBillingDate(parsed.nextBillingDate);
+    if (parsed.paymentMethod) setPaymentMethod(parsed.paymentMethod);
+    if (parsed.accountEmail) setAccountEmail(parsed.accountEmail);
+    if (parsed.password) setPasswordNote(parsed.password);
+    if (parsed.twoFactorNote) setTwoFactorNote(parsed.twoFactorNote);
+    if (parsed.notes) setNotes(parsed.notes);
+    if (parsed.apiKey) setExtractedApiKey(parsed.apiKey);
+
+    // If preset has portal/recharge URL, prefill them
+    if (parsed.serviceKey && parsed.serviceKey !== 'custom') {
+      const p = getPresetByKey(parsed.serviceKey);
+      if (p?.portalUrl && !portalUrl) setPortalUrl(p.portalUrl);
+      if (p?.rechargeUrl && !rechargeUrl) setRechargeUrl(p.rechargeUrl);
+    }
+
+    setHasExtractedFromSmart(true);
+  };
+
+  const handleProcessImage = async (imageFile: File) => {
+    setOcrLoading(true);
+    setOcrProgress(10);
+    setOcrStatus('正在加载离线 OCR 识别引擎...');
+
+    const objectUrl = URL.createObjectURL(imageFile);
+    setPreviewImageUrl(objectUrl);
+
+    try {
+      const text = await recognizeSubscriptionScreenshot(imageFile, (p, s) => {
+        setOcrProgress(Math.round(p * 100));
+        setOcrStatus(s);
+      });
+
+      const parsed = parseSmartText(text);
+      populateFromParsed(parsed);
+      setOcrLoading(false);
+    } catch (err: any) {
+      console.error('Image OCR error:', err);
+      setOcrLoading(false);
+      alert('图片识别失败，请确保截图清晰后重试');
+    }
+  };
+
+  const handleSmartTextChange = (text: string) => {
+    setSmartText(text);
+    if (!text.trim()) return;
+    const parsed = parseSmartText(text);
+    populateFromParsed(parsed);
+  };
+
+  const handlePasteClipboardText = async () => {
+    try {
+      const text = await navigator.clipboard.readText();
+      if (text) {
+        setSmartText(text);
+        const parsed = parseSmartText(text);
+        populateFromParsed(parsed);
+      }
+    } catch {}
+  };
 
   const handleServiceChange = (key: string) => {
     setServiceKey(key);
     if (key === 'custom') return;
     const p = getPresetByKey(key);
     if (p) {
-      if (!name || PRESET_SERVICES.some(s => s.name === name)) {
+      if (!name || PRESET_SERVICES.some((s) => s.name === name)) {
         setName(p.name);
       }
       setCategory(p.category);
@@ -91,6 +247,19 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
   };
 
   if (!isOpen) return null;
+
+  // Real-time calculated fields
+  const numPrice = parseFloat(price) || 0;
+  const usdConverted = convertToUSD(numPrice, currency);
+  const daysUntil = getDaysUntil(nextBillingDate);
+  const cycleTextMap: Record<string, string> = {
+    monthly: '月',
+    quarterly: '季',
+    'semi-annually': '半年',
+    annually: '年',
+    prepaid: '按量',
+    lifetime: '终身',
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -105,36 +274,57 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
       passwordNote: passwordNote.trim() || undefined,
       twoFactorNote: twoFactorNote.trim() || undefined,
       cycle,
-      price: parseFloat(price) || 0,
+      price: numPrice,
       currency,
       nextBillingDate,
       autoRenew: true,
       paymentMethod: paymentMethod.trim() || undefined,
       portalUrl: portalUrl.trim() || undefined,
       rechargeUrl: rechargeUrl.trim() || undefined,
-      notes: notes.trim() || undefined,
+      notes: notes.trim() || (hasExtractedFromSmart ? '智能识图录入' : undefined),
       history: initialData?.history || [],
       createdAt: initialData?.createdAt || new Date().toISOString().split('T')[0],
       updatedAt: new Date().toISOString().split('T')[0],
     });
+
+    // Save token if extracted
+    if (extractedApiKey && alsoSaveToken && onSaveToken) {
+      onSaveToken({
+        name: `${name || 'AI'} API Key`,
+        serviceKey: serviceKey || 'custom',
+        token: extractedApiKey,
+        accountEmail: accountEmail.trim() || undefined,
+        tags: ['智能录入', serviceKey || 'ai'],
+        notes: `关联订阅: ${name}`,
+        createdAt: new Date().toISOString().split('T')[0],
+        updatedAt: new Date().toISOString().split('T')[0],
+      });
+    }
+
+    confetti({
+      particleCount: 45,
+      spread: 60,
+      origin: { y: 0.6 },
+    });
+
     onClose();
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fadeIn">
-      <div className="w-full max-w-lg rounded-3xl bg-white border border-[#EBEBEB] p-6 sm:p-7 shadow-2xl overflow-y-auto max-h-[92vh] text-[#222222] airbnb-card">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/50 backdrop-blur-sm animate-fadeIn">
+      <div className="w-full max-w-xl rounded-3xl bg-white border border-[#EBEBEB] p-5 sm:p-7 shadow-2xl overflow-y-auto max-h-[92vh] text-[#222222] airbnb-card">
         {/* Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-[#EBEBEB]">
+        <div className="flex items-center justify-between pb-3.5 border-b border-[#EBEBEB]">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl bg-[#FFF0F2] text-[#FF385C] border border-[#FFCCD3] flex items-center justify-center shadow-2xs">
               <CreditCard className="w-5 h-5" />
             </div>
             <div>
               <h3 className="text-base font-bold text-[#222222]">
-                {initialData ? '编辑订阅详情' : '新建订阅记录'}
+                {initialData ? '编辑订阅详情' : '新建订阅'}
               </h3>
               <p className="text-xs text-[#717171]">
-                {initialData ? '修改账号、金额、到期时间与登录备忘' : '录入新的周期续费服务或账号'}
+                {initialData ? '修改账号、金额、到期时间与登录备忘' : '选择智能识别提取或手动填表录入'}
               </p>
             </div>
           </div>
@@ -146,233 +336,488 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="mt-5 space-y-4 text-sm">
-          {/* Preset selector */}
-          <div>
-            <label className="block text-xs font-semibold text-[#222222] mb-1.5">
-              快捷服务模板
-            </label>
-            <select
-              value={serviceKey}
-              onChange={(e) => handleServiceChange(e.target.value)}
-              className="w-full h-11 bg-[#F7F7F7] border border-[#DDDDDD] focus:border-[#222222] focus:bg-white rounded-xl px-3.5 text-xs font-medium text-[#222222] outline-none transition shadow-2xs"
+        {/* Unified Mode Selection Tabs (智能识别 / 手动填表) */}
+        {!initialData && (
+          <div className="grid grid-cols-2 gap-1.5 p-1 bg-[#F7F7F7] border border-[#EBEBEB] rounded-2xl mt-4">
+            <button
+              type="button"
+              onClick={() => setEntryMode('smart')}
+              className={`py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition ${
+                entryMode === 'smart'
+                  ? 'bg-white text-[#222222] shadow-2xs border border-[#DDDDDD]'
+                  : 'text-[#717171] hover:text-[#222222]'
+              }`}
             >
-              <option value="custom">-- 自定义服务 (自行输入) --</option>
-              {PRESET_SERVICES.map((p) => (
-                <option key={p.key} value={p.key}>
-                  {p.name} ({p.category})
-                </option>
-              ))}
-            </select>
+              <Sparkles className="w-3.5 h-3.5 text-[#FF385C]" />
+              <span>智能识别 (截图/发货单)</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setEntryMode('manual')}
+              className={`py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition ${
+                entryMode === 'manual'
+                  ? 'bg-white text-[#222222] shadow-2xs border border-[#DDDDDD]'
+                  : 'text-[#717171] hover:text-[#222222]'
+              }`}
+            >
+              <Edit3 className="w-3.5 h-3.5 text-[#222222]" />
+              <span>手动填写表单</span>
+            </button>
           </div>
+        )}
 
-          {/* Name & Category */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <form onSubmit={handleSubmit} className="mt-4 space-y-4 text-sm">
+          {/* ========================================================= */}
+          {/* 方式 1: 智能识别录入 (OCR / 文本粘贴) */}
+          {/* ========================================================= */}
+          {entryMode === 'smart' && (
+            <div className="space-y-3">
+              {/* Image / Text Switcher Tabs */}
+              <div className="flex items-center gap-2 text-xs">
+                <button
+                  type="button"
+                  onClick={() => setSmartTab('image')}
+                  className={`px-3 py-1.5 rounded-lg font-semibold flex items-center gap-1.5 transition ${
+                    smartTab === 'image'
+                      ? 'bg-[#222222] text-white shadow-2xs'
+                      : 'bg-[#F7F7F7] text-[#717171] hover:text-[#222222] border border-[#EBEBEB]'
+                  }`}
+                >
+                  <ImageIcon className="w-3.5 h-3.5" />
+                  <span>账单截图 (按 Cmd+V 直接粘贴)</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSmartTab('text')}
+                  className={`px-3 py-1.5 rounded-lg font-semibold flex items-center gap-1.5 transition ${
+                    smartTab === 'text'
+                      ? 'bg-[#222222] text-white shadow-2xs'
+                      : 'bg-[#F7F7F7] text-[#717171] hover:text-[#222222] border border-[#EBEBEB]'
+                  }`}
+                >
+                  <Copy className="w-3.5 h-3.5" />
+                  <span>发货邮件 / 文本粘贴</span>
+                </button>
+              </div>
+
+              {/* Tab Content A: Screenshot Upload & Paste */}
+              {smartTab === 'image' && (
+                <div
+                  onClick={() => fileInputRef.current?.click()}
+                  className="relative rounded-2xl border-2 border-dashed border-[#DDDDDD] hover:border-[#222222] bg-[#F7F7F7] hover:bg-white p-5 text-center cursor-pointer transition group"
+                >
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) handleProcessImage(file);
+                    }}
+                    className="hidden"
+                  />
+
+                  {previewImageUrl ? (
+                    <div className="flex flex-col items-center gap-2">
+                      <img
+                        src={previewImageUrl}
+                        alt="截图预览"
+                        className="max-h-36 rounded-xl object-contain shadow-2xs border border-[#EBEBEB]"
+                      />
+                      <span className="text-xs text-zinc-600 font-medium group-hover:underline">
+                        点击更换截图，或直接按 Cmd+V 粘贴新截图
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="space-y-1.5">
+                      <div className="w-10 h-10 rounded-xl bg-white text-[#222222] border border-[#EBEBEB] flex items-center justify-center mx-auto shadow-2xs group-hover:scale-105 transition">
+                        <Upload className="w-5 h-5 text-[#FF385C]" />
+                      </div>
+                      <p className="text-xs font-semibold text-zinc-900">
+                        点击上传 或 在此直接按 <kbd className="px-1.5 py-0.5 rounded bg-white border border-[#EBEBEB] font-mono text-[11px] shadow-2xs">Cmd+V</kbd> 粘贴截图
+                      </p>
+                      <p className="text-[11px] text-[#717171]">
+                        支持 iPhone 苹果订阅页面截图、SuperGrok、ChatGPT、Claude 账单，本地离线 OCR
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Tab Content B: Plain text */}
+              {smartTab === 'text' && (
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-medium text-[#222222]">
+                      粘贴发票、邮件通知或账号文本：
+                    </label>
+                    <button
+                      type="button"
+                      onClick={handlePasteClipboardText}
+                      className="text-xs text-zinc-600 hover:text-zinc-900 flex items-center gap-1 font-medium transition"
+                    >
+                      <Copy className="w-3.5 h-3.5" />
+                      <span>从剪贴板读取</span>
+                    </button>
+                  </div>
+                  <textarea
+                    rows={3}
+                    value={smartText}
+                    onChange={(e) => handleSmartTextChange(e.target.value)}
+                    placeholder="例如:
+SuperGrok 印度区 700 INR/月
+扣费时间：2026-11-18
+账号：vip_user@gmail.com"
+                    className="w-full bg-[#F7F7F7] border border-[#DDDDDD] rounded-xl p-3 text-xs font-mono text-zinc-900 outline-none focus:bg-white focus:border-[#222222] shadow-2xs"
+                  />
+                </div>
+              )}
+
+              {/* OCR Progress Indicator */}
+              {ocrLoading && (
+                <div className="p-3.5 rounded-2xl bg-[#FFF0F2] border border-[#FFCCD3] space-y-1.5 text-xs animate-fadeIn">
+                  <div className="flex items-center justify-between text-[#FF385C] font-semibold">
+                    <div className="flex items-center gap-2">
+                      <Loader2 className="w-4 h-4 text-[#FF385C] animate-spin" />
+                      <span>{ocrStatus}</span>
+                    </div>
+                    <span className="font-mono">{ocrProgress}%</span>
+                  </div>
+                  <div className="w-full h-1.5 bg-[#FFE2E6] rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-[#FF385C] transition-all duration-300"
+                      style={{ width: `${ocrProgress}%` }}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* ========================================================= */}
+          {/* 核心录入信息区域（包含全部用户要求字段，支持手动编辑与补全账号） */}
+          {/* ========================================================= */}
+          <div className="pt-2 border-t border-[#EBEBEB] space-y-3.5">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-zinc-900 flex items-center gap-1.5">
+                {entryMode === 'smart' && hasExtractedFromSmart ? (
+                  <>
+                    <Check className="w-4 h-4 text-emerald-600" />
+                    <span>识别结果与详情核对（可直接编辑）</span>
+                  </>
+                ) : (
+                  <>
+                    <CreditCard className="w-4 h-4 text-[#FF385C]" />
+                    <span>订阅核心信息</span>
+                  </>
+                )}
+              </span>
+              {numPrice > 0 && (
+                <span className="text-[11px] font-mono font-medium text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                  折合约 ${usdConverted.toFixed(2)} USD
+                </span>
+              )}
+            </div>
+
+            {/* 1. 服务名称 */}
             <div>
-              <label className="block text-xs font-semibold text-[#222222] mb-1.5">
-                服务名称 <span className="text-[#FF385C]">*</span>
-              </label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="text-xs font-bold text-[#222222] flex items-center gap-1">
+                  服务名称 <span className="text-[#FF385C]">*</span>
+                </label>
+                <div className="flex items-center gap-1">
+                  <span className="text-[11px] text-[#717171]">快捷模板:</span>
+                  <select
+                    value={serviceKey}
+                    onChange={(e) => handleServiceChange(e.target.value)}
+                    className="text-[11px] bg-[#F7F7F7] border border-[#DDDDDD] rounded-lg px-1.5 py-0.5 text-[#222222] outline-none"
+                  >
+                    <option value="custom">自定义 / 手输</option>
+                    {PRESET_SERVICES.map((p) => (
+                      <option key={p.key} value={p.key}>
+                        {p.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
               <input
                 type="text"
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="例如: ChatGPT Plus / Cursor / Netflix"
-                className="w-full h-11 bg-[#F7F7F7] border border-[#DDDDDD] focus:border-[#222222] focus:bg-white rounded-xl px-3.5 text-xs font-medium text-[#222222] outline-none transition shadow-2xs"
+                placeholder="例如: SuperGrok / ChatGPT Plus / Claude Pro"
+                className="w-full h-10 bg-[#F7F7F7] border border-[#DDDDDD] focus:border-[#222222] focus:bg-white rounded-xl px-3 text-xs font-bold text-[#222222] outline-none transition shadow-2xs"
               />
             </div>
-            <div>
-              <label className="block text-xs font-semibold text-[#222222] mb-1.5">
-                所属类别
-              </label>
-              <select
-                value={category}
-                onChange={(e) => setCategory(e.target.value as ServiceCategory)}
-                className="w-full h-11 bg-[#F7F7F7] border border-[#DDDDDD] focus:border-[#222222] focus:bg-white rounded-xl px-3.5 text-xs font-medium text-[#222222] outline-none transition shadow-2xs"
-              >
-                <option value="ai">AI 智能模型</option>
-                <option value="developer">开发工具与托管</option>
-                <option value="server">服务器与网络</option>
-                <option value="productivity">生产力办公</option>
-                <option value="entertainment">影音娱乐</option>
-                <option value="other">其他类别</option>
-              </select>
-            </div>
-          </div>
 
-          {/* Account credentials */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label className="block text-xs font-semibold text-[#222222] mb-1.5">
-                登录账号 / 邮箱
-              </label>
-              <input
-                type="text"
-                value={accountEmail}
-                onChange={(e) => setAccountEmail(e.target.value)}
-                placeholder="user@example.com"
-                className="w-full h-11 bg-[#F7F7F7] border border-[#DDDDDD] focus:border-[#222222] focus:bg-white rounded-xl px-3.5 font-mono text-xs text-[#222222] outline-none transition shadow-2xs"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-[#222222] mb-1.5">
-                登录密码备忘 (本地强加密)
-              </label>
-              <input
-                type="text"
-                value={passwordNote}
-                onChange={(e) => setPasswordNote(e.target.value)}
-                placeholder="登录密码或安全提示"
-                className="w-full h-11 bg-[#F7F7F7] border border-[#DDDDDD] focus:border-[#222222] focus:bg-white rounded-xl px-3.5 font-mono text-xs text-[#222222] outline-none transition shadow-2xs"
-              />
-            </div>
-          </div>
+            {/* 2. 续费金额与币种 (含折算 USD 实时统计) */}
+            <div className="p-3 rounded-2xl bg-[#F7F7F7] border border-[#EBEBEB] space-y-2">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-bold text-[#222222] flex items-center gap-1">
+                  <DollarSign className="w-3.5 h-3.5 text-[#FF385C]" />
+                  <span>续费金额与币种</span>
+                </label>
+                {currency !== 'USD' && numPrice > 0 && (
+                  <span className="text-[11px] text-[#717171] font-mono">
+                    折合约 <strong className="text-[#222222]">${usdConverted.toFixed(2)} USD</strong>，按全局汇率自动统计
+                  </span>
+                )}
+              </div>
 
-          {/* Pricing & Cycle */}
-          <div className="grid grid-cols-3 gap-2.5">
-            <div>
-              <label className="block text-xs font-semibold text-[#222222] mb-1.5">
-                续费周期
-              </label>
-              <select
-                value={cycle}
-                onChange={(e) => setCycle(e.target.value as BillingCycle)}
-                className="w-full h-11 bg-[#F7F7F7] border border-[#DDDDDD] focus:border-[#222222] focus:bg-white rounded-xl px-2.5 text-xs text-[#222222] outline-none transition shadow-2xs"
-              >
-                <option value="monthly">按月付 (Monthly)</option>
-                <option value="quarterly">按季度 (Quarterly)</option>
-                <option value="semi-annually">半年付 (Semi-annual)</option>
-                <option value="annually">按年付 (Annually)</option>
-                <option value="prepaid">余额扣款 (Prepaid)</option>
-                <option value="lifetime">买断制 (Lifetime)</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-[#222222] mb-1.5">
-                金额
-              </label>
-              <input
-                type="number"
-                step="0.01"
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
-                placeholder="20"
-                className="w-full h-11 bg-[#F7F7F7] border border-[#DDDDDD] focus:border-[#222222] focus:bg-white rounded-xl px-3 font-mono text-xs text-[#222222] outline-none transition shadow-2xs"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-[#222222] mb-1.5">
-                币种
-              </label>
-              <select
-                value={currency}
-                onChange={(e) => setCurrency(e.target.value)}
-                className="w-full h-11 bg-[#F7F7F7] border border-[#DDDDDD] focus:border-[#222222] focus:bg-white rounded-xl px-2 text-xs text-[#222222] outline-none transition shadow-2xs font-medium"
-              >
-                <optgroup label="🔥 热门低价与跨区订阅 (aisubdeal 榜单)">
-                  {SUPPORTED_CURRENCIES.filter(c => c.popularRank < 20).map(c => (
-                    <option key={c.code} value={c.code}>
-                      {c.flag} {c.code} ({c.symbol} {c.nameZh})
-                    </option>
-                  ))}
-                </optgroup>
-                <optgroup label="🌐 全球主流与常用货币">
-                  {SUPPORTED_CURRENCIES.filter(c => c.popularRank >= 20).map(c => (
-                    <option key={c.code} value={c.code}>
-                      {c.flag} {c.code} ({c.symbol} {c.nameZh})
-                    </option>
-                  ))}
-                </optgroup>
-              </select>
-            </div>
-          </div>
+              <div className="grid grid-cols-12 gap-2">
+                {/* 币种选择 */}
+                <div className="col-span-5 sm:col-span-5">
+                  <select
+                    value={currency}
+                    onChange={(e) => setCurrency(e.target.value)}
+                    className="w-full h-10 bg-white border border-[#DDDDDD] focus:border-[#222222] rounded-xl px-2 text-xs font-medium text-[#222222] outline-none shadow-2xs"
+                  >
+                    <optgroup label="🔥 热门低价与跨区订阅 (aisubdeal 推荐)">
+                      {SUPPORTED_CURRENCIES.filter((c) => c.popularRank < 20).map((c) => (
+                        <option key={c.code} value={c.code}>
+                          {c.flag} {c.code} ({c.symbol} {c.nameZh})
+                        </option>
+                      ))}
+                    </optgroup>
+                    <optgroup label="🌐 全球主流货币">
+                      {SUPPORTED_CURRENCIES.filter((c) => c.popularRank >= 20).map((c) => (
+                        <option key={c.code} value={c.code}>
+                          {c.flag} {c.code} ({c.symbol} {c.nameZh})
+                        </option>
+                      ))}
+                    </optgroup>
+                  </select>
+                </div>
 
-          {/* Next Billing Date & Payment Method */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {/* 金额数值 */}
+                <div className="col-span-4 sm:col-span-4">
+                  <input
+                    type="number"
+                    step="0.01"
+                    required
+                    value={price}
+                    onChange={(e) => setPrice(e.target.value)}
+                    placeholder="700"
+                    className="w-full h-10 bg-white border border-[#DDDDDD] focus:border-[#222222] rounded-xl px-3 font-mono font-bold text-xs text-[#222222] outline-none shadow-2xs"
+                  />
+                </div>
+
+                {/* 扣费周期 */}
+                <div className="col-span-3 sm:col-span-3">
+                  <select
+                    value={cycle}
+                    onChange={(e) => setCycle(e.target.value as BillingCycle)}
+                    className="w-full h-10 bg-white border border-[#DDDDDD] focus:border-[#222222] rounded-xl px-2 text-xs text-[#222222] outline-none shadow-2xs font-medium"
+                  >
+                    <option value="monthly">/月</option>
+                    <option value="quarterly">/季</option>
+                    <option value="semi-annually">/半年</option>
+                    <option value="annually">/年</option>
+                    <option value="prepaid">/按量</option>
+                    <option value="lifetime">/买断</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            {/* 3. 扣费时间与倒计时 */}
             <div>
-              <label className="block text-xs font-semibold text-[#222222] mb-1.5">
-                下期扣费/续费日 <span className="text-[#FF385C]">*</span>
-              </label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="text-xs font-bold text-[#222222] flex items-center gap-1">
+                  <Calendar className="w-3.5 h-3.5 text-[#FF385C]" />
+                  <span>扣费时间 (更新日) <span className="text-[#FF385C]">*</span></span>
+                </label>
+                {nextBillingDate && (
+                  <span
+                    className={`text-[11px] font-mono px-2 py-0.5 rounded-full font-bold ${
+                      daysUntil <= 0
+                        ? 'bg-[#c13515] text-white'
+                        : daysUntil <= 7
+                        ? 'bg-[#FFF0F2] text-[#FF385C] border border-[#FFCCD3]'
+                        : 'bg-[#F7F7F7] text-[#222222] border border-[#DDDDDD]'
+                    }`}
+                  >
+                    {daysUntil <= 0 ? '今日或已逾期' : `还剩 ${daysUntil} 天`}
+                  </span>
+                )}
+              </div>
               <input
                 type="date"
                 required
                 value={nextBillingDate}
                 onChange={(e) => setNextBillingDate(e.target.value)}
-                className="w-full h-11 bg-[#F7F7F7] border border-[#DDDDDD] focus:border-[#222222] focus:bg-white rounded-xl px-3 font-mono text-xs text-[#222222] outline-none transition shadow-2xs"
+                className="w-full h-10 bg-[#F7F7F7] border border-[#DDDDDD] focus:border-[#222222] focus:bg-white rounded-xl px-3 font-mono font-bold text-xs text-[#222222] outline-none transition shadow-2xs"
               />
             </div>
+
+            {/* 4. 支付渠道 (快捷建议与自填) */}
             <div>
-              <label className="block text-xs font-semibold text-[#222222] mb-1.5">
-                付款方式 / 充值渠道
+              <label className="block text-xs font-bold text-[#222222] mb-1">
+                支付渠道
               </label>
               <input
                 type="text"
                 value={paymentMethod}
                 onChange={(e) => setPaymentMethod(e.target.value)}
-                placeholder="例如: 美区 Apple 礼品卡 / 信用卡"
-                className="w-full h-11 bg-[#F7F7F7] border border-[#DDDDDD] focus:border-[#222222] focus:bg-white rounded-xl px-3 text-xs text-[#222222] outline-none transition shadow-2xs"
+                placeholder="例如: Apple 订阅 (印区) / 美区礼品卡 / 虚拟卡"
+                className="w-full h-10 bg-[#F7F7F7] border border-[#DDDDDD] focus:border-[#222222] focus:bg-white rounded-xl px-3 text-xs font-medium text-[#222222] outline-none transition shadow-2xs"
               />
+              {/* Quick suggestion chips */}
+              <div className="flex flex-wrap gap-1.5 mt-1.5">
+                {COMMON_PAYMENT_METHODS.slice(0, 5).map((m) => (
+                  <button
+                    key={m}
+                    type="button"
+                    onClick={() => setPaymentMethod(m)}
+                    className={`text-[11px] px-2 py-0.5 rounded-lg border transition ${
+                      paymentMethod === m
+                        ? 'bg-[#222222] text-white border-[#222222]'
+                        : 'bg-white text-[#717171] hover:text-[#222222] border-[#DDDDDD]'
+                    }`}
+                  >
+                    {m}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
 
-          {/* Direct URLs */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label className="block text-xs font-semibold text-[#222222] mb-1.5">
-                官方管理后台 URL
-              </label>
+            {/* 5. 账号 (若截图未识别到，清晰提示并支持手动输入) */}
+            <div className="p-3 rounded-2xl bg-white border border-[#EBEBEB] space-y-1.5 shadow-2xs">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-bold text-[#222222] flex items-center gap-1.5">
+                  <Mail className="w-3.5 h-3.5 text-[#222222]" />
+                  <span>服务账号 / 登录邮箱</span>
+                </label>
+                {!accountEmail.trim() ? (
+                  <span className="text-[11px] text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full font-medium flex items-center gap-1">
+                    <AlertCircle className="w-3 h-3 text-amber-600" />
+                    未从截图识别到，可在此手动添加
+                  </span>
+                ) : (
+                  <span className="text-[11px] text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full font-medium flex items-center gap-1">
+                    <Check className="w-3 h-3 text-emerald-600" />
+                    已录入
+                  </span>
+                )}
+              </div>
               <input
                 type="text"
-                value={portalUrl}
-                onChange={(e) => setPortalUrl(e.target.value)}
-                placeholder="https://..."
-                className="w-full h-11 bg-[#F7F7F7] border border-[#DDDDDD] focus:border-[#222222] focus:bg-white rounded-xl px-3 font-mono text-xs text-[#222222] outline-none transition shadow-2xs"
+                value={accountEmail}
+                onChange={(e) => setAccountEmail(e.target.value)}
+                placeholder="请输入登录邮箱或账号 (例如: user@gmail.com)"
+                className={`w-full h-10 rounded-xl px-3 font-mono text-xs text-[#222222] outline-none transition shadow-2xs ${
+                  !accountEmail.trim()
+                    ? 'bg-amber-50/40 border border-amber-300 focus:border-[#222222] focus:bg-white'
+                    : 'bg-[#F7F7F7] border border-[#DDDDDD] focus:border-[#222222] focus:bg-white'
+                }`}
               />
             </div>
-            <div>
-              <label className="block text-xs font-semibold text-[#222222] mb-1.5">
-                充值兑换直达 URL
-              </label>
-              <input
-                type="text"
-                value={rechargeUrl}
-                onChange={(e) => setRechargeUrl(e.target.value)}
-                placeholder="https://apps.apple.com/redeem"
-                className="w-full h-11 bg-[#F7F7F7] border border-[#DDDDDD] focus:border-[#222222] focus:bg-white rounded-xl px-3 font-mono text-xs text-[#222222] outline-none transition shadow-2xs"
-              />
+
+            {/* 展开更多信息 (密码备忘、2FA、直达充值链接) */}
+            <div className="pt-1">
+              <button
+                type="button"
+                onClick={() => setShowAdvanced(!showAdvanced)}
+                className="text-xs text-[#717171] hover:text-[#222222] font-semibold flex items-center gap-1 transition"
+              >
+                <span>{showAdvanced ? '收起高级设置' : '展开高级选项 (密码备忘、分类、直达链接)'}</span>
+                {showAdvanced ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+              </button>
+
+              {showAdvanced && (
+                <div className="mt-2.5 p-3.5 rounded-2xl bg-[#F7F7F7] border border-[#EBEBEB] space-y-3 animate-fadeIn text-xs">
+                  {/* Category & Password */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    <div>
+                      <label className="block text-xs font-semibold text-[#222222] mb-1">所属分类</label>
+                      <select
+                        value={category}
+                        onChange={(e) => setCategory(e.target.value as ServiceCategory)}
+                        className="w-full h-9 bg-white border border-[#DDDDDD] rounded-xl px-2.5 text-xs text-[#222222] outline-none"
+                      >
+                        <option value="ai">AI 智能模型</option>
+                        <option value="developer">开发工具与托管</option>
+                        <option value="server">服务器与网络</option>
+                        <option value="productivity">生产力办公</option>
+                        <option value="entertainment">影音娱乐</option>
+                        <option value="other">其他类别</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-[#222222] mb-1">密码备忘 (本地加密)</label>
+                      <input
+                        type="text"
+                        value={passwordNote}
+                        onChange={(e) => setPasswordNote(e.target.value)}
+                        placeholder="登录密码备忘"
+                        className="w-full h-9 bg-white border border-[#DDDDDD] rounded-xl px-2.5 font-mono text-xs text-[#222222] outline-none"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Portal & Recharge URLs */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    <div>
+                      <label className="block text-xs font-semibold text-[#222222] mb-1">官方管理后台 URL</label>
+                      <input
+                        type="text"
+                        value={portalUrl}
+                        onChange={(e) => setPortalUrl(e.target.value)}
+                        placeholder="https://..."
+                        className="w-full h-9 bg-white border border-[#DDDDDD] rounded-xl px-2.5 font-mono text-xs text-[#222222] outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-[#222222] mb-1">充值兑换直达 URL</label>
+                      <input
+                        type="text"
+                        value={rechargeUrl}
+                        onChange={(e) => setRechargeUrl(e.target.value)}
+                        placeholder="https://..."
+                        className="w-full h-9 bg-white border border-[#DDDDDD] rounded-xl px-2.5 font-mono text-xs text-[#222222] outline-none"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Notes */}
+                  <div>
+                    <label className="block text-xs font-semibold text-[#222222] mb-1">备注说明</label>
+                    <input
+                      type="text"
+                      value={notes}
+                      onChange={(e) => setNotes(e.target.value)}
+                      placeholder="家庭组共享、续费信用卡绑定说明等..."
+                      className="w-full h-9 bg-white border border-[#DDDDDD] rounded-xl px-2.5 text-xs text-[#222222] outline-none"
+                    />
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
-          {/* Notes */}
-          <div>
-            <label className="block text-xs font-semibold text-[#222222] mb-1.5">
-              备注备忘
-            </label>
-            <textarea
-              rows={2}
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              placeholder="记录家庭共享成员、绑定手机、订阅注意事项等..."
-              className="w-full bg-[#F7F7F7] border border-[#DDDDDD] focus:border-[#222222] focus:bg-white rounded-xl p-3 text-xs text-[#222222] outline-none transition shadow-2xs"
-            />
-          </div>
-
-          {/* Action buttons (Airbnb Style) */}
+          {/* Action Footer */}
           <div className="flex items-center justify-between pt-4 border-t border-[#EBEBEB]">
             {initialData && onDelete ? (
               <button
                 type="button"
                 onClick={() => {
-                  onDelete(initialData.id);
-                  onClose();
+                  if (confirm(`确定要删除订阅「${name || initialData.name}」吗？`)) {
+                    onDelete(initialData.id);
+                    onClose();
+                  }
                 }}
-                className="px-4 py-2.5 rounded-xl text-[#c13515] hover:bg-[#FFF0F2] text-xs font-bold flex items-center gap-1.5 transition active:scale-95"
+                className="px-3.5 py-2 rounded-xl text-[#c13515] hover:bg-[#FFF0F2] text-xs font-bold flex items-center gap-1.5 transition active:scale-95"
               >
                 <Trash2 className="w-3.5 h-3.5" />
-                <span>删除此订阅</span>
+                <span>删除订阅</span>
               </button>
             ) : (
-              <div />
+              <div className="text-[11px] text-[#717171] flex items-center gap-1">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                <span>端到端 AES-256 本地加密存储</span>
+              </div>
             )}
 
             <div className="flex items-center gap-2.5">
@@ -385,9 +830,11 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
               </button>
               <button
                 type="submit"
-                className="px-6 py-2.5 rounded-xl btn-rausch text-white font-bold text-xs flex items-center gap-1.5 shadow-md transition active:scale-95"
+                disabled={ocrLoading || !name.trim()}
+                className="px-6 py-2.5 rounded-xl btn-rausch disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold text-xs flex items-center gap-1.5 shadow-md transition active:scale-95"
               >
-                <span>{initialData ? '保存修改' : '确认添加'}</span>
+                <span>{initialData ? '保存修改' : '确认并录入订阅'}</span>
+                <ArrowRight className="w-3.5 h-3.5 text-white" />
               </button>
             </div>
           </div>

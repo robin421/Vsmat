@@ -49,7 +49,7 @@ export const OverviewStats: React.FC<OverviewStatsProps> = ({
   const unredeemedVouchers = vouchers.filter(v => v.status === 'unredeemed');
 
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4.5">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-6">
       {/* Monthly Expense Card */}
       <div className="p-6 rounded-3xl bg-white border border-[#EBEBEB] airbnb-card transition-all flex flex-col justify-between">
         <div className="flex items-center justify-between text-xs text-[#717171] mb-2">

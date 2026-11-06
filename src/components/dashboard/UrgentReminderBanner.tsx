@@ -34,7 +34,7 @@ export const UrgentReminderBanner: React.FC<UrgentReminderBannerProps> = ({
 
   if (urgentSubs.length === 0) {
     return (
-      <div className="flex flex-col sm:flex-row items-center justify-between p-4.5 rounded-2xl bg-white border border-[#EBEBEB] text-xs text-[#717171] gap-3 airbnb-card">
+      <div className="flex flex-col sm:flex-row items-center justify-between p-5 rounded-2xl bg-white border border-[#EBEBEB] text-xs text-[#717171] gap-3 airbnb-card">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-full bg-[#F7F7F7] border border-[#EBEBEB] text-[#222222] flex items-center justify-center">
             <ShieldCheck className="w-4 h-4 text-[#FF385C]" />

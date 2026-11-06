@@ -11,7 +11,8 @@ import {
   Gift,
   PieChart,
   Search,
-  ChevronDown
+  ChevronDown,
+  Plus
 } from 'lucide-react';
 import { exportBackup } from '../../lib/storage';
 import { AppData } from '../../types';
@@ -19,7 +20,7 @@ import { AppData } from '../../types';
 interface NavbarProps {
   activeTab: 'dashboard' | 'subscriptions' | 'tokens' | 'vouchers' | 'analytics';
   onTabChange: (tab: 'dashboard' | 'subscriptions' | 'tokens' | 'vouchers' | 'analytics') => void;
-  onOpenSmartParser: () => void;
+  onNewSubscription: () => void;
   onLockVault: () => void;
   isLocked: boolean;
   appData: AppData;
@@ -33,7 +34,7 @@ interface NavbarProps {
 export const Navbar: React.FC<NavbarProps> = ({
   activeTab,
   onTabChange,
-  onOpenSmartParser,
+  onNewSubscription,
   onLockVault,
   isLocked,
   appData,
@@ -169,14 +170,14 @@ export const Navbar: React.FC<NavbarProps> = ({
 
         {/* Action Controls & Utilities */}
         <div className="flex items-center gap-2 shrink-0">
-          {/* Smart Paste Quick Action (Airbnb Rausch Gradient) */}
+          {/* Unified Add Subscription CTA (Airbnb Rausch) */}
           <button
-            onClick={onOpenSmartParser}
-            className="h-10 px-4 rounded-full btn-rausch font-semibold text-xs flex items-center gap-1.5 shadow-sm active:scale-[0.98] transition-all"
-            title="一键粘贴/截图智能解析录入"
+            onClick={onNewSubscription}
+            className="h-10 px-4 rounded-full btn-rausch font-bold text-xs flex items-center gap-1.5 shadow-sm active:scale-[0.98] transition-all"
+            title="新建订阅（支持截图智能识别与手动录入）"
           >
-            <Sparkles className="w-3.5 h-3.5 text-white" />
-            <span className="hidden lg:inline">智能录入</span>
+            <Plus className="w-4 h-4 text-white stroke-[2.5]" />
+            <span className="hidden sm:inline">新建订阅</span>
           </button>
 
           {/* Currency Toggle */}
