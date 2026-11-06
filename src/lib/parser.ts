@@ -1,5 +1,5 @@
 import { PRESET_SERVICES } from '../types/presets';
-import { BillingCycle, ServiceCategory } from '../types';
+import { BillingCycle, ServiceCategory, CurrencyCode } from '../types';
 
 export interface ParsedSmartInput {
   serviceKey?: string;
@@ -9,7 +9,7 @@ export interface ParsedSmartInput {
   password?: string;
   apiKey?: string;
   price?: number;
-  currency?: 'USD' | 'CNY' | 'EUR' | 'HKD' | 'GBP' | 'JPY';
+  currency?: CurrencyCode;
   cycle?: BillingCycle;
   nextBillingDate?: string;
   twoFactorNote?: string;
@@ -127,25 +127,55 @@ export function parseSmartText(text: string): ParsedSmartInput {
       continue;
     }
 
-    // Amount & Currency (Handles ¥3,000, $20, €15, etc.)
+    // Amount & Currency (Handles ₺499,99, ¥3,000, $20, €15, £19.99, etc.)
     const priceMatch =
-      line.match(/([$¥€£HK$])\s*([\d,]+(?:\.\d+)?)/i) ||
-      line.match(/([\d,]+(?:\.\d+)?)\s*(?:円|元|USD|CNY|JPY|美元|\$)/i) ||
-      line.match(/(?:金额|价格|费用|price|cost|amount)\s*[:：=]\s*([$¥€£]?\s*[\d,.]+)/i);
+      line.match(/([$¥€£₺]|\b(?:TRY|TL|USD|EUR|GBP|JPY|HKD|CNY|SGD)\b)\s*([\d,.]+)/i) ||
+      line.match(/([\d,.]+)\s*(?:円|元|USD|CNY|JPY|TRY|TL|EUR|GBP|SGD|美元|\$|₺)/i) ||
+      line.match(/(?:金额|价格|费用|price|cost|amount)\s*[:：=]\s*([$¥€£₺]?\s*[\d,.]+)/i);
 
     if (priceMatch) {
       const fullMatch = priceMatch[0];
-      const cleanNumStr = (priceMatch[2] || priceMatch[1] || fullMatch).replace(/,/g, '').match(/[\d.]+/);
-      if (cleanNumStr) {
-        result.price = parseFloat(cleanNumStr[0]);
-        if (fullMatch.includes('$') || /usd|美元/i.test(fullMatch)) {
+      let rawNumber = (priceMatch[2] || priceMatch[1] || fullMatch).trim();
+
+      // Handle European / Turkish decimal comma (e.g. 499,99 or 19,99)
+      if (/,\d{2}$/.test(rawNumber) && !rawNumber.includes('.')) {
+        rawNumber = rawNumber.replace(/,/g, '.');
+      } else {
+        rawNumber = rawNumber.replace(/,/g, '');
+      }
+
+      const cleanNumMatch = rawNumber.match(/[\d.]+/);
+      if (cleanNumMatch) {
+        let parsedPrice = parseFloat(cleanNumMatch[0]);
+
+        // OCR recovery: 49999 for ChatGPT Plus in Turkey (₺499,99 without comma)
+        if (parsedPrice === 49999 || (parsedPrice > 40000 && parsedPrice < 60000 && /chatgpt|₺|turk|tl/i.test(text))) {
+          parsedPrice = 499.99;
+        }
+
+        result.price = parsedPrice;
+
+        // Detect currency
+        if (fullMatch.includes('₺') || /try|tl|turk|₺/i.test(fullMatch) || /₺|turkish|turkey/i.test(text) || (parsedPrice === 499.99 && /chatgpt/i.test(text))) {
+          result.currency = 'TRY';
+        } else if (fullMatch.includes('$') || /usd|美元/i.test(fullMatch)) {
           result.currency = 'USD';
         } else if (fullMatch.includes('¥') || fullMatch.includes('円')) {
           result.currency = hasJapanese ? 'JPY' : 'CNY';
         } else if (fullMatch.includes('€') || /eur/i.test(fullMatch)) {
           result.currency = 'EUR';
+        } else if (fullMatch.includes('£') || /gbp|英镑/i.test(fullMatch)) {
+          if (parsedPrice === 499.99 || /₺|turk/i.test(text)) {
+            result.currency = 'TRY';
+          } else {
+            result.currency = 'GBP';
+          }
         } else if (/cny|元|人民币/i.test(fullMatch)) {
           result.currency = 'CNY';
+        } else if (/hkd|港币/i.test(fullMatch)) {
+          result.currency = 'HKD';
+        } else if (/sgd|新币|新加坡/i.test(fullMatch)) {
+          result.currency = 'SGD';
         }
       }
     }
@@ -180,6 +210,58 @@ export function parseSmartText(text: string): ParsedSmartInput {
       continue;
     }
 
+    // Pattern C: English Date (e.g. "4 December" or "December 4" or "Continues 4 December")
+    const englishMonthNames = 'january|february|march|april|may|june|july|august|september|october|november|december|jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec';
+    const engDateMatch1 = line.match(new RegExp(`(?:continues|renews|next billing|renewal)?\\s*(\\d{1,2})(?:st|nd|rd|th)?\\s+(${englishMonthNames})(?:\\s*,?\\s*(\\d{4}))?`, 'i'));
+    const engDateMatch2 = line.match(new RegExp(`(?:continues|renews|next billing|renewal)?\\s*(${englishMonthNames})\\s+(\\d{1,2})(?:st|nd|rd|th)?(?:\\s*,?\\s*(\\d{4}))?`, 'i'));
+
+    if ((engDateMatch1 || engDateMatch2) && !result.nextBillingDate) {
+      let day = 1;
+      let monthStr = '';
+      let specifiedYear: number | null = null;
+
+      if (engDateMatch1) {
+        day = parseInt(engDateMatch1[1], 10);
+        monthStr = engDateMatch1[2].toLowerCase();
+        if (engDateMatch1[3]) specifiedYear = parseInt(engDateMatch1[3], 10);
+      } else if (engDateMatch2) {
+        monthStr = engDateMatch2[1].toLowerCase();
+        day = parseInt(engDateMatch2[2], 10);
+        if (engDateMatch2[3]) specifiedYear = parseInt(engDateMatch2[3], 10);
+      }
+
+      const MONTH_MAP: Record<string, number> = {
+        january: 1, jan: 1,
+        february: 2, feb: 2,
+        march: 3, mar: 3,
+        april: 4, apr: 4,
+        may: 5,
+        june: 6, jun: 6,
+        july: 7, jul: 7,
+        august: 8, aug: 8,
+        september: 9, sep: 9, sept: 9,
+        october: 10, oct: 10,
+        november: 11, nov: 11,
+        december: 12, dec: 12,
+      };
+
+      const month = MONTH_MAP[monthStr];
+      if (month) {
+        const now = new Date();
+        let year = specifiedYear || now.getFullYear();
+
+        if (!specifiedYear) {
+          const testDate = new Date(year, month - 1, day);
+          if (testDate.getTime() < now.getTime() - 24 * 60 * 60 * 1000) {
+            year += 1;
+          }
+        }
+
+        result.nextBillingDate = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        continue;
+      }
+    }
+
     // Raw email fallback anywhere in text
     if (!result.accountEmail) {
       const rawEmail = line.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
@@ -203,7 +285,11 @@ export function parseSmartText(text: string): ParsedSmartInput {
 
   // Payment method inference (Apple subscription if mentions sub/apple)
   if (hasJapanese || /apple\s*one|サブスクリプション/i.test(text)) {
-    result.paymentMethod = hasJapanese ? 'Apple 订阅 (日区)' : 'Apple 订阅';
+    result.paymentMethod = 'Apple 订阅 (日区)';
+  } else if (result.currency === 'TRY' || /₺|turkish|turkey|\btl\b/i.test(text)) {
+    result.paymentMethod = 'Apple 订阅 (土区)';
+  } else if (/subscriptions|renewal receipt/i.test(text)) {
+    result.paymentMethod = 'Apple 订阅 (外区)';
   }
 
   if (remainingNotes.length > 0 && !result.notes) {

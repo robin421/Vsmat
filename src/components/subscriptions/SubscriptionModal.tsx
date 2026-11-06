@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, CreditCard, Trash2, ArrowUpRight } from 'lucide-react';
-import { SubscriptionItem, BillingCycle, ServiceCategory } from '../../types';
+import { SubscriptionItem, BillingCycle, ServiceCategory, CurrencyCode } from '../../types';
 import { PRESET_SERVICES, getPresetByKey } from '../../types/presets';
 
 interface SubscriptionModalProps {
@@ -26,7 +26,7 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
   const [twoFactorNote, setTwoFactorNote] = useState('');
   const [cycle, setCycle] = useState<BillingCycle>('monthly');
   const [price, setPrice] = useState('');
-  const [currency, setCurrency] = useState<'USD' | 'CNY' | 'EUR' | 'HKD' | 'GBP' | 'JPY'>('USD');
+  const [currency, setCurrency] = useState<CurrencyCode>('USD');
   const [nextBillingDate, setNextBillingDate] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('');
   const [portalUrl, setPortalUrl] = useState('');
@@ -266,14 +266,16 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
               <select
                 value={currency}
                 onChange={(e) => setCurrency(e.target.value as any)}
-                className="w-full h-11 bg-[#F7F7F7] border border-[#DDDDDD] focus:border-[#222222] focus:bg-white rounded-xl px-2.5 text-xs text-[#222222] outline-none transition shadow-2xs"
+                className="w-full h-11 bg-[#F7F7F7] border border-[#DDDDDD] focus:border-[#222222] focus:bg-white rounded-xl px-2.5 text-xs text-[#222222] outline-none transition shadow-2xs font-medium"
               >
-                <option value="USD">USD ($)</option>
-                <option value="CNY">CNY (¥)</option>
-                <option value="JPY">JPY (¥)</option>
-                <option value="EUR">EUR (€)</option>
-                <option value="HKD">HKD ($)</option>
-                <option value="GBP">GBP (£)</option>
+                <option value="TRY">TRY (₺ 土耳其里拉)</option>
+                <option value="USD">USD ($ 美元)</option>
+                <option value="CNY">CNY (¥ 人民币)</option>
+                <option value="EUR">EUR (€ 欧元)</option>
+                <option value="GBP">GBP (£ 英镑)</option>
+                <option value="JPY">JPY (¥ 日元)</option>
+                <option value="HKD">HKD ($ 港币)</option>
+                <option value="SGD">SGD (S$ 新加坡元)</option>
               </select>
             </div>
           </div>

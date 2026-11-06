@@ -174,12 +174,16 @@ export const VoucherModal: React.FC<VoucherModalProps> = ({
               <select
                 value={currency}
                 onChange={(e) => setCurrency(e.target.value)}
-                className="w-full h-10 bg-[#F7F7F7] border border-[#DDDDDD] rounded-xl px-3 text-xs text-zinc-800 outline-none focus:bg-white focus:border-[#222222] shadow-2xs"
+                className="w-full h-10 bg-[#F7F7F7] border border-[#DDDDDD] rounded-xl px-3 text-xs text-[#222222] outline-none focus:bg-white focus:border-[#222222] shadow-2xs font-medium"
               >
-                <option value="USD">USD ($)</option>
-                <option value="CNY">CNY (¥)</option>
-                <option value="EUR">EUR (€)</option>
-                <option value="HKD">HKD ($)</option>
+                <option value="TRY">TRY (₺ 土耳其里拉)</option>
+                <option value="USD">USD ($ 美元)</option>
+                <option value="CNY">CNY (¥ 人民币)</option>
+                <option value="EUR">EUR (€ 欧元)</option>
+                <option value="GBP">GBP (£ 英镑)</option>
+                <option value="JPY">JPY (¥ 日元)</option>
+                <option value="HKD">HKD ($ 港币)</option>
+                <option value="SGD">SGD (S$ 新加坡元)</option>
               </select>
             </div>
           </div>

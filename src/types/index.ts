@@ -30,6 +30,8 @@ export interface TokenItem {
   updatedAt: string;
 }
 
+export type CurrencyCode = 'USD' | 'CNY' | 'TRY' | 'EUR' | 'GBP' | 'JPY' | 'HKD' | 'SGD' | string;
+
 export interface SubscriptionItem {
   id: string;
   name: string;
@@ -40,7 +42,7 @@ export interface SubscriptionItem {
   twoFactorNote?: string;
   cycle: BillingCycle;
   price: number;
-  currency: 'USD' | 'CNY' | 'EUR' | 'HKD' | 'GBP' | 'JPY';
+  currency: CurrencyCode;
   nextBillingDate: string; // YYYY-MM-DD
   autoRenew: boolean;
   paymentMethod?: string;

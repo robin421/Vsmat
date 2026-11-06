@@ -26,9 +26,12 @@ export const SpendAnalytics: React.FC<SpendAnalyticsProps> = ({
   const getMonthlyAmountInUSD = (sub: SubscriptionItem): number => {
     let p = sub.price;
     if (sub.currency === 'CNY') p = p / usdToCnyRate;
+    else if (sub.currency === 'TRY') p = p / 34.5;
     else if (sub.currency === 'EUR') p = p * 1.08;
+    else if (sub.currency === 'GBP') p = p * 1.30;
     else if (sub.currency === 'HKD') p = p / 7.8;
     else if (sub.currency === 'JPY') p = p / 155;
+    else if (sub.currency === 'SGD') p = p * 0.76;
 
     switch (sub.cycle) {
       case 'monthly': return p;
