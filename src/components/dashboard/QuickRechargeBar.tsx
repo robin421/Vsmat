@@ -47,6 +47,11 @@ export const QuickRechargeBar: React.FC<QuickRechargeBarProps> = ({
         selectedService === 'auto' ? undefined : selectedService
       );
 
+      if (!result.success) {
+        setToastMessage(result.message);
+        return;
+      }
+
       confetti({
         particleCount: 50,
         spread: 60,

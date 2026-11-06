@@ -9,6 +9,7 @@ import {
   encryptWithKey,
   generateSalt,
 } from './crypto';
+import { addMonthsClamped, formatLocalDate, parseLocalDate } from './date';
 
 const STORAGE_KEY = 'vsmat_vault_storage_v1';
 const KEY_DB_NAME = 'vsmat_keystore';
@@ -412,32 +413,16 @@ export async function parseBackup(text: string, password?: string): Promise<AppD
  * Advance next billing date based on billing cycle when user clicks "我已续费"
  */
 export function advanceBillingDate(currentDateStr: string, cycle: string): string {
-  const d = new Date(currentDateStr + 'T00:00:00');
-  if (isNaN(d.getTime())) {
-    const now = new Date();
-    d.setTime(now.getTime());
-  }
-
+  const base = parseLocalDate(currentDateStr) ?? new Date();
   switch (cycle) {
-    case 'monthly':
-      d.setMonth(d.getMonth() + 1);
-      break;
     case 'quarterly':
-      d.setMonth(d.getMonth() + 3);
-      break;
+      return formatLocalDate(addMonthsClamped(base, 3));
     case 'semi-annually':
-      d.setMonth(d.getMonth() + 6);
-      break;
+      return formatLocalDate(addMonthsClamped(base, 6));
     case 'annually':
-      d.setFullYear(d.getFullYear() + 1);
-      break;
+      return formatLocalDate(addMonthsClamped(base, 12));
+    case 'monthly':
     default:
-      d.setMonth(d.getMonth() + 1);
-      break;
+      return formatLocalDate(addMonthsClamped(base, 1));
   }
-
-  const year = d.getFullYear();
-  const month = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
 }

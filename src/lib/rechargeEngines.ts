@@ -1,13 +1,16 @@
 import { PRESET_SERVICES, getPresetByKey } from '../types/presets';
 import { PresetService } from '../types';
+import { safeHttpUrl } from './url';
 
-export interface RechargeExecutionResult {
-  success: boolean;
-  service: PresetService;
-  url: string;
-  isDirectRedeem: boolean;
-  message: string;
-}
+export type RechargeExecutionResult =
+  | {
+      success: true;
+      service: PresetService;
+      url: string;
+      isDirectRedeem: boolean;
+      message: string;
+    }
+  | { success: false; message: string };
 
 /**
  * Clean up voucher code (remove spaces, trim, uppercase if needed)
@@ -60,14 +63,12 @@ export async function execute1ClickRecharge(
   customRechargeUrl?: string
 ): Promise<RechargeExecutionResult> {
   const cleanCode = sanitizeVoucherCode(voucherCode);
-  let service: PresetService;
 
-  if (serviceKey && serviceKey !== 'custom') {
-    service = getPresetByKey(serviceKey);
-  } else {
-    // Auto-detect
-    const detected = detectVoucherService(cleanCode);
-    service = detected || getPresetByKey('openai'); // default to OpenAI or custom
+  // Never guess: opening the wrong provider's site with a gift code is worse than asking.
+  const service =
+    serviceKey && serviceKey !== 'custom' ? getPresetByKey(serviceKey) : detectVoucherService(cleanCode);
+  if (!service) {
+    return { success: false, message: '无法识别该券码所属服务，请先在上方手动选择服务后再充值。' };
   }
 
   // 1. Copy to clipboard
@@ -79,34 +80,28 @@ export async function execute1ClickRecharge(
     console.warn('Clipboard write permission not granted', err);
   }
 
-  // 2. Determine target URL
-  let targetUrl = customRechargeUrl || service.rechargeUrl || service.portalUrl;
+  // 2. Determine target URL (http/https only)
   let isDirectRedeem = false;
+  let targetUrl = safeHttpUrl(customRechargeUrl) || safeHttpUrl(service.rechargeUrl) || safeHttpUrl(service.portalUrl);
 
   if (service.directRedeemUrlPattern && cleanCode) {
-    targetUrl = service.directRedeemUrlPattern.replace('{CODE}', encodeURIComponent(cleanCode));
-    isDirectRedeem = true;
+    const direct = safeHttpUrl(service.directRedeemUrlPattern.replace('{CODE}', encodeURIComponent(cleanCode)));
+    if (direct) {
+      targetUrl = direct;
+      isDirectRedeem = true;
+    }
   }
 
   if (!targetUrl) {
-    targetUrl = 'https://www.google.com';
+    return { success: false, message: `【${service.name}】没有可用的充值链接，券码已复制，请手动前往官网兑换。` };
   }
 
   // 3. Open in browser
   window.open(targetUrl, '_blank', 'noopener,noreferrer');
 
-  let message = '';
-  if (isDirectRedeem) {
-    message = `已为您一键生成【${service.name}】官方兑换直达页面，兑换码已预填并复制到剪贴板！`;
-  } else {
-    message = `已为您极速直达【${service.name}】充值中心！礼品券码已自动复制，直接在页面粘贴 (Cmd+V) 即可！`;
-  }
+  const message = isDirectRedeem
+    ? `已为您一键生成【${service.name}】官方兑换直达页面，兑换码已预填并复制到剪贴板！`
+    : `已为您极速直达【${service.name}】充值中心！礼品券码已自动复制，直接在页面粘贴 (Cmd+V) 即可！`;
 
-  return {
-    success: true,
-    service,
-    url: targetUrl,
-    isDirectRedeem,
-    message,
-  };
+  return { success: true, service, url: targetUrl, isDirectRedeem, message };
 }

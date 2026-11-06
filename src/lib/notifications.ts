@@ -1,13 +1,8 @@
 import { SubscriptionItem } from '../types';
+import { daysFromToday, todayLocal } from './date';
 
 export function getDaysUntil(dateStr: string): number {
-  if (!dateStr) return 999;
-  const target = new Date(dateStr + 'T00:00:00');
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  const diffTime = target.getTime() - today.getTime();
-  return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  return daysFromToday(dateStr) ?? 999;
 }
 
 export async function requestNotificationPermission(): Promise<boolean> {
@@ -31,9 +26,7 @@ export async function requestNotificationPermission(): Promise<boolean> {
 const NOTIFIED_KEY = 'vsmat_notified_v1';
 const ICON = '/icon-192.png';
 
-function localDateKey(): string {
-  return new Date().toLocaleDateString('sv-SE'); // YYYY-MM-DD in the user's timezone
-}
+const localDateKey = todayLocal;
 
 /** Ids already notified today (ids are random UUIDs, not secrets). */
 function loadNotifiedToday(): Set<string> {

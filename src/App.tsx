@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { Suspense, lazy, useState, useEffect, useRef } from 'react';
 import { AppData, SubscriptionItem, TokenItem, VoucherItem } from './types';
 import {
   advanceBillingDate,
@@ -6,25 +6,27 @@ import {
   parseBackup,
   probeBackup,
 } from './lib/storage';
+import { todayLocal as todayStr } from './lib/date';
 import { useVault } from './hooks/useVault';
 import { checkAndSendRenewalNotifications } from './lib/notifications';
 import { Navbar } from './components/layout/Navbar';
-import { QuickRechargeBar } from './components/dashboard/QuickRechargeBar';
 import { UrgentReminderBanner } from './components/dashboard/UrgentReminderBanner';
-import { OverviewStats } from './components/dashboard/OverviewStats';
-import { TokenList } from './components/tokens/TokenList';
-import { TokenModal } from './components/tokens/TokenModal';
 import { SubscriptionList } from './components/subscriptions/SubscriptionList';
-import { SubscriptionModal } from './components/subscriptions/SubscriptionModal';
-import { VoucherStash } from './components/recharge/VoucherStash';
-import { VoucherModal } from './components/recharge/VoucherModal';
-import { AppleWebRedeemModal } from './components/recharge/AppleWebRedeemModal';
-import { SpendAnalytics } from './components/analytics/SpendAnalytics';
 import { MasterPasswordModal } from './components/auth/MasterPasswordModal';
-import { DataSecurityModal } from './components/common/DataSecurityModal';
 import { ShieldCheck, AlertCircle, X } from 'lucide-react';
 
-const todayStr = () => new Date().toISOString().split('T')[0];
+// Code-split: tabs/modals the user hasn't opened yet are fetched on demand.
+const TokenList = lazy(() => import('./components/tokens/TokenList').then((m) => ({ default: m.TokenList })));
+const TokenModal = lazy(() => import('./components/tokens/TokenModal').then((m) => ({ default: m.TokenModal })));
+const SubscriptionModal = lazy(() => import('./components/subscriptions/SubscriptionModal').then((m) => ({ default: m.SubscriptionModal })));
+const VoucherStash = lazy(() => import('./components/recharge/VoucherStash').then((m) => ({ default: m.VoucherStash })));
+const VoucherModal = lazy(() => import('./components/recharge/VoucherModal').then((m) => ({ default: m.VoucherModal })));
+const AppleWebRedeemModal = lazy(() => import('./components/recharge/AppleWebRedeemModal').then((m) => ({ default: m.AppleWebRedeemModal })));
+const SpendAnalytics = lazy(() => import('./components/analytics/SpendAnalytics').then((m) => ({ default: m.SpendAnalytics })));
+const OverviewStats = lazy(() => import('./components/dashboard/OverviewStats').then((m) => ({ default: m.OverviewStats })));
+const QuickRechargeBar = lazy(() => import('./components/dashboard/QuickRechargeBar').then((m) => ({ default: m.QuickRechargeBar })));
+const DataSecurityModal = lazy(() => import('./components/common/DataSecurityModal').then((m) => ({ default: m.DataSecurityModal })));
+
 const newId = (prefix: string) => `${prefix}-${crypto.randomUUID()}`;
 
 export function App() {
@@ -244,6 +246,7 @@ export function App() {
         </div>
       )}
 
+      <Suspense fallback={<div className="flex-1" aria-busy="true" />}>
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
         {/* Tab 1: Subscriptions (Clean & Spacious) */}
         {activeTab === 'subscriptions' && (
@@ -348,6 +351,7 @@ export function App() {
           </div>
         )}
       </main>
+      </Suspense>
 
       {/* Executive Clean Footer with Security & Privacy Guarantee */}
       <footer className="mt-auto py-8 border-t border-[#EBEBEB] text-center text-xs text-[#717171] bg-white">
@@ -371,51 +375,64 @@ export function App() {
       </footer>
 
       {/* Modals */}
-      <DataSecurityModal
-        isOpen={isSecurityModalOpen}
-        onClose={() => setIsSecurityModalOpen(false)}
-        onOpenExport={() => void exportBackup(appData)}
-      />
+      <Suspense fallback={null}>
+      {isSecurityModalOpen && (
+        <DataSecurityModal
+          isOpen={isSecurityModalOpen}
+          onClose={() => setIsSecurityModalOpen(false)}
+          onOpenExport={() => void exportBackup(appData)}
+        />
+      )}
 
-      <AppleWebRedeemModal
-        isOpen={isAppleModalOpen}
-        onClose={() => setIsAppleModalOpen(false)}
-        voucherCode={appleVoucherCode}
-        accountEmail={appleActiveSub?.accountEmail || ''}
-        passwordNote={appleActiveSub?.passwordNote || ''}
-        onConfirmRecharged={() => {
-          if (appleActiveSub) {
-            handleMarkRenewed(appleActiveSub.id);
-          }
-          const v = appData.vouchers.find(item => item.code.replace(/\s+/g, '') === appleVoucherCode.replace(/\s+/g, ''));
-          if (v) {
-            handleUpdateVoucherStatus(v.id, 'redeemed');
-          }
-        }}
-      />
+      {isAppleModalOpen && (
+        <AppleWebRedeemModal
+          isOpen={isAppleModalOpen}
+          onClose={() => setIsAppleModalOpen(false)}
+          voucherCode={appleVoucherCode}
+          accountEmail={appleActiveSub?.accountEmail || ''}
+          passwordNote={appleActiveSub?.passwordNote || ''}
+          onConfirmRecharged={() => {
+            if (appleActiveSub) {
+              handleMarkRenewed(appleActiveSub.id);
+            }
+            const v = appData.vouchers.find(item => item.code.replace(/\s+/g, '') === appleVoucherCode.replace(/\s+/g, ''));
+            if (v) {
+              handleUpdateVoucherStatus(v.id, 'redeemed');
+            }
+          }}
+        />
+      )}
 
-      <SubscriptionModal
-        isOpen={isSubModalOpen}
-        onClose={() => setIsSubModalOpen(false)}
-        onSave={handleSaveSubscription}
-        onDelete={handleDeleteSubscription}
-        initialData={editingSub}
-        onSaveToken={handleSaveToken}
-      />
+      {isSubModalOpen && (
+        <SubscriptionModal
+          isOpen={isSubModalOpen}
+          onClose={() => setIsSubModalOpen(false)}
+          onSave={handleSaveSubscription}
+          onDelete={handleDeleteSubscription}
+          initialData={editingSub}
+          onSaveToken={handleSaveToken}
+        />
+      )}
 
-      <TokenModal
-        isOpen={isTokenModalOpen}
-        onClose={() => setIsTokenModalOpen(false)}
-        onSave={handleSaveToken}
-        initialData={editingToken}
-      />
+      {isTokenModalOpen && (
+        <TokenModal
+          isOpen={isTokenModalOpen}
+          onClose={() => setIsTokenModalOpen(false)}
+          onSave={handleSaveToken}
+          initialData={editingToken}
+        />
+      )}
 
-      <VoucherModal
-        isOpen={isVoucherModalOpen}
-        onClose={() => setIsVoucherModalOpen(false)}
-        onSave={handleSaveVoucher}
-        initialData={editingVoucher}
-      />
+      {isVoucherModalOpen && (
+        <VoucherModal
+          isOpen={isVoucherModalOpen}
+          onClose={() => setIsVoucherModalOpen(false)}
+          onSave={handleSaveVoucher}
+          initialData={editingVoucher}
+        />
+      )}
+
+      </Suspense>
 
       <MasterPasswordModal
         isOpen={isPasswordModalOpen}

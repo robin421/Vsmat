@@ -28,6 +28,7 @@ import { SUPPORTED_CURRENCIES, convertToUSD } from '../../lib/currencies';
 import { getDaysUntil } from '../../lib/notifications';
 import { parseSmartText, ParsedSmartInput } from '../../lib/parser';
 import { recognizeSubscriptionScreenshot } from '../../lib/ocrEngine';
+import { todayLocal } from '../../lib/date';
 
 interface SubscriptionModalProps {
   isOpen: boolean;
@@ -284,8 +285,8 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
       rechargeUrl: rechargeUrl.trim() || undefined,
       notes: notes.trim() || (hasExtractedFromSmart ? '智能识图录入' : undefined),
       history: initialData?.history || [],
-      createdAt: initialData?.createdAt || new Date().toISOString().split('T')[0],
-      updatedAt: new Date().toISOString().split('T')[0],
+      createdAt: initialData?.createdAt || todayLocal(),
+      updatedAt: todayLocal(),
     });
 
     // Save token if extracted
@@ -297,8 +298,8 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
         accountEmail: accountEmail.trim() || undefined,
         tags: ['智能录入', serviceKey || 'ai'],
         notes: `关联订阅: ${name}`,
-        createdAt: new Date().toISOString().split('T')[0],
-        updatedAt: new Date().toISOString().split('T')[0],
+        createdAt: todayLocal(),
+        updatedAt: todayLocal(),
       });
     }
 

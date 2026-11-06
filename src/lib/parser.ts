@@ -1,6 +1,7 @@
 import { PRESET_SERVICES } from '../types/presets';
 import { BillingCycle, ServiceCategory, CurrencyCode } from '../types';
 import { getCurrencyDef } from './currencies';
+import { formatLocalDate } from './date';
 
 export interface ParsedSmartInput {
   serviceKey?: string;
@@ -440,7 +441,7 @@ export function parseSmartText(text: string): ParsedSmartInput {
   if (!result.nextBillingDate) {
     const d = new Date();
     d.setDate(d.getDate() + 30);
-    result.nextBillingDate = d.toISOString().split('T')[0];
+    result.nextBillingDate = formatLocalDate(d);
   }
 
   return result;

@@ -4,6 +4,7 @@ import { parseSmartText, ParsedSmartInput } from '../../lib/parser';
 import { recognizeSubscriptionScreenshot } from '../../lib/ocrEngine';
 import { SubscriptionItem, TokenItem } from '../../types';
 import confetti from 'canvas-confetti';
+import { todayLocal } from '../../lib/date';
 
 interface SmartAccountModalProps {
   isOpen: boolean;
@@ -121,13 +122,13 @@ export const SmartAccountModal: React.FC<SmartAccountModalProps> = ({
       cycle: parsed.cycle || 'monthly',
       price: parsed.price || 20,
       currency: parsed.currency || 'USD',
-      nextBillingDate: parsed.nextBillingDate || new Date().toISOString().split('T')[0],
+      nextBillingDate: parsed.nextBillingDate || todayLocal(),
       autoRenew: true,
       paymentMethod: parsed.paymentMethod || 'Apple 订阅',
       notes: parsed.notes || '智能图片识别录入',
       history: [],
-      createdAt: new Date().toISOString().split('T')[0],
-      updatedAt: new Date().toISOString().split('T')[0],
+      createdAt: todayLocal(),
+      updatedAt: todayLocal(),
     };
     onSaveSubscription(subData);
 
@@ -140,8 +141,8 @@ export const SmartAccountModal: React.FC<SmartAccountModalProps> = ({
         accountEmail: parsed.accountEmail,
         tags: ['智能录入', parsed.serviceKey || 'ai'],
         notes: `关联订阅: ${parsed.serviceName || ''}`,
-        createdAt: new Date().toISOString().split('T')[0],
-        updatedAt: new Date().toISOString().split('T')[0],
+        createdAt: todayLocal(),
+        updatedAt: todayLocal(),
       });
     }
 

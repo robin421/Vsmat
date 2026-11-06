@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, Key, Sparkles, ExternalLink } from 'lucide-react';
 import { TokenItem } from '../../types';
 import { PRESET_SERVICES, getPresetByKey } from '../../types/presets';
+import { safeHttpUrl } from '../../lib/url';
 
 interface TokenModalProps {
   isOpen: boolean;
@@ -245,7 +246,7 @@ export const TokenModal: React.FC<TokenModalProps> = ({
               <span>官方控制台链接</span>
               {consoleUrl && (
                 <a
-                  href={consoleUrl}
+                  href={safeHttpUrl(consoleUrl)}
                   target="_blank"
                   rel="noreferrer"
                   className="text-zinc-600 text-xs flex items-center gap-1 hover:text-[#222222] font-normal"

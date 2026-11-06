@@ -43,7 +43,11 @@ export const VoucherStash: React.FC<VoucherStashProps> = ({
     }
 
     try {
-      await execute1ClickRecharge(voucher.code, voucher.serviceKey);
+      const result = await execute1ClickRecharge(voucher.code, voucher.serviceKey);
+      if (!result.success) {
+        window.alert(result.message);
+        return;
+      }
 
       confetti({
         particleCount: 50,

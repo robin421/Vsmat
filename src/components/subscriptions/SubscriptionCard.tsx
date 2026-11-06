@@ -21,6 +21,7 @@ import { SubscriptionItem } from '../../types';
 import { getDaysUntil } from '../../lib/notifications';
 import { convertToUSD } from '../../lib/currencies';
 import { BrandBadge } from '../common/BrandBadge';
+import { safeHttpUrl } from '../../lib/url';
 
 interface SubscriptionCardProps {
   subscription: SubscriptionItem;
@@ -182,7 +183,7 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
 
                   {subscription.portalUrl && (
                     <a
-                      href={subscription.portalUrl}
+                      href={safeHttpUrl(subscription.portalUrl)}
                       target="_blank"
                       rel="noreferrer"
                       className="w-full text-left px-3 py-2 rounded-xl hover:bg-[#F7F7F7] text-[#222222] font-medium flex items-center gap-2"

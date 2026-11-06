@@ -3,6 +3,7 @@ import { Eye, EyeOff, Copy, Check, ExternalLink, Edit2, Trash2, Globe, MoreHoriz
 import { TokenItem } from '../../types';
 import { getPresetByKey } from '../../types/presets';
 import { BrandBadge } from '../common/BrandBadge';
+import { safeHttpUrl } from '../../lib/url';
 
 interface TokenCardProps {
   token: TokenItem;
@@ -53,7 +54,7 @@ export const TokenCard: React.FC<TokenCardProps> = ({ token, onEdit, onDelete })
           <div className="flex items-center gap-1 shrink-0" onClick={(e) => e.stopPropagation()}>
             {token.consoleUrl && (
               <a
-                href={token.consoleUrl}
+                href={safeHttpUrl(token.consoleUrl)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-8 h-8 rounded-full text-[#717171] hover:text-[#222222] hover:bg-[#F7F7F7] flex items-center justify-center transition"
