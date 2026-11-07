@@ -199,19 +199,18 @@ export const BrandBadge: React.FC<BrandBadgeProps> = ({
   const lowerName = (name || '').toLowerCase();
 
   const sizeClasses = {
-    sm: 'w-8 h-8 rounded-xl',
-    md: 'w-11 h-11 rounded-2xl',
+    sm: 'w-9 h-9 rounded-lg',
+    md: 'w-10 h-10 rounded-xl',
     lg: 'w-13 h-13 rounded-2xl',
   };
 
   const iconSizes = {
     sm: 'w-4 h-4',
-    md: 'w-6 h-6',
+    md: 'w-5 h-5',
     lg: 'w-7 h-7',
   };
 
-  // Airbnb style: warm, tactile squircle with subtle border and crisp brand styling
-  const baseSquircle = `${sizeClasses[size]} flex items-center justify-center font-bold shadow-2xs shrink-0 transition-transform duration-200 group-hover:scale-105 ${className}`;
+    const baseSquircle = `${sizeClasses[size]} flex items-center justify-center font-semibold shrink-0 ${className}`;
 
   // 1. OpenAI / ChatGPT (Official Emerald / Dark)
   if (normalizedKey.includes('openai') || lowerName.includes('chatgpt') || lowerName.includes('openai') || lowerName.includes('gpt')) {

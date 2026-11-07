@@ -3,6 +3,7 @@ import { Gift, Plus, Copy, Check, Zap, Trash2 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { VoucherItem } from '../../types';
 import { execute1ClickRecharge } from '../../lib/rechargeEngines';
+import { getPresetByKey } from '../../types/presets';
 import { BrandBadge } from '../common/BrandBadge';
 
 interface VoucherStashProps {
@@ -62,14 +63,14 @@ export const VoucherStash: React.FC<VoucherStashProps> = ({
   };
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       {/* Header & Filter */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3.5">
         <div className="flex items-center gap-2">
-          <div className="flex items-center p-0.5 rounded-lg bg-inset border border-line text-sm max-w-full overflow-x-auto">
+          <div className="flex items-center p-1 rounded-xl bg-inset text-sm max-w-full overflow-x-auto">
             <button
               onClick={() => setFilter('unredeemed')}
-              className={`px-3.5 h-8 rounded-md transition-colors select-none font-medium whitespace-nowrap ${
+              className={`px-3 h-8 rounded-lg transition-colors select-none font-medium whitespace-nowrap ${
                 filter === 'unredeemed'
                   ? 'bg-white text-ink font-semibold'
                   : 'text-muted hover:text-ink'
@@ -79,7 +80,7 @@ export const VoucherStash: React.FC<VoucherStashProps> = ({
             </button>
             <button
               onClick={() => setFilter('redeemed')}
-              className={`px-3.5 h-8 rounded-md transition-colors select-none font-medium whitespace-nowrap ${
+              className={`px-3 h-8 rounded-lg transition-colors select-none font-medium whitespace-nowrap ${
                 filter === 'redeemed'
                   ? 'bg-white text-ink font-semibold'
                   : 'text-muted hover:text-ink'
@@ -89,7 +90,7 @@ export const VoucherStash: React.FC<VoucherStashProps> = ({
             </button>
             <button
               onClick={() => setFilter('all')}
-              className={`px-3.5 h-8 rounded-md transition-colors select-none font-medium whitespace-nowrap ${
+              className={`px-3 h-8 rounded-lg transition-colors select-none font-medium whitespace-nowrap ${
                 filter === 'all'
                   ? 'bg-white text-ink font-semibold'
                   : 'text-muted hover:text-ink'
@@ -102,7 +103,7 @@ export const VoucherStash: React.FC<VoucherStashProps> = ({
 
         <button
           onClick={onAddNew}
-          className="h-9 px-4 rounded-lg btn-primary font-semibold text-sm flex items-center justify-center gap-1.5 shrink-0"
+          className="h-10 px-4 rounded-xl btn-primary font-semibold text-sm flex items-center justify-center gap-1.5 shrink-0 whitespace-nowrap"
         >
           <Plus className="w-4 h-4 text-white stroke-[2.5]" />
           <span>存入礼品卡券</span>
@@ -111,101 +112,97 @@ export const VoucherStash: React.FC<VoucherStashProps> = ({
 
       {/* Grid of Vouchers */}
       {filteredVouchers.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 row:grid-cols-3 gap-4">
           {filteredVouchers.map(voucher => {
             const isRedeemed = voucher.status === 'redeemed';
+            const tone = getPresetByKey(voucher.serviceKey).brandColor;
 
             return (
-              <div
-                key={voucher.id}
-                className={`group p-5 rounded-2xl flex flex-col justify-between surface-card ${
-                  isRedeemed ? 'opacity-60 !bg-inset' : ''
-                }`}
-              >
-                <div>
-                  <div className="flex items-start justify-between gap-2 mb-3.5">
-                    <div className="flex items-center gap-3">
+              <div key={voucher.id} className={`rounded-2xl overflow-hidden surface-card flex flex-col ${isRedeemed ? 'opacity-70' : ''}`}>
+                {/* The card face, in the provider's colour */}
+                <div
+                  className="relative p-4 h-32 flex flex-col justify-between text-white"
+                  style={{ background: isRedeemed ? '#8E93A6' : `color-mix(in srgb, ${tone} 55%, #141B4D)` }}
+                >
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <span className="rounded-lg bg-white shrink-0">
                       <BrandBadge serviceKey={voucher.serviceKey} name={voucher.serviceName} size="sm" />
-                      <div>
-                        <h4 className="text-sm font-semibold text-ink leading-snug">
-                          {voucher.serviceName}
-                        </h4>
-                        <span className="text-xs font-mono text-muted">
-                          {voucher.createdAt} 录入
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Amount badge */}
+                    </span>
+                    <h4 className="text-sm font-semibold truncate" title={voucher.serviceName}>
+                      {voucher.serviceName}
+                    </h4>
+                  </div>
+                  <div className="flex items-end justify-between gap-3">
+                    <span className="text-xs text-white/75 whitespace-nowrap">{voucher.createdAt} 录入</span>
                     {voucher.amount ? (
-                      <span className="text-xs px-2 py-0.5 rounded-md bg-inset text-ink font-mono font-semibold border border-line">
+                      <span className="text-2xl font-bold tracking-tight leading-none whitespace-nowrap">
                         {voucher.currency} {voucher.amount}
                       </span>
                     ) : null}
                   </div>
+                </div>
 
-                  {/* Code box */}
-                  <div className="flex items-center justify-between px-3.5 py-3 rounded-xl border border-dashed border-line-strong font-mono text-[13px] mb-3.5">
-                    <span className="truncate text-ink font-medium select-all">
-                      {voucher.code}
-                    </span>
+                <div className="p-4 flex-1 flex flex-col gap-3">
+                  <div className="flex items-center justify-between gap-2 pl-3 pr-1 h-10 rounded-lg bg-inset font-mono text-[13px]">
+                    <span className="truncate text-ink select-all">{voucher.code}</span>
                     <button
                       type="button"
                       onClick={() => handleCopy(voucher.id, voucher.code)}
-                      className="hover:text-ink text-muted ml-2 w-7 h-7 -mr-1.5 rounded-md hover:bg-inset text-xs flex items-center justify-center shrink-0 transition-colors"
+                      className="w-8 h-8 rounded-md hover:bg-line text-muted hover:text-ink flex items-center justify-center shrink-0 transition-colors"
                       title="复制卡密"
+                      aria-label="复制卡密"
                     >
                       {copiedId === voucher.id ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
                     </button>
                   </div>
 
                   {voucher.notes && (
-                    <p className="text-sm text-muted mb-3 truncate">
+                    <p className="text-[13px] text-muted truncate" title={voucher.notes}>
                       {voucher.notes}
                     </p>
                   )}
-                </div>
 
-                {/* Card footer */}
-                <div className="pt-1 flex items-center justify-between gap-2">
-                  {!isRedeemed ? (
+                  <div className="mt-auto flex items-center gap-2">
+                    {!isRedeemed ? (
+                      <button
+                        type="button"
+                        onClick={() => handle1ClickRecharge(voucher)}
+                        className="flex-1 h-10 px-4 rounded-lg btn-primary font-semibold text-sm flex items-center justify-center gap-1.5 whitespace-nowrap"
+                      >
+                        <Zap className="w-3.5 h-3.5" />
+                        <span>一键充值使用</span>
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => onUpdateStatus(voucher.id, 'unredeemed')}
+                        className="flex-1 h-10 px-4 rounded-lg bg-inset hover:bg-line text-ink-soft text-sm font-semibold transition-colors"
+                      >
+                        撤销核销
+                      </button>
+                    )}
+
                     <button
                       type="button"
-                      onClick={() => handle1ClickRecharge(voucher)}
-                      className="flex-1 h-10 px-4 rounded-lg btn-primary font-semibold text-sm flex items-center justify-center gap-1.5"
+                      onClick={() => {
+                        if (confirm(`确定要删除此卡券吗？`)) {
+                          onDelete(voucher.id);
+                        }
+                      }}
+                      className="w-10 h-10 rounded-lg text-muted hover:text-rose-700 hover:bg-rose-50 flex items-center justify-center transition-colors shrink-0"
+                      title="删除"
+                      aria-label="删除"
                     >
-                      <Zap className="w-3.5 h-3.5" />
-                      <span>一键充值使用</span>
+                      <Trash2 className="w-4 h-4" />
                     </button>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() => onUpdateStatus(voucher.id, 'unredeemed')}
-                      className="flex-1 h-10 px-4 rounded-lg bg-white hover:bg-line text-muted text-sm font-semibold transition-colors border border-line"
-                    >
-                      撤销核销
-                    </button>
-                  )}
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (confirm(`确定要删除此卡券吗？`)) {
-                        onDelete(voucher.id);
-                      }
-                    }}
-                    className="w-10 h-10 rounded-lg text-muted hover:text-rose-700 hover:bg-rose-50 flex items-center justify-center transition-colors"
-                    title="删除"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
+                  </div>
                 </div>
               </div>
             );
           })}
         </div>
       ) : (
-        <div className="text-center py-16 px-4 rounded-2xl border border-dashed border-line-strong bg-white">
+        <div className="text-center py-16 px-4 rounded-2xl surface-card">
           <div className="w-12 h-12 rounded-lg bg-brand-700 text-white flex items-center justify-center mx-auto mb-4">
             <Gift className="w-6 h-6" />
           </div>

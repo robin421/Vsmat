@@ -27,6 +27,14 @@ const OverviewStats = lazy(() => import('./components/dashboard/OverviewStats').
 const QuickRechargeBar = lazy(() => import('./components/dashboard/QuickRechargeBar').then((m) => ({ default: m.QuickRechargeBar })));
 const DataSecurityModal = lazy(() => import('./components/common/DataSecurityModal').then((m) => ({ default: m.DataSecurityModal })));
 
+const TAB_TITLES = {
+  dashboard: '我的订阅',
+  subscriptions: '我的订阅',
+  tokens: 'Token 密钥',
+  vouchers: '礼品券直充',
+  analytics: '支出统计',
+} as const;
+
 const newId = (prefix: string) => `${prefix}-${crypto.randomUUID()}`;
 
 export function App() {
@@ -219,7 +227,7 @@ export function App() {
   }
 
   return (
-    <div className="min-h-screen bg-canvas text-ink flex flex-col font-sans antialiased">
+    <div className="min-h-screen bg-canvas text-ink flex flex-col font-sans antialiased lg:pl-60 pb-[calc(4rem+env(safe-area-inset-bottom))] lg:pb-0">
       <Navbar
         activeTab={activeTab}
         onTabChange={setActiveTab}
@@ -247,7 +255,9 @@ export function App() {
       )}
 
       <Suspense fallback={<div className="flex-1" aria-busy="true" />}>
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+      <main className="flex-1 max-w-[1240px] w-full mx-auto px-4 sm:px-6 lg:px-10 py-6 lg:py-9 space-y-6">
+        <h1 className="text-2xl lg:text-[28px] font-bold tracking-tight text-ink leading-tight">{TAB_TITLES[activeTab]}</h1>
+
         {/* Tab 1: Subscriptions (Clean & Spacious) */}
         {activeTab === 'subscriptions' && (
           <div className="animate-fadeIn space-y-6">
@@ -354,22 +364,22 @@ export function App() {
       </Suspense>
 
       {/* Executive Clean Footer with Security & Privacy Guarantee */}
-      <footer className="mt-auto py-6 border-t border-line text-center text-xs text-muted bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <footer className="mt-auto px-4 sm:px-6 lg:px-10 py-5 text-xs text-muted">
+        <div className="max-w-[1160px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
           <div className="flex items-center gap-2 whitespace-nowrap">
             <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
-            <span className="font-semibold text-ink">Vsmat 本地加密金库</span>
-            <span className="text-subtle hidden md:inline">· 100% 纯前端离线架构 · 无后端服务器 · 零云端数据库</span>
+            <span className="font-semibold text-ink-soft">Vsmat 本地加密金库</span>
+            <span className="hidden md:inline">· 100% 纯前端离线架构 · 无后端服务器 · 零云端数据库</span>
           </div>
-          <div className="flex items-center gap-4 whitespace-nowrap">
+          <div className="flex items-center gap-3 whitespace-nowrap">
             <button
               onClick={() => setIsSecurityModalOpen(true)}
-              className="text-ink hover:text-ink-soft underline decoration-line-strong hover:decoration-black transition font-medium"
+              className="text-brand-700 hover:text-brand-800 font-medium transition-colors"
             >
               数据安全与隐私白皮书
             </button>
             <span>·</span>
-            <span className="font-mono text-subtle">AES-256-GCM 本地加密</span>
+            <span>AES-256-GCM 本地加密</span>
           </div>
         </div>
       </footer>

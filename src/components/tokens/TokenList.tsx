@@ -31,17 +31,17 @@ export const TokenList: React.FC<TokenListProps> = ({
   }, [tokens, searchTerm]);
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       {/* Top action toolbar */}
-      <div className="flex items-center justify-between pb-1">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center gap-2.5 text-sm text-muted">
           <ShieldCheck className="w-4 h-4 text-emerald-600" />
-          <span>共收录 <strong className="text-ink font-mono">{tokens.length}</strong> 个 API 密钥凭证 · 硬件级 AES-256 本地加密</span>
+          <span>共收录 <strong className="text-ink">{tokens.length}</strong> 个 API 密钥凭证 · 硬件级 AES-256 本地加密</span>
         </div>
 
         <button
           onClick={onAddNew}
-          className="h-9 px-4 rounded-lg btn-primary font-semibold text-sm flex items-center justify-center gap-1.5"
+          className="h-10 px-4 rounded-xl btn-primary font-semibold text-sm flex items-center justify-center gap-1.5 shrink-0 whitespace-nowrap"
         >
           <Plus className="w-4 h-4 text-white stroke-[2.5]" />
           <span>收藏新密钥</span>
@@ -50,7 +50,7 @@ export const TokenList: React.FC<TokenListProps> = ({
 
       {/* Grid of Tokens */}
       {filteredTokens.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 row:block row:bg-white row:rounded-2xl row:shadow-card row:divide-y row:divide-line">
           {filteredTokens.map(token => (
             <TokenCard
               key={token.id}
@@ -61,7 +61,7 @@ export const TokenList: React.FC<TokenListProps> = ({
           ))}
         </div>
       ) : (
-        <div className="text-center py-16 px-4 rounded-2xl border border-dashed border-line-strong bg-white">
+        <div className="text-center py-16 px-4 rounded-2xl surface-card">
           <div className="w-12 h-12 rounded-lg bg-brand-700 text-white flex items-center justify-center mx-auto mb-4">
             <Key className="w-6 h-6" />
           </div>

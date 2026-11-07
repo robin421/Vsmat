@@ -72,22 +72,22 @@ export const QuickRechargeBar: React.FC<QuickRechargeBarProps> = ({
   };
 
   return (
-    <div className="relative overflow-hidden rounded-3xl bg-white border border-line p-6 sm:p-7 surface-card">
+    <div className="rounded-3xl surface-card p-5 sm:p-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-5">
         <div className="flex items-center gap-3.5">
-          <div className="w-11 h-11 rounded-lg bg-brand-700 text-white flex items-center justify-center shrink-0">
-            <Zap className="w-5 h-5 fill-white" />
+          <div className="w-10 h-10 rounded-xl bg-brand-50 text-brand-700 flex items-center justify-center shrink-0">
+            <Zap className="w-5 h-5" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-lg font-semibold text-ink tracking-tight">
+              <h2 className="text-lg font-bold text-ink tracking-tight whitespace-nowrap">
                 粘贴礼品券一键充值
               </h2>
-              <span className="text-xs px-2 py-0.5 rounded-md bg-inset text-ink-soft font-medium border border-line">
+              <span className="text-xs px-2 h-5 inline-flex items-center rounded-full bg-brand-50 text-brand-700 font-semibold whitespace-nowrap">
                 极速直达
               </span>
             </div>
-            <p className="text-sm text-muted mt-1">
+            <p className="text-sm text-muted mt-1 text-pretty">
               粘贴 Apple 礼品卡直接唤出【网页端免退号兑换】，粘贴 AI 服务兑换码自动复制并秒开充值台
             </p>
           </div>
@@ -97,7 +97,7 @@ export const QuickRechargeBar: React.FC<QuickRechargeBarProps> = ({
         <button
           type="button"
           onClick={handlePasteFromClipboard}
-          className="self-start md:self-auto h-9 text-sm px-3.5 rounded-lg bg-white hover:bg-inset text-ink border border-line-strong hover:border-ink transition-colors flex items-center gap-1.5 font-semibold active:scale-[0.985]"
+          className="self-start md:self-auto h-9 text-[13px] px-3 rounded-lg bg-inset hover:bg-line text-ink-soft transition-colors flex items-center gap-1.5 font-semibold whitespace-nowrap shrink-0 active:scale-[0.985]"
         >
           <Copy className="w-3.5 h-3.5 text-muted" />
           <span>从剪贴板粘贴</span>
@@ -105,13 +105,13 @@ export const QuickRechargeBar: React.FC<QuickRechargeBarProps> = ({
       </div>
 
       <form onSubmit={handleRecharge} className="space-y-3.5">
-        <div className="flex flex-col sm:flex-row items-stretch gap-3">
+        <div className="flex flex-col md:flex-row items-stretch gap-1.5 p-1.5 rounded-2xl bg-inset">
           {/* Service selector */}
-          <div className="sm:w-60 shrink-0">
+          <div className="md:w-52 shrink-0">
             <select
               value={selectedService}
               onChange={(e) => setSelectedService(e.target.value)}
-              className="field w-full h-12 rounded-lg px-3.5 text-sm font-medium text-ink outline-none"
+              className="w-full h-11 rounded-xl bg-white px-3 text-sm font-medium text-ink outline-none"
             >
               <option value="auto">
                 {detectedService ? `识别为: ${detectedService.name}` : '⚡ 自动智能识别服务'}
@@ -132,7 +132,7 @@ export const QuickRechargeBar: React.FC<QuickRechargeBarProps> = ({
               value={code}
               onChange={(e) => setCode(e.target.value)}
               placeholder="在此粘贴礼品卡号、兑换码或卡密 (如 X89A-24B8... 或 AAAAA-BBBBB-CCCCC)"
-              className="field w-full h-12 rounded-lg pl-4 pr-10 text-sm font-mono text-ink placeholder:text-muted outline-none"
+              className="w-full h-11 rounded-xl bg-white pl-3.5 pr-9 text-sm font-mono text-ink placeholder:text-muted placeholder:font-sans outline-none"
             />
             {code && (
               <button
@@ -149,7 +149,7 @@ export const QuickRechargeBar: React.FC<QuickRechargeBarProps> = ({
           <button
             type="submit"
             disabled={!code.trim()}
-            className="h-12 px-6 rounded-lg font-semibold text-sm btn-primary disabled:bg-line-strong disabled:text-white disabled:cursor-not-allowed flex items-center justify-center gap-2 shrink-0"
+            className="h-11 px-5 rounded-xl font-semibold text-sm btn-primary disabled:bg-brand-200 disabled:text-white disabled:cursor-not-allowed flex items-center justify-center gap-1.5 shrink-0 whitespace-nowrap"
           >
             {isCopied ? (
               <>
@@ -168,7 +168,7 @@ export const QuickRechargeBar: React.FC<QuickRechargeBarProps> = ({
         {/* Channel Helper Tag */}
         <div className="flex flex-wrap items-center gap-2 text-sm text-muted pt-1">
           <span>目标通道:</span>
-          <span className="px-2 py-0.5 rounded-md font-semibold text-xs bg-inset text-ink border border-line">
+          <span className="px-2 h-6 inline-flex items-center rounded-md font-semibold text-xs bg-brand-50 text-brand-700">
             {effectiveService.name}
           </span>
           {effectiveService.key === 'apple' ? (

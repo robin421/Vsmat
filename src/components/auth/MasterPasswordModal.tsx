@@ -101,7 +101,7 @@ export const MasterPasswordModal: React.FC<MasterPasswordModalProps> = ({
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="请输入主密码"
-              className="w-full h-11 bg-inset border border-line-strong focus:border-ink rounded-lg px-3.5 text-sm font-mono text-ink outline-none transition"
+              className="w-full h-11 bg-inset border border-line-strong focus:border-ink rounded-lg px-3.5 text-sm text-ink outline-none transition"
             />
           </div>
 
@@ -121,7 +121,7 @@ export const MasterPasswordModal: React.FC<MasterPasswordModalProps> = ({
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="请再次输入主密码"
-                className="w-full h-11 bg-inset border border-line-strong focus:border-ink rounded-lg px-3.5 text-sm font-mono text-ink outline-none transition"
+                className="w-full h-11 bg-inset border border-line-strong focus:border-ink rounded-lg px-3.5 text-sm text-ink outline-none transition"
               />
             </div>
           )}
@@ -133,7 +133,7 @@ export const MasterPasswordModal: React.FC<MasterPasswordModalProps> = ({
                 type="checkbox"
                 checked={remember}
                 onChange={(e) => setRemember(e.target.checked)}
-                className="w-4 h-4 rounded border-line-strong bg-white accent-black"
+                className="w-4 h-4 rounded border-line-strong bg-white accent-brand-700"
               />
               <span>记住解锁状态（仅在本设备保存不可导出的解锁密钥，主动锁定或空闲超时后需重新输入）</span>
             </label>

@@ -64,15 +64,15 @@ export const SubscriptionList: React.FC<SubscriptionListProps> = ({
   }, [subscriptions, effectiveSearch, selectedCategory, filterUrgentOnly, sortBy]);
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       {/* Airbnb Style Category Pills & Search Toolbar */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3.5 pb-1">
         {/* Left: Category Switcher (Airbnb Experiences Bar) */}
         <div className="flex flex-wrap items-center gap-2">
-          <div className="flex items-center p-0.5 rounded-lg bg-inset border border-line text-sm max-w-full overflow-x-auto">
+          <div className="flex items-center p-1 rounded-xl bg-inset text-sm max-w-full overflow-x-auto">
             <button
               onClick={() => setSelectedCategory('all')}
-              className={`px-3.5 h-8 rounded-md transition-colors font-medium select-none whitespace-nowrap ${
+              className={`px-3 h-8 rounded-lg transition-colors font-medium select-none whitespace-nowrap ${
                 selectedCategory === 'all'
                   ? 'bg-white text-ink font-semibold'
                   : 'text-muted hover:text-ink'
@@ -82,7 +82,7 @@ export const SubscriptionList: React.FC<SubscriptionListProps> = ({
             </button>
             <button
               onClick={() => setSelectedCategory('ai')}
-              className={`px-3.5 h-8 rounded-md transition-colors font-medium select-none whitespace-nowrap ${
+              className={`px-3 h-8 rounded-lg transition-colors font-medium select-none whitespace-nowrap ${
                 selectedCategory === 'ai'
                   ? 'bg-white text-ink font-semibold'
                   : 'text-muted hover:text-ink'
@@ -92,7 +92,7 @@ export const SubscriptionList: React.FC<SubscriptionListProps> = ({
             </button>
             <button
               onClick={() => setSelectedCategory('developer')}
-              className={`px-3.5 h-8 rounded-md transition-colors font-medium select-none whitespace-nowrap ${
+              className={`px-3 h-8 rounded-lg transition-colors font-medium select-none whitespace-nowrap ${
                 selectedCategory === 'developer'
                   ? 'bg-white text-ink font-semibold'
                   : 'text-muted hover:text-ink'
@@ -102,7 +102,7 @@ export const SubscriptionList: React.FC<SubscriptionListProps> = ({
             </button>
             <button
               onClick={() => setSelectedCategory('server')}
-              className={`px-3.5 h-8 rounded-md transition-colors font-medium select-none whitespace-nowrap ${
+              className={`px-3 h-8 rounded-lg transition-colors font-medium select-none whitespace-nowrap ${
                 selectedCategory === 'server'
                   ? 'bg-white text-ink font-semibold'
                   : 'text-muted hover:text-ink'
@@ -115,10 +115,10 @@ export const SubscriptionList: React.FC<SubscriptionListProps> = ({
           {/* Urgent Filter Toggle */}
           <button
             onClick={() => setFilterUrgentOnly(!filterUrgentOnly)}
-            className={`px-3.5 h-9 rounded-lg text-sm font-medium border transition-colors active:scale-[0.985] ${
+            className={`px-3.5 h-10 rounded-xl text-sm font-medium border transition-colors whitespace-nowrap active:scale-[0.985] ${
               filterUrgentOnly
-                ? 'bg-brand-700 text-white border-ink'
-                : 'bg-white text-ink hover:bg-inset border-line-strong hover:border-ink'
+                ? 'bg-brand-700 text-white border-brand-700'
+                : 'bg-white text-ink-soft hover:bg-inset border-line'
             }`}
           >
             仅待续费 (≤7天)
@@ -135,7 +135,7 @@ export const SubscriptionList: React.FC<SubscriptionListProps> = ({
               value={localSearch}
               onChange={(e) => setLocalSearch(e.target.value)}
               placeholder="搜索订阅名称或账号..."
-              className="field w-full h-9 pl-9 pr-8 rounded-lg text-sm text-ink placeholder:text-muted outline-none"
+              className="field w-full h-10 pl-9 pr-8 rounded-xl text-sm text-ink placeholder:text-muted outline-none"
             />
             {localSearch && (
               <button
@@ -150,7 +150,7 @@ export const SubscriptionList: React.FC<SubscriptionListProps> = ({
           {/* Add New Subscription (Executive Primary CTA) */}
           <button
             onClick={onAddNew}
-            className="h-9 px-4 rounded-lg btn-primary font-semibold text-sm flex items-center justify-center gap-1.5 shrink-0"
+            className="h-10 px-4 rounded-xl btn-primary font-semibold text-sm flex items-center justify-center gap-1.5 shrink-0 whitespace-nowrap"
             title="新建订阅（支持截图智能识别与手动录入）"
           >
             <Plus className="w-4 h-4 text-white stroke-[2.5]" />
@@ -161,7 +161,7 @@ export const SubscriptionList: React.FC<SubscriptionListProps> = ({
 
       {/* Grid of Subscriptions */}
       {filteredSubscriptions.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 row:block row:bg-white row:rounded-2xl row:shadow-card row:divide-y row:divide-line">
           {filteredSubscriptions.map(sub => (
             <SubscriptionCard
               key={sub.id}
@@ -174,7 +174,7 @@ export const SubscriptionList: React.FC<SubscriptionListProps> = ({
           ))}
         </div>
       ) : (
-        <div className="text-center py-16 px-4 rounded-2xl border border-dashed border-line-strong bg-white">
+        <div className="text-center py-16 px-4 rounded-2xl surface-card">
           <div className="w-12 h-12 rounded-lg bg-brand-700 text-white flex items-center justify-center mx-auto mb-4">
             <CreditCard className="w-6 h-6" />
           </div>

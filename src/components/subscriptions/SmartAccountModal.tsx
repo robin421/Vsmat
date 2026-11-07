@@ -251,7 +251,7 @@ export const SmartAccountModal: React.FC<SmartAccountModalProps> = ({
                   </div>
                   <div>
                     <p className="text-sm font-semibold text-ink">
-                      点击上传 或 在此处直接按 <kbd className="px-1.5 py-0.5 rounded bg-white border border-line font-mono text-xs">Cmd+V</kbd> 粘贴截图
+                      点击上传 或 在此处直接按 <kbd className="px-1.5 py-0.5 rounded bg-white border border-line text-xs">Cmd+V</kbd> 粘贴截图
                     </p>
                     <p className="text-xs text-muted mt-1">
                       支持 iPhone 苹果订阅页面截图、账单截图等，纯本地离线 OCR 识别
@@ -307,7 +307,7 @@ ChatGPT Plus 账号：user@example.com
 密码：MySecretPass123
 下期续费：2026-12-08
 金额：20 USD/月"
-              className="w-full bg-inset border border-line-strong rounded-xl p-3 text-xs font-mono text-ink outline-none focus:border-ink"
+              className="w-full bg-inset border border-line-strong rounded-xl p-3 text-xs text-ink outline-none focus:border-ink"
             />
           </div>
         )}
@@ -320,7 +320,7 @@ ChatGPT Plus 账号：user@example.com
                 <Check className="w-4 h-4 text-ink" />
                 识别结果预览
               </span>
-              <span className="text-xs font-mono text-muted">
+              <span className="text-xs text-muted">
                 可核对后一键存入保险箱
               </span>
             </div>
@@ -337,7 +337,7 @@ ChatGPT Plus 账号：user@example.com
                 <div className="text-[11px] text-subtle mb-0.5 flex items-center gap-1 font-medium">
                   <DollarSign className="w-3 h-3 text-muted" /> 续费金额与币种
                 </div>
-                <div className="font-mono text-ink font-semibold">
+                <div className="text-ink font-semibold">
                   {parsed.currency} {parsed.price} ({parsed.cycle === 'monthly' ? '月付' : parsed.cycle})
                 </div>
               </div>
@@ -347,7 +347,7 @@ ChatGPT Plus 账号：user@example.com
                 <div className="text-[11px] text-subtle mb-0.5 flex items-center gap-1 font-medium">
                   <Calendar className="w-3 h-3 text-muted" /> 下期扣费时间 (更新日)
                 </div>
-                <div className="font-mono font-semibold text-ink text-sm">
+                <div className="font-semibold text-ink text-sm">
                   {parsed.nextBillingDate}
                 </div>
               </div>
@@ -366,7 +366,7 @@ ChatGPT Plus 账号：user@example.com
                   <div className="text-[11px] text-subtle mb-0.5 flex items-center gap-1 font-medium">
                     <Mail className="w-3 h-3 text-muted" /> 账号邮箱
                   </div>
-                  <div className="font-mono text-ink truncate">{parsed.accountEmail}</div>
+                  <div className="text-ink truncate">{parsed.accountEmail}</div>
                 </div>
               )}
             </div>

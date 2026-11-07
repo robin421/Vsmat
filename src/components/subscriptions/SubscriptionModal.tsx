@@ -344,19 +344,19 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
             <button
               type="button"
               onClick={() => setEntryMode('smart')}
-              className={`py-2 px-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition ${
+              className={`py-2 px-1.5 sm:px-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 whitespace-nowrap transition ${
                 entryMode === 'smart'
                   ? 'bg-white text-ink border border-line-strong'
                   : 'text-muted hover:text-ink'
               }`}
             >
-              <Sparkles className="w-3.5 h-3.5 text-ink" />
+              <Sparkles className="hidden sm:block w-3.5 h-3.5 text-ink" />
               <span>智能识别 (截图/发货单)</span>
             </button>
             <button
               type="button"
               onClick={() => setEntryMode('manual')}
-              className={`py-2 px-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition ${
+              className={`py-2 px-1.5 sm:px-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 whitespace-nowrap transition ${
                 entryMode === 'manual'
                   ? 'bg-white text-ink border border-line-strong'
                   : 'text-muted hover:text-ink'
@@ -374,7 +374,7 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
             <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
             <span className="truncate sm:whitespace-normal">100% 纯本地离线解析与加密存储，所有截图与账号密码绝不离开您的设备。</span>
           </div>
-          <span className="font-mono text-[11px] text-emerald-700 bg-white px-2 py-0.5 rounded-md border border-emerald-200 shrink-0 hidden sm:inline">
+          <span className="text-[11px] text-emerald-700 bg-white px-2 py-0.5 rounded-md border border-emerald-200 shrink-0 hidden sm:inline">
             无云端上传
           </span>
         </div>
@@ -447,7 +447,7 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
                         <Upload className="w-5 h-5 text-ink" />
                       </div>
                       <p className="text-xs font-semibold text-ink">
-                        点击上传 或 在此直接按 <kbd className="px-1.5 py-0.5 rounded bg-white border border-line font-mono text-xs">Cmd+V</kbd> 粘贴截图
+                        点击上传 或 在此直接按 <kbd className="px-1.5 py-0.5 rounded bg-white border border-line text-xs">Cmd+V</kbd> 粘贴截图
                       </p>
                       <p className="text-xs text-muted">
                         支持 iPhone 苹果订阅页面截图、SuperGrok、ChatGPT、Claude 账单，纯本地离线 OCR (零网络上传)
@@ -481,7 +481,7 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
 SuperGrok 印度区 700 INR/月
 扣费时间：2026-11-18
 账号：vip_user@gmail.com"
-                    className="w-full bg-inset border border-line-strong rounded-xl p-3 text-xs font-mono text-ink outline-none focus:border-ink"
+                    className="w-full bg-inset border border-line-strong rounded-xl p-3 text-xs text-ink outline-none focus:border-ink"
                   />
                 </div>
               )}
@@ -526,7 +526,7 @@ SuperGrok 印度区 700 INR/月
                 )}
               </span>
               {numPrice > 0 && (
-                <span className="text-xs font-mono font-medium text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                <span className="text-xs font-medium text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
                   折合约 ${usdConverted.toFixed(2)} USD
                 </span>
               )}
@@ -534,16 +534,16 @@ SuperGrok 印度区 700 INR/月
 
             {/* 1. 服务名称 */}
             <div>
-              <div className="flex items-center justify-between mb-1">
-                <label className="text-xs font-semibold text-ink flex items-center gap-1">
+              <div className="flex items-center justify-between gap-2 mb-1">
+                <label className="text-xs font-semibold text-ink flex items-center gap-1 whitespace-nowrap shrink-0">
                   服务名称 <span className="text-rose-500">*</span>
                 </label>
-                <div className="flex items-center gap-1">
-                  <span className="text-xs text-muted">快捷模板:</span>
+                <div className="flex items-center gap-1 min-w-0">
+                  <span className="text-xs text-muted whitespace-nowrap">快捷模板:</span>
                   <select
                     value={serviceKey}
                     onChange={(e) => handleServiceChange(e.target.value)}
-                    className="text-xs bg-inset border border-line-strong rounded-lg px-1.5 py-0.5 text-ink outline-none"
+                    className="min-w-0 max-w-full text-xs bg-inset border border-line-strong rounded-lg px-1.5 py-0.5 text-ink outline-none"
                   >
                     <option value="custom">自定义 / 手输</option>
                     {PRESET_SERVICES.map((p) => (
@@ -572,7 +572,7 @@ SuperGrok 印度区 700 INR/月
                   <span>续费金额与币种</span>
                 </label>
                 {currency !== 'USD' && numPrice > 0 && (
-                  <span className="text-xs text-muted font-mono">
+                  <span className="text-xs text-muted">
                     折合约 <strong className="text-ink">${usdConverted.toFixed(2)} USD</strong>，按全局汇率自动统计
                   </span>
                 )}
@@ -612,7 +612,7 @@ SuperGrok 印度区 700 INR/月
                     value={price}
                     onChange={(e) => setPrice(e.target.value)}
                     placeholder="700"
-                    className="w-full h-10 bg-white border border-line-strong focus:border-ink rounded-lg px-3 font-mono font-semibold text-sm text-ink outline-none"
+                    className="w-full h-10 bg-white border border-line-strong focus:border-ink rounded-lg px-3 font-semibold text-sm text-ink outline-none"
                   />
                 </div>
 
@@ -643,7 +643,7 @@ SuperGrok 印度区 700 INR/月
                 </label>
                 {nextBillingDate && (
                   <span
-                    className={`text-xs font-mono px-2 py-0.5 rounded-full font-semibold ${
+                    className={`text-xs px-2 py-0.5 rounded-full font-semibold ${
                       daysUntil <= 0
                         ? 'bg-rose-50 text-rose-800 border border-rose-200'
                         : daysUntil <= 7
@@ -660,7 +660,7 @@ SuperGrok 印度区 700 INR/月
                 required
                 value={nextBillingDate}
                 onChange={(e) => setNextBillingDate(e.target.value)}
-                className="w-full h-10 bg-inset border border-line-strong focus:border-ink focus:bg-white rounded-lg px-3 font-mono font-semibold text-sm text-ink outline-none transition"
+                className="w-full h-10 bg-inset border border-line-strong focus:border-ink focus:bg-white rounded-lg px-3 font-semibold text-sm text-ink outline-none transition"
               />
             </div>
 
@@ -697,13 +697,13 @@ SuperGrok 印度区 700 INR/月
 
             {/* 5. 账号 (若截图未识别到，清晰提示并支持手动输入) */}
             <div className="p-3 rounded-2xl bg-white border border-line space-y-1.5">
-              <div className="flex items-center justify-between">
-                <label className="text-xs font-semibold text-ink flex items-center gap-1.5">
+              <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-1">
+                <label className="text-xs font-semibold text-ink flex items-center gap-1.5 whitespace-nowrap">
                   <Mail className="w-3.5 h-3.5 text-ink" />
                   <span>服务账号 / 登录邮箱</span>
                 </label>
                 {!accountEmail.trim() ? (
-                  <span className="text-xs text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full font-medium flex items-center gap-1">
+                  <span className="text-xs text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full font-medium flex items-center gap-1 whitespace-nowrap">
                     <AlertCircle className="w-3 h-3 text-amber-600" />
                     未从截图识别到，可在此手动添加
                   </span>
@@ -719,7 +719,7 @@ SuperGrok 印度区 700 INR/月
                 value={accountEmail}
                 onChange={(e) => setAccountEmail(e.target.value)}
                 placeholder="请输入登录邮箱或账号 (例如: user@gmail.com)"
-                className={`w-full h-10 rounded-xl px-3 font-mono text-xs text-ink outline-none transition ${
+                className={`w-full h-10 rounded-xl px-3 text-xs text-ink outline-none transition ${
                   !accountEmail.trim()
                     ? 'bg-amber-50/40 border border-amber-300 focus:border-ink focus:bg-white'
                     : 'bg-inset border border-line-strong focus:border-ink focus:bg-white'
@@ -765,7 +765,7 @@ SuperGrok 印度区 700 INR/月
                         value={passwordNote}
                         onChange={(e) => setPasswordNote(e.target.value)}
                         placeholder="登录密码备忘"
-                        className="w-full h-9 bg-white border border-line-strong rounded-xl px-2.5 font-mono text-xs text-ink outline-none"
+                        className="w-full h-9 bg-white border border-line-strong rounded-xl px-2.5 text-xs text-ink outline-none"
                       />
                     </div>
                   </div>
@@ -779,7 +779,7 @@ SuperGrok 印度区 700 INR/月
                         value={portalUrl}
                         onChange={(e) => setPortalUrl(e.target.value)}
                         placeholder="https://..."
-                        className="w-full h-9 bg-white border border-line-strong rounded-xl px-2.5 font-mono text-xs text-ink outline-none"
+                        className="w-full h-9 bg-white border border-line-strong rounded-xl px-2.5 text-xs text-ink outline-none"
                       />
                     </div>
                     <div>
@@ -789,7 +789,7 @@ SuperGrok 印度区 700 INR/月
                         value={rechargeUrl}
                         onChange={(e) => setRechargeUrl(e.target.value)}
                         placeholder="https://..."
-                        className="w-full h-9 bg-white border border-line-strong rounded-xl px-2.5 font-mono text-xs text-ink outline-none"
+                        className="w-full h-9 bg-white border border-line-strong rounded-xl px-2.5 text-xs text-ink outline-none"
                       />
                     </div>
                   </div>

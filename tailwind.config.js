@@ -1,7 +1,7 @@
 /** @type {import('tailwindcss').Config} */
-// Design tokens for Vsmat — a local-only vault + renewal ledger.
-// Monochrome "obsidian" base (brand), one semantic signal per meaning:
-//   secure (emerald) · due (amber) · overdue (rose). Everything else is ink on paper.
+// Design tokens for Vsmat: a personal wallet for subscriptions, keys and gift cards.
+// Cobalt is the brand; amber (due) and coral (overdue) are reserved for billing status,
+// teal for "stored safely". Neutrals lean slightly blue so they sit with the brand.
 const fontCJK = '"PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", "Source Han Sans SC", "WenQuanYi Micro Hei"';
 
 export default {
@@ -9,35 +9,32 @@ export default {
   darkMode: 'class',
   theme: {
     extend: {
+      screens: { row: '1360px' }, // wide enough for list rows; below this items are cards
       colors: {
-        // Brand: "vault green" — deep, calm, tied to the one promise the product makes (your data stays safe).
         brand: {
-          50: '#E8F4EF', 100: '#CFE9DF', 200: '#A2D3C1', 300: '#6DB89F', 400: '#3A9A7C',
-          500: '#1B7F62', 600: '#0F6B52', 700: '#0B5844', 800: '#094637', 900: '#0A2C24', 950: '#061C17',
+          50: '#EEF1FE', 100: '#DFE4FD', 200: '#C3CCFB', 300: '#9BAAF7', 400: '#6C80F1',
+          500: '#4660E9', 600: '#2F49DC', 700: '#2639BE', 800: '#213097', 900: '#1E2B78', 950: '#141B4D',
         },
-        // Neutrals carry a faint green undertone so they sit with the brand instead of fighting it.
-        ink: { DEFAULT: '#14211D', soft: '#43524D' },
-        muted: '#586A64', // secondary text (5.8:1 on white)
-        subtle: '#8A9A95', // placeholders / disabled only
-        canvas: '#F1F5F3', // page background
-        inset: '#EAF0EE', // recessed fills
-        line: { DEFAULT: '#DAE3DF', strong: '#C0CDC8' },
-        // Status signals (remap the Tailwind palettes used across components)
-        emerald: { 50: '#E8F4EF', 100: '#CFE9DF', 200: '#A2D3C1', 300: '#6DB89F', 400: '#3A9A7C', 500: '#1B7F62', 600: '#0F6B52', 700: '#0B5844', 800: '#094637', 900: '#0A2C24' },
-        amber: { 50: '#FFF6E5', 100: '#FFEBC2', 200: '#F6D58E', 300: '#EBB84F', 400: '#D99A1C', 500: '#BF7F08', 600: '#A15C00', 700: '#834A00', 800: '#6B3D03', 900: '#4F2D05' },
-        rose: { 50: '#FDEEEC', 100: '#FADAD6', 200: '#F3B6AE', 300: '#E98A7F', 400: '#D95C4E', 500: '#C93A2B', 600: '#B42318', 700: '#982016', 800: '#7A1B13', 900: '#5E160F' },
+        ink: { DEFAULT: '#16192B', soft: '#3F4459' },
+        muted: '#646A80', // secondary text (5.2:1 on white)
+        subtle: '#8E93A6', // placeholders / disabled only
+        canvas: '#F4F5FA', // page background
+        inset: '#EFF0F6', // recessed fills
+        line: { DEFAULT: '#E6E8F0', strong: '#D3D6E2' },
+        emerald: { 50: '#E6F6F1', 100: '#CCEDE3', 200: '#9EDCCB', 300: '#66C6AC', 400: '#2FA98A', 500: '#0F9274', 600: '#0B7D63', 700: '#0A6651', 800: '#0A5241', 900: '#093F33' },
+        amber: { 50: '#FFF5E6', 100: '#FFE8C4', 200: '#FFD591', 300: '#FBBD58', 400: '#F2A32B', 500: '#DC8A0E', 600: '#B56E05', 700: '#8F5604', 800: '#6F4306', 900: '#523208' },
+        rose: { 50: '#FEEFEE', 100: '#FDDCDA', 200: '#FBBAB6', 300: '#F68F89', 400: '#EE645C', 500: '#E0453D', 600: '#C9302A', 700: '#A82620', 800: '#86201B', 900: '#661A16' },
       },
       fontFamily: {
-        sans: ['"IBM Plex Sans Variable"', '"IBM Plex Sans"', 'system-ui', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', ...fontCJK.split(', ').map((s) => s.replace(/"/g, '')), 'sans-serif'],
+        sans: ['"Figtree Variable"', 'system-ui', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', ...fontCJK.split(', ').map((s) => s.replace(/"/g, '')), 'sans-serif'],
         mono: ['"IBM Plex Mono"', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Consolas', ...fontCJK.split(', ').map((s) => s.replace(/"/g, '')), 'monospace'],
       },
-      // Radius scale by role: chips 6 · controls 8/10 · cards 12 · sheets 16
-      borderRadius: { md: '6px', lg: '8px', xl: '10px', '2xl': '12px', '3xl': '16px' },
+      // Radius by role: chips 6 / controls 10 / inner panels 12 / cards 16 / heroes and sheets 20
+      borderRadius: { md: '6px', lg: '10px', xl: '12px', '2xl': '16px', '3xl': '20px' },
       boxShadow: {
-        // One hairline + one soft lift. No glows.
-        card: '0 1px 0 rgba(10,44,36,0.05), 0 1px 3px rgba(10,44,36,0.06)',
-        pop: '0 16px 40px -10px rgba(10,44,36,0.28), 0 2px 6px rgba(10,44,36,0.08)',
-        '2xs': '0 1px 1px rgba(10,44,36,0.05)',
+        card: '0 1px 2px rgba(22,25,43,0.04), 0 6px 20px -8px rgba(22,25,43,0.08)',
+        pop: '0 20px 48px -12px rgba(20,27,77,0.28), 0 2px 8px rgba(20,27,77,0.08)',
+        '2xs': '0 1px 2px rgba(22,25,43,0.06)',
       },
       keyframes: {
         fadeIn: { from: { opacity: '0', transform: 'translateY(2px)' }, to: { opacity: '1', transform: 'none' } },
