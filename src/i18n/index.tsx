@@ -22,11 +22,6 @@ export function detectDefaultLanguage(): SupportedLanguage {
     if (saved === 'zh' || saved === 'en' || saved === 'ja' || saved === 'ko') {
       return saved;
     }
-    const navLang = (navigator.language || '').toLowerCase();
-    if (navLang.startsWith('zh')) return 'zh';
-    if (navLang.startsWith('ja')) return 'ja';
-    if (navLang.startsWith('ko')) return 'ko';
-    if (navLang.startsWith('en')) return 'en';
   } catch {}
   return 'zh';
 }
