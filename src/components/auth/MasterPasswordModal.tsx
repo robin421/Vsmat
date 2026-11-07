@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
-import { Lock, Shield, KeyRound, Check, AlertCircle } from 'lucide-react';
-
+import { Lock, KeyRound, AlertCircle, Fingerprint } from 'lucide-react';
 import { MIN_PASSWORD_LENGTH, STRENGTH_LABELS, passwordStrength } from '../../lib/password';
 
 interface MasterPasswordModalProps {
   isOpen: boolean;
   isInitialSetup: boolean;
   onUnlock: (password: string, remember: boolean) => Promise<boolean>;
-  onSetup: (password: string, remember: boolean) => Promise<void>;
+  onSetup: (password: string, remember: boolean, enableBiometrics?: boolean) => Promise<void>;
+  isBiometricsSupported?: boolean;
+  isBiometricsEnrolled?: boolean;
+  biometricsLabel?: string;
+  onBiometricUnlock?: () => Promise<boolean>;
 }
 
 export const MasterPasswordModal: React.FC<MasterPasswordModalProps> = ({
@@ -15,14 +18,36 @@ export const MasterPasswordModal: React.FC<MasterPasswordModalProps> = ({
   isInitialSetup,
   onUnlock,
   onSetup,
+  isBiometricsSupported = false,
+  isBiometricsEnrolled = false,
+  biometricsLabel = '触控 ID (Touch ID)',
+  onBiometricUnlock,
 }) => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [remember, setRemember] = useState(true);
+  const [enableBiometrics, setEnableBiometrics] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [bioLoading, setBioLoading] = useState(false);
 
   if (!isOpen) return null;
+
+  const handleBioUnlock = async () => {
+    if (!onBiometricUnlock) return;
+    setError(null);
+    setBioLoading(true);
+    try {
+      const ok = await onBiometricUnlock();
+      if (!ok) {
+        setError('已取消触控 ID 验证，可输入主密码解锁');
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : '触控 ID 验证失败');
+    } finally {
+      setBioLoading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,15 +70,15 @@ export const MasterPasswordModal: React.FC<MasterPasswordModalProps> = ({
           setLoading(false);
           return;
         }
-        await onSetup(password, remember);
+        await onSetup(password, remember, isBiometricsSupported && enableBiometrics);
       } else {
         const success = await onUnlock(password, remember);
         if (!success) {
           setError('主密码错误，解密失败');
         }
       }
-    } catch (err: any) {
-      setError(err?.message || '操作失败');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : '操作失败');
     } finally {
       setLoading(false);
     }
@@ -61,9 +86,9 @@ export const MasterPasswordModal: React.FC<MasterPasswordModalProps> = ({
 
   return (
     <div role="dialog" aria-modal="true" className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-brand-950/40 backdrop-blur-sm animate-fadeIn">
-      <div className="w-full max-w-md rounded-3xl bg-white border border-line p-7 surface-card text-ink">
+      <div className="w-full max-w-md rounded-3xl bg-white border border-line p-7 surface-card text-ink shadow-2xl">
         <div className="text-center mb-6">
-          <div className="w-12 h-12 rounded-2xl bg-brand-700 text-white border border-ink/10 flex items-center justify-center mx-auto mb-3">
+          <div className="w-12 h-12 rounded-2xl bg-brand-700 text-white border border-ink/10 flex items-center justify-center mx-auto mb-3 shadow-sm">
             <Lock className="w-6 h-6" />
           </div>
           <h2 className="text-lg font-semibold text-ink">
@@ -71,10 +96,29 @@ export const MasterPasswordModal: React.FC<MasterPasswordModalProps> = ({
           </h2>
           <p className="text-xs text-muted mt-1 max-w-xs mx-auto">
             {isInitialSetup
-              ? '所有 Token 密钥与账号信息将在本机进行 AES-256-GCM 强加密，安全无外泄'
-              : '输入主密码以解密您的 API Token 密钥与订阅账号'}
+              ? '所有凭证与账号均在本机进行 AES-256-GCM 强加密，安全无外泄'
+              : '验证触控 ID 或输入主密码以解密您的 API Key 与订阅资产'}
           </p>
         </div>
+
+        {/* Touch ID quick unlock shortcut if enrolled */}
+        {!isInitialSetup && isBiometricsEnrolled && onBiometricUnlock && (
+          <div className="mb-4">
+            <button
+              type="button"
+              disabled={bioLoading || loading}
+              onClick={handleBioUnlock}
+              className="w-full h-12 rounded-xl bg-gradient-to-r from-brand-700 via-brand-800 to-indigo-700 hover:from-brand-800 hover:to-indigo-800 text-white font-semibold text-sm shadow-sm hover:shadow transition flex items-center justify-center gap-2.5 active:scale-[0.98] disabled:opacity-50"
+            >
+              <Fingerprint className="w-5 h-5 text-white/90 animate-pulse" />
+              <span>{bioLoading ? '请轻触触控 ID...' : `使用 ${biometricsLabel} 快速解锁`}</span>
+            </button>
+            <div className="relative my-4 flex items-center justify-center">
+              <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-line" /></div>
+              <span className="relative bg-white px-3 text-[11px] text-muted">或使用主密码解锁</span>
+            </div>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
@@ -83,7 +127,7 @@ export const MasterPasswordModal: React.FC<MasterPasswordModalProps> = ({
             </label>
             <input
               type="password"
-              autoFocus
+              autoFocus={!isBiometricsEnrolled}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="请输入主密码"
@@ -112,8 +156,8 @@ export const MasterPasswordModal: React.FC<MasterPasswordModalProps> = ({
             </div>
           )}
 
-          {/* Remember on this machine */}
-          <div className="pt-1">
+          {/* Options: Remember & Touch ID enrollment */}
+          <div className="pt-1 space-y-2">
             <label className="flex items-center gap-2.5 text-xs text-muted cursor-pointer select-none font-medium">
               <input
                 type="checkbox"
@@ -123,6 +167,21 @@ export const MasterPasswordModal: React.FC<MasterPasswordModalProps> = ({
               />
               <span>记住解锁状态（仅在本设备保存不可导出的解锁密钥，主动锁定或空闲超时后需重新输入）</span>
             </label>
+
+            {isInitialSetup && isBiometricsSupported && (
+              <label className="flex items-center gap-2.5 text-xs text-muted cursor-pointer select-none font-medium pt-0.5">
+                <input
+                  type="checkbox"
+                  checked={enableBiometrics}
+                  onChange={(e) => setEnableBiometrics(e.target.checked)}
+                  className="w-4 h-4 rounded border-line-strong bg-white accent-brand-700"
+                />
+                <span className="flex items-center gap-1.5 text-ink font-semibold">
+                  <Fingerprint className="w-3.5 h-3.5 text-brand-700" />
+                  <span>同时启用 {biometricsLabel} 快速解锁</span>
+                </span>
+              </label>
+            )}
           </div>
 
           {error && (
@@ -134,7 +193,7 @@ export const MasterPasswordModal: React.FC<MasterPasswordModalProps> = ({
 
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || bioLoading}
             className="w-full h-11 rounded-lg bg-brand-700 hover:bg-brand-800 text-white font-semibold text-sm transition flex items-center justify-center gap-2 mt-2 active:scale-95 disabled:opacity-40"
           >
             <KeyRound className="w-4 h-4" />

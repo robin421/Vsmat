@@ -253,3 +253,41 @@ describe('backups', () => {
     expect(() => s.probeBackup(JSON.stringify({ tokens: [] }))).toThrow();
   });
 });
+
+describe('biometrics vault integration', () => {
+  it('enables Touch ID and unlocks locked vault via biometrics', async () => {
+    const fakeRawId = new Uint8Array([1, 2, 3, 4]).buffer;
+    vi.stubGlobal('window', {
+      isSecureContext: true,
+      location: { hostname: 'localhost' },
+      PublicKeyCredential: {
+        isUserVerifyingPlatformAuthenticatorAvailable: vi.fn().mockResolvedValue(true),
+      },
+    });
+    vi.stubGlobal('navigator', {
+      userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)',
+      credentials: {
+        create: vi.fn().mockResolvedValue({ id: 'cred-1', rawId: fakeRawId, type: 'public-key' }),
+        get: vi.fn().mockResolvedValue({ id: 'cred-1', type: 'public-key' }),
+      },
+    });
+
+    const s = await load();
+    await s.setupVault(sample(s, 'BioProtected'), PW, false);
+
+    // Enable biometrics
+    expect(await s.hasBiometricsConfigured()).toBe(false);
+    const enabled = await s.setBiometricsEnabled(true);
+    expect(enabled).toBe(true);
+    expect(await s.hasBiometricsConfigured()).toBe(true);
+
+    // Lock the vault
+    await s.lockVault();
+    expect(await s.readVaultState()).toEqual({ kind: 'locked' });
+
+    // Unlock with Touch ID
+    const restored = await s.unlockVaultWithBiometrics();
+    expect(restored.subscriptions[0].name).toBe('BioProtected');
+    expect(await s.hasActiveSession()).toBe(true);
+  });
+});

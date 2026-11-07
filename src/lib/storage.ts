@@ -1,5 +1,12 @@
 import { AppData, AppSettings } from '../types';
 import {
+  authenticateWithBiometrics,
+  hasBiometricsEnrolled,
+  registerBiometrics,
+  removeBiometrics,
+  updateBiometricsSession,
+} from './biometrics';
+import {
   CURRENT_KDF_ITERATIONS,
   LEGACY_KDF_ITERATIONS,
   CipherBlob,
@@ -24,6 +31,7 @@ export const EMPTY_DATA: AppData = {
     preferredCurrency: 'CNY',
     usdToCnyRate: 7.25,
     autoLockMinutes: 30,
+    biometricsEnabled: false,
   },
   tokens: [],
   subscriptions: [],
@@ -116,6 +124,7 @@ export function normalizeAppData(input: unknown): AppData {
       typeof s.autoLockMinutes === 'number' && Number.isFinite(s.autoLockMinutes) && s.autoLockMinutes >= 0
         ? s.autoLockMinutes
         : base.autoLockMinutes,
+    biometricsEnabled: typeof s.biometricsEnabled === 'boolean' ? s.biometricsEnabled : base.biometricsEnabled,
   };
 
   return {
@@ -328,9 +337,44 @@ export async function changeMasterPassword(data: AppData, current: string, next:
 
   const run = writeQueue.then(async () => {
     await setupVault(data, next, data.settings.rememberUnlocked);
+    if (session) {
+      await updateBiometricsSession(session.key, session.salt, session.iterations);
+    }
   });
   writeQueue = run.catch(() => undefined);
   return run;
+}
+
+/** Unlock with Apple Touch ID / Platform Biometrics. */
+export async function unlockVaultWithBiometrics(): Promise<AppData> {
+  const parsed = readRaw();
+  if (!isV2(parsed) && !isV1(parsed)) throw new Error('未找到加密的保险箱数据');
+
+  const iterations = isV2(parsed) ? parsed.kdf.iterations : LEGACY_KDF_ITERATIONS;
+  const authSession = await authenticateWithBiometrics(parsed.salt, iterations);
+  const data = await decryptEnvelope(parsed, authSession.key);
+
+  session = authSession;
+  if (data.settings.rememberUnlocked) {
+    await rememberKey(session);
+  }
+  return data;
+}
+
+/** Check if Touch ID / biometric unlock is configured and ready. */
+export async function hasBiometricsConfigured(): Promise<boolean> {
+  return await hasBiometricsEnrolled();
+}
+
+/** Enable or disable Touch ID / biometric unlock for the active vault. */
+export async function setBiometricsEnabled(enable: boolean): Promise<boolean> {
+  if (!session) throw new Error('保险箱已锁定');
+  if (enable) {
+    return await registerBiometrics(session.key, session.salt, session.iterations);
+  } else {
+    await removeBiometrics();
+    return false;
+  }
 }
 
 /** Turn "remember on this device" on or off for the open vault. */

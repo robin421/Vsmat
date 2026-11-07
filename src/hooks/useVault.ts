@@ -3,13 +3,20 @@ import { AppData } from '../types';
 import {
   createEmptyData,
   changeMasterPassword,
+  hasBiometricsConfigured,
   lockVault,
   persistVault,
   readVaultState,
+  setBiometricsEnabled,
   setRememberUnlocked,
   setupVault,
   unlockVault,
+  unlockVaultWithBiometrics,
 } from '../lib/storage';
+import {
+  getBiometricsInfo,
+  isBiometricsSupported as checkBiometricsSupported,
+} from '../lib/biometrics';
 import { WrongPasswordError } from '../lib/crypto';
 
 export type VaultStatus = 'loading' | 'setup' | 'locked' | 'ready';
@@ -29,8 +36,17 @@ export function useVault() {
   const [status, setStatus] = useState<VaultStatus>('loading');
   const [saveError, setSaveError] = useState<string | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [isBiometricsSupported, setIsBiometricsSupported] = useState(false);
+  const [isBiometricsEnrolled, setIsBiometricsEnrolled] = useState(false);
   const dataRef = useRef<AppData>(data);
   const statusRef = useRef<VaultStatus>('loading');
+
+  const biometricsInfo = getBiometricsInfo();
+
+  useEffect(() => {
+    checkBiometricsSupported().then(setIsBiometricsSupported);
+    hasBiometricsConfigured().then(setIsBiometricsEnrolled);
+  }, [status]);
 
   const applyStatus = useCallback((s: VaultStatus) => {
     statusRef.current = s;
@@ -166,5 +182,52 @@ export function useVault() {
     };
   }, [status, autoLockMinutes, lock]);
 
-  return { data, status, loadError, saveError, dismissSaveError: () => setSaveError(null), update, setup, unlock, lock, changePassword, setRemember };
+  const unlockBiometrics = useCallback(async (): Promise<boolean> => {
+    try {
+      const loaded = await unlockVaultWithBiometrics();
+      applyData(loaded);
+      applyStatus('ready');
+      return true;
+    } catch (err) {
+      console.warn('Biometric unlock failed or cancelled:', err);
+      return false;
+    }
+  }, [applyData, applyStatus]);
+
+  const toggleBiometrics = useCallback(
+    async (enabled: boolean): Promise<boolean> => {
+      try {
+        const success = await setBiometricsEnabled(enabled);
+        setIsBiometricsEnrolled(success);
+        update((prev) => ({
+          ...prev,
+          settings: { ...prev.settings, biometricsEnabled: success },
+        }));
+        return success;
+      } catch (err) {
+        console.error('Failed to toggle biometrics:', err);
+        throw err;
+      }
+    },
+    [update]
+  );
+
+  return {
+    data,
+    status,
+    loadError,
+    saveError,
+    isBiometricsSupported,
+    isBiometricsEnrolled,
+    biometricsInfo,
+    dismissSaveError: () => setSaveError(null),
+    update,
+    setup,
+    unlock,
+    unlockBiometrics,
+    toggleBiometrics,
+    lock,
+    changePassword,
+    setRemember,
+  };
 }

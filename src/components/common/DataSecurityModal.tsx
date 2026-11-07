@@ -74,10 +74,10 @@ export const DataSecurityModal: React.FC<DataSecurityModalProps> = ({
           <div className="p-4 rounded-2xl bg-inset border border-line space-y-1.5">
             <div className="flex items-center gap-2 text-xs font-semibold text-ink">
               <Lock className="w-4 h-4 text-ink" />
-              <span>2. 硬件级 AES-256-GCM 加密</span>
+              <span>2. 硬件级 AES-256-GCM 与 Touch ID 绑定</span>
             </div>
             <p className="text-xs text-muted leading-relaxed">
-              使用浏览器原生 Web Crypto API 硬件加速芯片进行端到端加解密，即使设备被盗也无法逆向破解高熵密文。
+              使用 Web Crypto API 原生硬件加速芯片加解密，支持 Apple Secure Enclave 触控 ID (Touch ID) 硬件门禁验证，兼顾绝密安全与秒级解锁。
             </p>
           </div>
 

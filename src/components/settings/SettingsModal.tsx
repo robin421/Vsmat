@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { AlertCircle, Check, KeyRound, Settings, X } from 'lucide-react';
+import { AlertCircle, Check, Fingerprint, KeyRound, Settings, X } from 'lucide-react';
 import { AppSettings } from '../../types';
 import { useDismiss } from '../../hooks/useDismiss';
 import { MIN_PASSWORD_LENGTH, STRENGTH_LABELS, passwordStrength } from '../../lib/password';
 import { requestNotificationPermission } from '../../lib/notifications';
+import { BiometricInfo } from '../../lib/biometrics';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -13,6 +14,10 @@ interface SettingsModalProps {
   onChangeRemember: (remember: boolean) => void;
   /** Resolves false when the current password is wrong. */
   onChangePassword: (current: string, next: string) => Promise<boolean>;
+  isBiometricsSupported?: boolean;
+  isBiometricsEnrolled?: boolean;
+  biometricsInfo?: BiometricInfo;
+  onToggleBiometrics?: (enable: boolean) => Promise<boolean>;
 }
 
 const AUTO_LOCK_OPTIONS = [
@@ -46,11 +51,16 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   onChangeSettings,
   onChangeRemember,
   onChangePassword,
+  isBiometricsSupported = false,
+  isBiometricsEnrolled = false,
+  biometricsInfo,
+  onToggleBiometrics,
 }) => {
   useDismiss(isOpen, onClose);
 
   const [rate, setRate] = useState(String(settings.usdToCnyRate));
   const [notifyHint, setNotifyHint] = useState<string | null>(null);
+  const [bioHint, setBioHint] = useState<string | null>(null);
 
   const [current, setCurrent] = useState('');
   const [next, setNext] = useState('');
@@ -60,6 +70,18 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   const [saving, setSaving] = useState(false);
 
   if (!isOpen) return null;
+
+  const handleToggleBio = async (on: boolean) => {
+    if (!onToggleBiometrics) return;
+    setBioHint(null);
+    try {
+      if (on) setBioHint('请轻触触控 ID 完成录入...');
+      await onToggleBiometrics(on);
+      setBioHint(on ? '触控 ID 解锁已成功开启' : '触控 ID 解锁已关闭');
+    } catch (err) {
+      setBioHint(err instanceof Error ? err.message : '触控 ID 设置取消');
+    }
+  };
 
   const commitRate = () => {
     const n = Number(rate);
@@ -149,6 +171,25 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             </div>
             <Toggle label="记住解锁状态" checked={settings.rememberUnlocked} onChange={onChangeRemember} />
           </div>
+
+          {isBiometricsSupported && onToggleBiometrics && (
+            <div className={rowClass}>
+              <div className="min-w-0">
+                <div className="text-sm font-medium flex items-center gap-1.5">
+                  <Fingerprint className="w-4 h-4 text-brand-700" />
+                  <span>{biometricsInfo?.name || '触控 ID (Touch ID) 解锁'}</span>
+                </div>
+                <div className="text-xs text-muted mt-0.5">
+                  {bioHint || biometricsInfo?.description || '轻触触控 ID 即可秒速解锁保险箱'}
+                </div>
+              </div>
+              <Toggle
+                label={biometricsInfo?.short || '触控 ID 解锁'}
+                checked={isBiometricsEnrolled || !!settings.biometricsEnabled}
+                onChange={(v) => void handleToggleBio(v)}
+              />
+            </div>
+          )}
 
           <div className={rowClass}>
             <div className="min-w-0">

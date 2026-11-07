@@ -40,7 +40,24 @@ const TAB_TITLES = {
 const newId = (prefix: string) => `${prefix}-${crypto.randomUUID()}`;
 
 export function App() {
-  const { data: appData, status, loadError, saveError, dismissSaveError, update, setup, unlock, lock, changePassword, setRemember } = useVault();
+  const {
+    data: appData,
+    status,
+    loadError,
+    saveError,
+    isBiometricsSupported,
+    isBiometricsEnrolled,
+    biometricsInfo,
+    dismissSaveError,
+    update,
+    setup,
+    unlock,
+    unlockBiometrics,
+    toggleBiometrics,
+    lock,
+    changePassword,
+    setRemember,
+  } = useVault();
   const isLocked = status === 'locked';
   const isPasswordModalOpen = status === 'setup' || status === 'locked';
   const isInitialSetup = status === 'setup';
@@ -94,7 +111,6 @@ export function App() {
   }, [status]);
 
   const handleUnlock = (password: string, remember: boolean) => unlock(password, remember);
-  const handleSetupPassword = (password: string, remember: boolean) => setup(password, remember);
   const handleLockVault = () => void lock();
 
   // Replace the vault contents with a backup file, after validation + confirmation
@@ -440,6 +456,10 @@ export function App() {
           onChangeSettings={(patch) => update((prev) => ({ ...prev, settings: { ...prev.settings, ...patch } }))}
           onChangeRemember={setRemember}
           onChangePassword={changePassword}
+          isBiometricsSupported={isBiometricsSupported}
+          isBiometricsEnrolled={isBiometricsEnrolled}
+          biometricsInfo={biometricsInfo}
+          onToggleBiometrics={toggleBiometrics}
         />
       )}
       {isSecurityModalOpen && (
@@ -507,7 +527,16 @@ export function App() {
         isOpen={isPasswordModalOpen}
         isInitialSetup={isInitialSetup}
         onUnlock={handleUnlock}
-        onSetup={handleSetupPassword}
+        onSetup={async (pw, remember, enableBio) => {
+          await setup(pw, remember);
+          if (enableBio) {
+            await toggleBiometrics(true).catch((err) => console.warn('Biometrics setup skipped:', err));
+          }
+        }}
+        isBiometricsSupported={isBiometricsSupported}
+        isBiometricsEnrolled={isBiometricsEnrolled}
+        biometricsLabel={biometricsInfo.short}
+        onBiometricUnlock={unlockBiometrics}
       />
     </div>
   );

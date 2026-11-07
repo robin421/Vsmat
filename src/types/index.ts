@@ -77,6 +77,7 @@ export interface AppSettings {
   preferredCurrency: 'CNY' | 'USD';
   usdToCnyRate: number;
   autoLockMinutes: number;
+  biometricsEnabled?: boolean;
 }
 
 export interface AppData {
