@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Gift, Plus, Copy, Check, Zap, Trash2 } from 'lucide-react';
+import { Gift, Plus, Copy, Check, CheckCheck, Zap, Trash2, Edit2 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { VoucherItem } from '../../types';
 import { execute1ClickRecharge } from '../../lib/rechargeEngines';
@@ -9,6 +9,7 @@ import { BrandBadge } from '../common/BrandBadge';
 interface VoucherStashProps {
   vouchers: VoucherItem[];
   onAddNew: () => void;
+  onEdit: (voucher: VoucherItem) => void;
   onDelete: (id: string) => void;
   onUpdateStatus: (id: string, status: 'unredeemed' | 'redeemed') => void;
   onOpenAppleWebRedeem?: (code: string) => void;
@@ -17,12 +18,15 @@ interface VoucherStashProps {
 export const VoucherStash: React.FC<VoucherStashProps> = ({
   vouchers,
   onAddNew,
+  onEdit,
   onDelete,
   onUpdateStatus,
   onOpenAppleWebRedeem,
 }) => {
   const [filter, setFilter] = useState<'all' | 'unredeemed' | 'redeemed'>('unredeemed');
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  // Opened the provider's page, waiting for the user to confirm the redemption
+  const [pendingIds, setPendingIds] = useState<string[]>([]);
 
   const filteredVouchers = vouchers.filter(v => {
     if (filter === 'all') return true;
@@ -50,16 +54,20 @@ export const VoucherStash: React.FC<VoucherStashProps> = ({
         return;
       }
 
-      confetti({
-        particleCount: 50,
-        spread: 60,
-        origin: { y: 0.6 }
-      });
-
-      onUpdateStatus(voucher.id, 'redeemed');
+      setPendingIds((ids) => (ids.includes(voucher.id) ? ids : [...ids, voucher.id]));
     } catch (err) {
       console.error(err);
     }
+  };
+
+  const markRedeemed = (id: string) => {
+    confetti({
+      particleCount: 50,
+      spread: 60,
+      origin: { y: 0.6 }
+    });
+    setPendingIds((ids) => ids.filter((x) => x !== id));
+    onUpdateStatus(id, 'redeemed');
   };
 
   return (
@@ -162,7 +170,20 @@ export const VoucherStash: React.FC<VoucherStashProps> = ({
                     </p>
                   )}
 
-                  <div className="mt-auto flex items-center gap-2">
+                  {pendingIds.includes(voucher.id) && !isRedeemed && (
+                    <div className="flex items-center justify-between gap-2 pl-3 pr-1.5 h-10 rounded-lg bg-amber-50 text-[13px] text-amber-800">
+                      <span className="truncate">已打开兑换页，兑换成功后请确认</span>
+                      <button
+                        type="button"
+                        onClick={() => markRedeemed(voucher.id)}
+                        className="h-7 px-2.5 rounded-md bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold whitespace-nowrap transition-colors shrink-0"
+                      >
+                        已兑换
+                      </button>
+                    </div>
+                  )}
+
+                  <div className="mt-auto flex items-center gap-1">
                     {!isRedeemed ? (
                       <button
                         type="button"
@@ -181,6 +202,28 @@ export const VoucherStash: React.FC<VoucherStashProps> = ({
                         撤销核销
                       </button>
                     )}
+
+                    {!isRedeemed && (
+                      <button
+                        type="button"
+                        onClick={() => markRedeemed(voucher.id)}
+                        className="w-10 h-10 rounded-lg text-muted hover:text-emerald-700 hover:bg-emerald-50 flex items-center justify-center transition-colors shrink-0"
+                        title="标记为已核销"
+                        aria-label="标记为已核销"
+                      >
+                        <CheckCheck className="w-4 h-4" />
+                      </button>
+                    )}
+
+                    <button
+                      type="button"
+                      onClick={() => onEdit(voucher)}
+                      className="w-10 h-10 rounded-lg text-muted hover:text-ink hover:bg-inset flex items-center justify-center transition-colors shrink-0"
+                      title="编辑卡券"
+                      aria-label="编辑卡券"
+                    >
+                      <Edit2 className="w-4 h-4" />
+                    </button>
 
                     <button
                       type="button"

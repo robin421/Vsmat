@@ -239,6 +239,9 @@ export function App() {
     update((prev) => ({ ...prev, vouchers: prev.vouchers.filter(v => v.id !== id) }));
   };
 
+  const findVoucherByCode = (code: string) =>
+    appData.vouchers.find(item => item.code.replace(/\s+/g, '') === code.replace(/\s+/g, ''));
+
   // Toggle preferred currency
   const handleToggleCurrency = () => {
     update((prev) => ({
@@ -358,17 +361,20 @@ export function App() {
           <div className="space-y-6 animate-fadeIn">
             <QuickRechargeBar
               onOpenAppleWebRedeem={(code) => handleOpenAppleWebRedeem(code)}
-              onRechargeComplete={(serviceKey, code) => {
-                const v = appData.vouchers.find(item => item.code.replace(/\s+/g, '') === code.replace(/\s+/g, ''));
-                if (v) {
-                  handleUpdateVoucherStatus(v.id, 'redeemed');
-                }
+              isStoredVoucher={(code) => findVoucherByCode(code) !== undefined}
+              onConfirmRedeemed={(code) => {
+                const v = findVoucherByCode(code);
+                if (v) handleUpdateVoucherStatus(v.id, 'redeemed');
               }}
             />
             <VoucherStash
               vouchers={appData.vouchers}
               onAddNew={() => {
                 setEditingVoucher(null);
+                setIsVoucherModalOpen(true);
+              }}
+              onEdit={(voucher) => {
+                setEditingVoucher(voucher);
                 setIsVoucherModalOpen(true);
               }}
               onDelete={handleDeleteVoucher}

@@ -5,18 +5,22 @@ import { PRESET_SERVICES, getPresetByKey } from '../../types/presets';
 import { execute1ClickRecharge, detectVoucherService } from '../../lib/rechargeEngines';
 
 interface QuickRechargeBarProps {
-  onRechargeComplete?: (serviceKey: string, code: string) => void;
+  /** True when the code matches a voucher stored in the wallet. */
+  isStoredVoucher?: (code: string) => boolean;
+  onConfirmRedeemed?: (code: string) => void;
   onOpenAppleWebRedeem?: (code: string) => void;
 }
 
 export const QuickRechargeBar: React.FC<QuickRechargeBarProps> = ({
-  onRechargeComplete,
+  isStoredVoucher,
+  onConfirmRedeemed,
   onOpenAppleWebRedeem,
 }) => {
   const [code, setCode] = useState('');
   const [selectedService, setSelectedService] = useState('auto');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [isCopied, setIsCopied] = useState(false);
+  const [pendingCode, setPendingCode] = useState<string | null>(null);
 
   const detectedService = detectVoucherService(code);
   const effectiveService = selectedService === 'auto' ? detectedService : getPresetByKey(selectedService);
@@ -50,19 +54,12 @@ export const QuickRechargeBar: React.FC<QuickRechargeBarProps> = ({
         return;
       }
 
-      confetti({
-        particleCount: 50,
-        spread: 60,
-        origin: { y: 0.7 }
-      });
-
       setIsCopied(true);
       setToastMessage(result.message);
       setTimeout(() => setIsCopied(false), 3000);
 
-      if (onRechargeComplete) {
-        onRechargeComplete(result.service.key, code.trim());
-      }
+      // A stored voucher only counts as used once the user confirms it
+      setPendingCode(isStoredVoucher?.(code.trim()) ? code.trim() : null);
     } catch (err) {
       console.error(err);
       setToastMessage('充值跳转失败，请手动打开目标网站');
@@ -198,8 +195,25 @@ export const QuickRechargeBar: React.FC<QuickRechargeBarProps> = ({
         <div className="mt-4 p-3.5 rounded-xl bg-inset border border-line text-sm text-ink flex items-start gap-2.5 animate-fadeIn">
           <ExternalLink className="w-4 h-4 text-ink shrink-0 mt-0.5" />
           <div className="flex-1 leading-relaxed">{toastMessage}</div>
+          {pendingCode && (
+            <button
+              type="button"
+              onClick={() => {
+                confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
+                onConfirmRedeemed?.(pendingCode);
+                setPendingCode(null);
+                setToastMessage(null);
+              }}
+              className="h-7 px-2.5 rounded-md btn-primary text-xs font-semibold whitespace-nowrap shrink-0"
+            >
+              已兑换，核销此券
+            </button>
+          )}
           <button
-            onClick={() => setToastMessage(null)}
+            onClick={() => {
+              setToastMessage(null);
+              setPendingCode(null);
+            }}
             className="text-muted hover:text-ink ml-2"
           >
             ✕
