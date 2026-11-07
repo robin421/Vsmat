@@ -25,6 +25,7 @@ const AppleWebRedeemModal = lazy(() => import('./components/recharge/AppleWebRed
 const SpendAnalytics = lazy(() => import('./components/analytics/SpendAnalytics').then((m) => ({ default: m.SpendAnalytics })));
 const OverviewStats = lazy(() => import('./components/dashboard/OverviewStats').then((m) => ({ default: m.OverviewStats })));
 const QuickRechargeBar = lazy(() => import('./components/dashboard/QuickRechargeBar').then((m) => ({ default: m.QuickRechargeBar })));
+const SettingsModal = lazy(() => import('./components/settings/SettingsModal').then((m) => ({ default: m.SettingsModal })));
 const DataSecurityModal = lazy(() => import('./components/common/DataSecurityModal').then((m) => ({ default: m.DataSecurityModal })));
 
 const RENEW_GUARD_MS = 800;
@@ -39,7 +40,7 @@ const TAB_TITLES = {
 const newId = (prefix: string) => `${prefix}-${crypto.randomUUID()}`;
 
 export function App() {
-  const { data: appData, status, loadError, saveError, dismissSaveError, update, setup, unlock, lock } = useVault();
+  const { data: appData, status, loadError, saveError, dismissSaveError, update, setup, unlock, lock, changePassword, setRemember } = useVault();
   const isLocked = status === 'locked';
   const isPasswordModalOpen = status === 'setup' || status === 'locked';
   const isInitialSetup = status === 'setup';
@@ -47,6 +48,7 @@ export function App() {
   const [activeTab, setActiveTab] = useState<'subscriptions' | 'tokens' | 'vouchers' | 'analytics'>('subscriptions');
   const [searchQuery, setSearchQuery] = useState('');
   const [isSecurityModalOpen, setIsSecurityModalOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   // Modals state
   const [isTokenModalOpen, setIsTokenModalOpen] = useState(false);
@@ -79,6 +81,7 @@ export function App() {
   useEffect(() => {
     if (status !== 'locked') return;
     setIsSecurityModalOpen(false);
+    setIsSettingsOpen(false);
     setIsTokenModalOpen(false);
     setEditingToken(null);
     setIsSubModalOpen(false);
@@ -281,6 +284,7 @@ export function App() {
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
         onOpenSecurityModal={() => setIsSecurityModalOpen(true)}
+        onOpenSettings={() => setIsSettingsOpen(true)}
       />
 
       {saveError && (
@@ -352,6 +356,7 @@ export function App() {
               }}
               onDelete={handleDeleteToken}
               searchTerm={searchQuery}
+              onSearchChange={setSearchQuery}
             />
           </div>
         )}
@@ -427,6 +432,16 @@ export function App() {
 
       {/* Modals */}
       <Suspense fallback={null}>
+      {isSettingsOpen && (
+        <SettingsModal
+          isOpen={isSettingsOpen}
+          onClose={() => setIsSettingsOpen(false)}
+          settings={appData.settings}
+          onChangeSettings={(patch) => update((prev) => ({ ...prev, settings: { ...prev.settings, ...patch } }))}
+          onChangeRemember={setRemember}
+          onChangePassword={changePassword}
+        />
+      )}
       {isSecurityModalOpen && (
         <DataSecurityModal
           isOpen={isSecurityModalOpen}

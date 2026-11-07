@@ -1,7 +1,7 @@
 import React from 'react';
 import { PieChart } from 'lucide-react';
 import { SubscriptionItem, ServiceCategory } from '../../types';
-import { convertToUSD } from '../../lib/currencies';
+import { monthlyAmountUSD } from '../../lib/currencies';
 
 interface SpendAnalyticsProps {
   subscriptions: SubscriptionItem[];
@@ -25,19 +25,6 @@ export const SpendAnalytics: React.FC<SpendAnalyticsProps> = ({
     other: { label: '其他杂项', color: 'bg-[#D3D6E2]', dot: 'bg-[#D3D6E2]' },
   };
 
-  const getMonthlyAmountInUSD = (sub: SubscriptionItem): number => {
-    const p = convertToUSD(sub.price, sub.currency, usdToCnyRate);
-
-    switch (sub.cycle) {
-      case 'monthly': return p;
-      case 'quarterly': return p / 3;
-      case 'semi-annually': return p / 6;
-      case 'annually': return p / 12;
-      case 'prepaid': return p / 3;
-      default: return p;
-    }
-  };
-
   const totalsByCategory: Record<ServiceCategory, number> = {
     ai: 0,
     developer: 0,
@@ -49,7 +36,7 @@ export const SpendAnalytics: React.FC<SpendAnalyticsProps> = ({
 
   let grandTotalUSD = 0;
   for (const sub of subscriptions) {
-    const m = getMonthlyAmountInUSD(sub);
+    const m = monthlyAmountUSD(sub, usdToCnyRate);
     totalsByCategory[sub.category] = (totalsByCategory[sub.category] || 0) + m;
     grandTotalUSD += m;
   }

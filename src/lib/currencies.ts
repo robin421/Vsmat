@@ -81,3 +81,19 @@ export function convertToUSD(amount: number, currency: string, usdToCnyRate = 7.
   }
   return amount; // 未知货币默认按 1:1 处理
 }
+
+/** Monthly cost in USD. One-off lifetime purchases are not a recurring cost. */
+export function monthlyAmountUSD(
+  sub: { price: number; currency: string; cycle: string },
+  usdToCnyRate?: number
+): number {
+  const usd = convertToUSD(sub.price, sub.currency, usdToCnyRate);
+  switch (sub.cycle) {
+    case 'lifetime': return 0;
+    case 'quarterly': return usd / 3;
+    case 'semi-annually': return usd / 6;
+    case 'annually': return usd / 12;
+    case 'prepaid': return usd / 3;
+    default: return usd;
+  }
+}

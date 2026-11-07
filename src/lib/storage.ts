@@ -315,6 +315,31 @@ export async function unlockVault(password: string, remember: boolean): Promise<
   return data;
 }
 
+/**
+ * Re-encrypt the vault under a new password with a fresh salt. The current
+ * password is checked against the stored vault first; a wrong one throws
+ * WrongPasswordError and changes nothing. Runs in the write queue so it cannot
+ * interleave with a pending save.
+ */
+export async function changeMasterPassword(data: AppData, current: string, next: string): Promise<void> {
+  const parsed = readRaw();
+  if (!isV2(parsed)) throw new Error('未找到加密的保险箱数据');
+  await decryptEnvelope(parsed, await deriveKey(current, parsed.salt, parsed.kdf.iterations));
+
+  const run = writeQueue.then(async () => {
+    await setupVault(data, next, data.settings.rememberUnlocked);
+  });
+  writeQueue = run.catch(() => undefined);
+  return run;
+}
+
+/** Turn "remember on this device" on or off for the open vault. */
+export async function setRememberUnlocked(remember: boolean): Promise<void> {
+  if (!session) throw new Error('保险箱已锁定');
+  if (remember) await rememberKey(session);
+  else await forgetKey();
+}
+
 /** Drop the key from memory and from IndexedDB. */
 export async function lockVault(): Promise<void> {
   session = null;

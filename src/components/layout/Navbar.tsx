@@ -12,7 +12,8 @@ import {
   PieChart,
   Search,
   ChevronDown,
-  Plus
+  Plus,
+  Settings,
 } from 'lucide-react';
 import { exportBackup } from '../../lib/storage';
 import { AppData } from '../../types';
@@ -30,6 +31,7 @@ interface NavbarProps {
   searchQuery: string;
   onSearchChange: (query: string) => void;
   onOpenSecurityModal: () => void;
+  onOpenSettings: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -45,6 +47,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   searchQuery,
   onSearchChange,
   onOpenSecurityModal,
+  onOpenSettings,
 }) => {
   const [showBackupMenu, setShowBackupMenu] = useState(false);
 
@@ -99,7 +102,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         <div className="min-w-0">
           <div className="flex items-center gap-1.5">
             <span className="font-bold text-lg tracking-tight text-ink leading-none">Vsmat</span>
-            <span className="text-[11px] px-1.5 py-0.5 rounded-md bg-brand-50 text-brand-700 font-semibold leading-none whitespace-nowrap">
+            <span className="hidden sm:inline text-[11px] px-1.5 py-0.5 rounded-md bg-brand-50 text-brand-700 font-semibold leading-none whitespace-nowrap">
               AES-256
             </span>
           </div>
@@ -248,6 +251,15 @@ export const Navbar: React.FC<NavbarProps> = ({
               </div>
             )}
           </div>
+
+          <button
+            onClick={onOpenSettings}
+            className={`${utilityButton} w-9 lg:flex-1`}
+            title="设置"
+            aria-label="设置"
+          >
+            <Settings className="w-4 h-4" />
+          </button>
 
           <button
             onClick={onLockVault}

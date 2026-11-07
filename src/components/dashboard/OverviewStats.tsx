@@ -2,7 +2,7 @@ import React from 'react';
 import { VaultDial } from '../common/VaultDial';
 import { DollarSign, Key, Gift, TrendingUp, ShieldCheck } from 'lucide-react';
 import { SubscriptionItem, TokenItem, VoucherItem } from '../../types';
-import { convertToUSD } from '../../lib/currencies';
+import { monthlyAmountUSD } from '../../lib/currencies';
 
 interface OverviewStatsProps {
   subscriptions: SubscriptionItem[];
@@ -19,29 +19,7 @@ export const OverviewStats: React.FC<OverviewStatsProps> = ({
   usdToCnyRate,
   preferredCurrency,
 }) => {
-  let monthlyTotalUSD = 0;
-  for (const sub of subscriptions) {
-    if (!sub.autoRenew && sub.cycle === 'lifetime') continue;
-    const priceInUSD = convertToUSD(sub.price, sub.currency, usdToCnyRate);
-
-    switch (sub.cycle) {
-      case 'monthly':
-        monthlyTotalUSD += priceInUSD;
-        break;
-      case 'quarterly':
-        monthlyTotalUSD += priceInUSD / 3;
-        break;
-      case 'semi-annually':
-        monthlyTotalUSD += priceInUSD / 6;
-        break;
-      case 'annually':
-        monthlyTotalUSD += priceInUSD / 12;
-        break;
-      case 'prepaid':
-        monthlyTotalUSD += priceInUSD / 3;
-        break;
-    }
-  }
+  const monthlyTotalUSD = subscriptions.reduce((sum, sub) => sum + monthlyAmountUSD(sub, usdToCnyRate), 0);
 
   const monthlyTotalCNY = monthlyTotalUSD * usdToCnyRate;
   const annualTotalUSD = monthlyTotalUSD * 12;

@@ -3,6 +3,7 @@ import { Plus, Sparkles, CreditCard, Search, ArrowUpDown, X } from 'lucide-react
 import { SubscriptionItem } from '../../types';
 import { SubscriptionCard } from './SubscriptionCard';
 import { getDaysUntil } from '../../lib/notifications';
+import { monthlyAmountUSD } from '../../lib/currencies';
 
 interface SubscriptionListProps {
   subscriptions: SubscriptionItem[];
@@ -56,14 +57,16 @@ export const SubscriptionList: React.FC<SubscriptionListProps> = ({
       })
       .sort((a, b) => {
         if (sortBy === 'price') {
-          return (b.price || 0) - (a.price || 0);
+          return monthlyAmountUSD(b, usdToCnyRate) - monthlyAmountUSD(a, usdToCnyRate);
         }
         if (sortBy === 'name') {
           return a.name.localeCompare(b.name);
         }
+        // Lifetime purchases have no due date, so they go last
+        if ((a.cycle === 'lifetime') !== (b.cycle === 'lifetime')) return a.cycle === 'lifetime' ? 1 : -1;
         return new Date(a.nextBillingDate).getTime() - new Date(b.nextBillingDate).getTime();
       });
-  }, [subscriptions, effectiveSearch, selectedCategory, filterUrgentOnly, sortBy]);
+  }, [subscriptions, effectiveSearch, selectedCategory, filterUrgentOnly, sortBy, usdToCnyRate]);
 
   return (
     <div className="space-y-4">
@@ -129,6 +132,16 @@ export const SubscriptionList: React.FC<SubscriptionListProps> = ({
 
         {/* Right: Search & Action Buttons (Executive Monochrome Style) */}
         <div className="flex items-center gap-2.5 flex-wrap sm:flex-nowrap">
+          <select
+            aria-label="排序方式"
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
+            className="field h-10 rounded-xl px-2.5 text-sm text-ink-soft outline-none shrink-0"
+          >
+            <option value="date">按到期日</option>
+            <option value="price">按月均金额</option>
+            <option value="name">按名称</option>
+          </select>
           {/* Quick Search Input */}
           <div className="relative flex-1 sm:w-60">
             <Search className="w-3.5 h-3.5 text-muted absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />

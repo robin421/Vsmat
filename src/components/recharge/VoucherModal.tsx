@@ -224,7 +224,7 @@ export const VoucherModal: React.FC<VoucherModalProps> = ({
               type="submit"
               className="h-10 px-5 rounded-lg bg-brand-700 hover:bg-brand-800 text-white font-semibold text-xs flex items-center gap-1.5 transition active:scale-95"
             >
-              <span>存入券包</span>
+              <span>{initialData ? '保存修改' : '存入券包'}</span>
             </button>
           </div>
         </form>

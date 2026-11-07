@@ -2,9 +2,11 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { AppData } from '../types';
 import {
   createEmptyData,
+  changeMasterPassword,
   lockVault,
   persistVault,
   readVaultState,
+  setRememberUnlocked,
   setupVault,
   unlockVault,
 } from '../lib/storage';
@@ -116,6 +118,28 @@ export function useVault() {
     [applyData, applyStatus]
   );
 
+  /** Resolves false for a wrong current password; other failures throw. */
+  const changePassword = useCallback(async (current: string, next: string): Promise<boolean> => {
+    try {
+      await changeMasterPassword(dataRef.current, current, next);
+      return true;
+    } catch (err) {
+      if (err instanceof WrongPasswordError) return false;
+      throw err;
+    }
+  }, []);
+
+  const setRemember = useCallback(
+    (remember: boolean) => {
+      update((prev) => ({ ...prev, settings: { ...prev.settings, rememberUnlocked: remember } }));
+      setRememberUnlocked(remember).catch((err) => {
+        console.error('Could not update remembered key:', err);
+        setSaveError(err instanceof Error ? err.message : '保存失败');
+      });
+    },
+    [update]
+  );
+
   const lock = useCallback(async () => {
     applyStatus('locked');
     applyData(createEmptyData()); // decrypted secrets leave memory/React state
@@ -139,5 +163,5 @@ export function useVault() {
     };
   }, [status, autoLockMinutes, lock]);
 
-  return { data, status, loadError, saveError, dismissSaveError: () => setSaveError(null), update, setup, unlock, lock };
+  return { data, status, loadError, saveError, dismissSaveError: () => setSaveError(null), update, setup, unlock, lock, changePassword, setRemember };
 }

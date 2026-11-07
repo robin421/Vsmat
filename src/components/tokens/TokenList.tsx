@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Plus, Key, ShieldCheck } from 'lucide-react';
+import { Plus, Key, ShieldCheck, Search } from 'lucide-react';
 import { TokenItem } from '../../types';
 import { TokenCard } from './TokenCard';
 
@@ -9,6 +9,7 @@ interface TokenListProps {
   onEdit: (token: TokenItem) => void;
   onDelete: (id: string) => void;
   searchTerm?: string;
+  onSearchChange?: (term: string) => void;
 }
 
 export const TokenList: React.FC<TokenListProps> = ({
@@ -17,6 +18,7 @@ export const TokenList: React.FC<TokenListProps> = ({
   onEdit,
   onDelete,
   searchTerm = '',
+  onSearchChange,
 }) => {
   const filteredTokens = useMemo(() => {
     return tokens.filter(t => {
@@ -47,6 +49,21 @@ export const TokenList: React.FC<TokenListProps> = ({
           <span>收藏新密钥</span>
         </button>
       </div>
+
+      {/* The global search lives in the header from tablet width up */}
+      {onSearchChange && (
+        <div className="field md:hidden flex items-center h-10 rounded-xl px-3 gap-2">
+          <Search className="w-4 h-4 text-muted shrink-0" />
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => onSearchChange(e.target.value)}
+            placeholder="搜索名称或账号..."
+            aria-label="搜索密钥"
+            className="w-full min-w-0 text-sm text-ink placeholder:text-muted outline-none bg-transparent"
+          />
+        </div>
+      )}
 
       {/* Grid of Tokens */}
       {filteredTokens.length > 0 ? (
