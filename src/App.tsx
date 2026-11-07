@@ -11,6 +11,12 @@ import { useVault } from './hooks/useVault';
 import { checkAndSendRenewalNotifications } from './lib/notifications';
 import { buildAiSubDealUrl, syncAiSubDealDataset } from './lib/aisubdeal';
 import { parseUrlImportParams, clearUrlImportParams } from './lib/urlImport';
+import {
+  handleOutgoingAutoMigration,
+  hasLocalVault,
+  isLegacyDomain,
+  startMigrationToNewDomain,
+} from './lib/migration';
 import { Navbar } from './components/layout/Navbar';
 import { UrgentReminderBanner } from './components/dashboard/UrgentReminderBanner';
 import { SubscriptionList } from './components/subscriptions/SubscriptionList';
@@ -58,12 +64,15 @@ function AppContent({ vault }: AppContentProps) {
     lock,
     changePassword,
     setRemember,
+    justMigrated,
+    clearJustMigrated,
   } = vault;
 
   const isLocked = status === 'locked';
   const isPasswordModalOpen = status === 'setup' || status === 'locked';
   const isInitialSetup = status === 'setup';
 
+  const [showLegacyBanner, setShowLegacyBanner] = useState(false);
   const [activeTab, setActiveTab] = useState<'subscriptions' | 'tokens' | 'vouchers' | 'analytics'>('subscriptions');
   const [searchQuery, setSearchQuery] = useState('');
   const [isSecurityModalOpen, setIsSecurityModalOpen] = useState(false);
@@ -97,6 +106,10 @@ function AppContent({ vault }: AppContentProps) {
 
   // Check URL for 1-click import from aisubdeal.com & silently sync latest dataset on boot
   useEffect(() => {
+    if (handleOutgoingAutoMigration()) return;
+    if (isLegacyDomain() && hasLocalVault()) {
+      setShowLegacyBanner(true);
+    }
     void syncAiSubDealDataset();
     if (typeof window !== 'undefined' && window.location.search) {
       const imported = parseUrlImportParams(window.location.search);
@@ -315,6 +328,40 @@ function AppContent({ vault }: AppContentProps) {
 
   return (
     <div className="min-h-screen bg-canvas text-ink flex flex-col font-sans antialiased lg:pl-60 pb-[calc(4rem+env(safe-area-inset-bottom))] lg:pb-0">
+      {showLegacyBanner && (
+        <aside className="bg-gradient-to-r from-amber-500 to-amber-600 text-brand-950 px-4 py-2.5 text-xs font-semibold flex flex-wrap items-center justify-between gap-2 shadow-md z-40">
+          <div className="flex items-center gap-2">
+            <span className="text-base" aria-hidden>📢</span>
+            <span>{t.migration.bannerText}</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => startMigrationToNewDomain()}
+            className="bg-brand-950 hover:bg-brand-900 text-white px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm active:scale-95 cursor-pointer"
+          >
+            <span>{t.migration.bannerBtn}</span>
+            <span aria-hidden>→</span>
+          </button>
+        </aside>
+      )}
+
+      {justMigrated && (
+        <div
+          role="status"
+          className="fixed top-5 left-1/2 -translate-x-1/2 z-50 bg-emerald-600 text-white px-5 py-3 rounded-2xl shadow-pop text-xs font-semibold flex items-center gap-3 animate-fadeIn border border-emerald-500"
+        >
+          <span>{t.migration.successToast}</span>
+          <button
+            type="button"
+            onClick={clearJustMigrated}
+            className="text-white/80 hover:text-white ml-2 text-sm cursor-pointer"
+            aria-label="Close"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
       <Navbar
         activeTab={activeTab}
         onTabChange={setActiveTab}

@@ -359,4 +359,12 @@ export const ja: TranslationDictionary = {
     floorRegionInfo: '世界最安：{flag} {currency} {price} (≈ ${usd}/月)',
     importBanner: 'AISubDeal から地域価格設定を自動入力しました。確認して保存してください。',
   },
+  migration: {
+    bannerText: 'Vsmat は新ドメイン vsmat.aisubdeal.com に移行しました。現在のドメインにデータが保存されています。',
+    bannerBtn: '新ドメインへ一括移行',
+    setupHint: '以前 vsmat.pages.dev でサブスクやキーを登録していましたか？',
+    migrateBtn: '旧ドメインからワンクリックでデータを同期',
+    successToast: '🎉 旧ドメインからのデータ移行が完了しました！マスターパスワードでロック解除してください。',
+    noDataFound: '旧ドメインに既存のデータは見つかりませんでした。',
+  },
 };

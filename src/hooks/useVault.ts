@@ -18,6 +18,7 @@ import {
   isBiometricsSupported as checkBiometricsSupported,
 } from '../lib/biometrics';
 import { WrongPasswordError } from '../lib/crypto';
+import { handleIncomingMigration } from '../lib/migration';
 
 export type VaultStatus = 'loading' | 'setup' | 'locked' | 'ready';
 
@@ -38,6 +39,7 @@ export function useVault() {
   const [loadError, setLoadError] = useState<string | null>(null);
   const [isBiometricsSupported, setIsBiometricsSupported] = useState(false);
   const [isBiometricsEnrolled, setIsBiometricsEnrolled] = useState(false);
+  const [justMigrated, setJustMigrated] = useState(false);
   const dataRef = useRef<AppData>(data);
   const statusRef = useRef<VaultStatus>('loading');
 
@@ -62,6 +64,10 @@ export function useVault() {
     let cancelled = false;
     (async () => {
       try {
+        const migration = handleIncomingMigration();
+        if (migration.migrated) {
+          setJustMigrated(true);
+        }
         const state = await readVaultState();
         if (cancelled) return;
         switch (state.kind) {
@@ -229,5 +235,7 @@ export function useVault() {
     lock,
     changePassword,
     setRemember,
+    justMigrated,
+    clearJustMigrated: () => setJustMigrated(false),
   };
 }

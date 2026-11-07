@@ -384,4 +384,14 @@ export interface TranslationDictionary {
     floorRegionInfo: string;
     importBanner: string;
   };
+
+  // Cross-domain Migration
+  migration: {
+    bannerText: string;
+    bannerBtn: string;
+    setupHint: string;
+    migrateBtn: string;
+    successToast: string;
+    noDataFound: string;
+  };
 }

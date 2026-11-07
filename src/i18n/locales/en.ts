@@ -359,4 +359,12 @@ export const en: TranslationDictionary = {
     floorRegionInfo: 'Lowest: {flag} {currency} {price} (≈ ${usd}/mo)',
     importBanner: 'Regional pricing imported from AISubDeal. Verify details and save to vault.',
   },
+  migration: {
+    bannerText: 'Vsmat has upgraded to vsmat.aisubdeal.com. Vault data detected on this domain.',
+    bannerBtn: 'Migrate to new domain',
+    setupHint: 'Already entered subscriptions or credentials on vsmat.pages.dev?',
+    migrateBtn: '1-Click sync data from old domain',
+    successToast: '🎉 Data successfully migrated from old domain! Enter your master password to unlock.',
+    noDataFound: 'No existing vault data found on the old domain.',
+  },
 };

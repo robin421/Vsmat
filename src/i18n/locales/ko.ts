@@ -359,4 +359,12 @@ export const ko: TranslationDictionary = {
     floorRegionInfo: '글로벌 최저가: {flag} {currency} {price} (≈ ${usd}/월)',
     importBanner: 'AISubDeal에서 국가별 구독 가격 정보를 불러왔습니다. 확인 후 저장하세요.',
   },
+  migration: {
+    bannerText: 'Vsmat이 새 도메인 vsmat.aisubdeal.com으로 이전되었습니다. 현재 도메인에 저장된 데이터가 있습니다.',
+    bannerBtn: '새 도메인으로 데이터 이전',
+    setupHint: '이전 vsmat.pages.dev에서 구독이나 키를 등록하신 적이 있나요?',
+    migrateBtn: '이전 도메인에서 원클릭 데이터 동기화',
+    successToast: '🎉 이전 도메인의 데이터를 성공적으로 가져왔습니다! 마스터 비밀번호로 잠금을 해제하세요.',
+    noDataFound: '이전 도메인에서 기존 데이터를 찾을 수 없습니다.',
+  },
 };

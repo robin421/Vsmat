@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Lock, KeyRound, AlertCircle, Fingerprint } from 'lucide-react';
+import { Lock, KeyRound, AlertCircle, Fingerprint, ArrowLeftRight } from 'lucide-react';
 import { MIN_PASSWORD_LENGTH, STRENGTH_LABELS, passwordStrength } from '../../lib/password';
 import { useI18n } from '../../i18n';
+import { isLegacyDomain, requestMigrationFromOldDomain } from '../../lib/migration';
 
 interface MasterPasswordModalProps {
   isOpen: boolean;
@@ -210,6 +211,22 @@ export const MasterPasswordModal: React.FC<MasterPasswordModalProps> = ({
             <span>{loading ? '处理中...' : isInitialSetup ? t.auth.btnSetup : t.auth.btnUnlock}</span>
           </button>
         </form>
+
+        {isInitialSetup && !isLegacyDomain() && (
+          <div className="mt-5 pt-4 border-t border-line text-center">
+            <p className="text-xs text-muted mb-2">
+              {t.migration.setupHint}
+            </p>
+            <button
+              type="button"
+              onClick={() => requestMigrationFromOldDomain()}
+              className="w-full h-10 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 text-xs font-semibold flex items-center justify-center gap-1.5 transition active:scale-95 shadow-2xs"
+            >
+              <ArrowLeftRight className="w-4 h-4 text-amber-700" />
+              <span>{t.migration.migrateBtn}</span>
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

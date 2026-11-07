@@ -359,4 +359,12 @@ export const zh: TranslationDictionary = {
     floorRegionInfo: '全球底价：{flag} {currency} {price} (≈ ${usd}/月)',
     importBanner: '已从 AISubDeal 自动带入跨区价格配置，补全账号后即可保存',
   },
+  migration: {
+    bannerText: 'Vsmat 已正式升级新域名 vsmat.aisubdeal.com，检测到当前页面存有历史数据。',
+    bannerBtn: '一键迁移到新域名',
+    setupHint: '之前在旧域名 vsmat.pages.dev 录入过订阅或凭据？',
+    migrateBtn: '从旧域名一键无缝同步数据',
+    successToast: '🎉 历史数据已从旧域名成功同步！请输入主密码解锁。',
+    noDataFound: '未在旧域名检测到已存储的保险箱数据。',
+  },
 };
