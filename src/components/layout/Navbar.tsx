@@ -18,8 +18,8 @@ import { exportBackup } from '../../lib/storage';
 import { AppData } from '../../types';
 
 interface NavbarProps {
-  activeTab: 'dashboard' | 'subscriptions' | 'tokens' | 'vouchers' | 'analytics';
-  onTabChange: (tab: 'dashboard' | 'subscriptions' | 'tokens' | 'vouchers' | 'analytics') => void;
+  activeTab: 'subscriptions' | 'tokens' | 'vouchers' | 'analytics';
+  onTabChange: (tab: 'subscriptions' | 'tokens' | 'vouchers' | 'analytics') => void;
   onNewSubscription: () => void;
   onLockVault: () => void;
   isLocked: boolean;
@@ -69,7 +69,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   };
 
   interface NavItemDef {
-    key: 'dashboard' | 'subscriptions' | 'tokens' | 'vouchers' | 'analytics';
+    key: 'subscriptions' | 'tokens' | 'vouchers' | 'analytics';
     label: string;
     icon: React.ComponentType<{ className?: string }>;
     count?: number;

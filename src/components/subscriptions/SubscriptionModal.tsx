@@ -29,12 +29,14 @@ import { getDaysUntil } from '../../lib/notifications';
 import { parseSmartText, ParsedSmartInput } from '../../lib/parser';
 import { recognizeSubscriptionScreenshot } from '../../lib/ocrEngine';
 import { todayLocal } from '../../lib/date';
+import { useDismiss } from '../../hooks/useDismiss';
 
 interface SubscriptionModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (sub: Partial<SubscriptionItem>) => void;
   onDelete?: (id: string) => void;
+  usdToCnyRate?: number;
   initialData?: SubscriptionItem | null;
   onSaveToken?: (token: Partial<TokenItem>) => void;
 }
@@ -55,9 +57,11 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
   onClose,
   onSave,
   onDelete,
+  usdToCnyRate,
   initialData,
   onSaveToken,
 }) => {
+  useDismiss(isOpen, onClose);
   // Mode selection: smart scanner or manual form
   const [entryMode, setEntryMode] = useState<'smart' | 'manual'>('smart');
   const [smartTab, setSmartTab] = useState<'image' | 'text'>('image');
@@ -252,7 +256,7 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
 
   // Real-time calculated fields
   const numPrice = parseFloat(price) || 0;
-  const usdConverted = convertToUSD(numPrice, currency);
+  const usdConverted = convertToUSD(numPrice, currency, usdToCnyRate);
   const daysUntil = getDaysUntil(nextBillingDate);
   const cycleTextMap: Record<string, string> = {
     monthly: '月',
@@ -313,7 +317,7 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-brand-950/50 backdrop-blur-sm animate-fadeIn">
+    <div role="dialog" aria-modal="true" className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-brand-950/50 backdrop-blur-sm animate-fadeIn">
       <div className="w-full max-w-xl rounded-3xl bg-white border border-line p-5 sm:p-7 shadow-pop overflow-y-auto max-h-[92vh] text-ink surface-card">
         {/* Header */}
         <div className="flex items-center justify-between pb-3.5 border-b border-line">

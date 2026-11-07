@@ -61,7 +61,7 @@ export function checkAndSendRenewalNotifications(subscriptions: SubscriptionItem
   const notified = loadNotifiedToday();
 
   for (const sub of subscriptions) {
-    if (notified.has(sub.id)) continue;
+    if (notified.has(sub.id) || sub.cycle === 'lifetime') continue;
     const days = getDaysUntil(sub.nextBillingDate);
     const options = { icon: ICON, tag: `vsmat-renewal-${sub.id}` };
 

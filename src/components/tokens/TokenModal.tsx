@@ -3,6 +3,7 @@ import { X, Key, Sparkles, ExternalLink } from 'lucide-react';
 import { TokenItem } from '../../types';
 import { PRESET_SERVICES, getPresetByKey } from '../../types/presets';
 import { safeHttpUrl } from '../../lib/url';
+import { useDismiss } from '../../hooks/useDismiss';
 
 interface TokenModalProps {
   isOpen: boolean;
@@ -17,6 +18,7 @@ export const TokenModal: React.FC<TokenModalProps> = ({
   onSave,
   initialData,
 }) => {
+  useDismiss(isOpen, onClose);
   const [name, setName] = useState('');
   const [serviceKey, setServiceKey] = useState('custom');
   const [token, setToken] = useState('');
@@ -95,7 +97,7 @@ export const TokenModal: React.FC<TokenModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-brand-950/40 backdrop-blur-sm animate-fadeIn">
+    <div role="dialog" aria-modal="true" className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-brand-950/40 backdrop-blur-sm animate-fadeIn">
       <div className="w-full max-w-lg rounded-3xl bg-white border border-line p-6 sm:p-7 surface-card overflow-y-auto max-h-[92vh] text-ink">
         <div className="flex items-center justify-between pb-4 border-b border-line">
           <div className="flex items-center gap-2.5">

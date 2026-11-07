@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X, ShieldCheck, Copy, Check, ExternalLink, Globe, Lock, Eye, EyeOff, Sparkles, CheckCircle2 } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { useDismiss, closeOnBackdrop } from '../../hooks/useDismiss';
 
 interface AppleWebRedeemModalProps {
   isOpen: boolean;
@@ -19,6 +20,7 @@ export const AppleWebRedeemModal: React.FC<AppleWebRedeemModalProps> = ({
   passwordNote = 'ApplePass#2026',
   onConfirmRecharged,
 }) => {
+  useDismiss(isOpen, onClose);
   const [showPassword, setShowPassword] = useState(false);
   const [copiedEmail, setCopiedEmail] = useState(false);
   const [copiedPassword, setCopiedPassword] = useState(false);
@@ -92,7 +94,7 @@ export const AppleWebRedeemModal: React.FC<AppleWebRedeemModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-brand-950/40 backdrop-blur-sm animate-fadeIn">
+    <div role="dialog" aria-modal="true" className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-brand-950/40 backdrop-blur-sm animate-fadeIn" onClick={closeOnBackdrop(onClose)}>
       <div className="w-full max-w-lg rounded-3xl bg-white border border-line p-6 sm:p-7 surface-card text-ink">
         {/* Header */}
         <div className="flex items-start justify-between pb-4 border-b border-line">

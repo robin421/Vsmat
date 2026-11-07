@@ -19,7 +19,7 @@ export function generateICalendarData(subscriptions: SubscriptionItem[]): string
   const dtStamp = now.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
 
   for (const sub of subscriptions) {
-    if (!sub.nextBillingDate) continue;
+    if (!sub.nextBillingDate || sub.cycle === 'lifetime') continue;
     // Format date YYYYMMDD
     const dateStr = sub.nextBillingDate.replace(/-/g, '');
     const uid = `sub-${sub.id}-${dateStr}@vsmat.vault`;

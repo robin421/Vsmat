@@ -27,8 +27,9 @@ const OverviewStats = lazy(() => import('./components/dashboard/OverviewStats').
 const QuickRechargeBar = lazy(() => import('./components/dashboard/QuickRechargeBar').then((m) => ({ default: m.QuickRechargeBar })));
 const DataSecurityModal = lazy(() => import('./components/common/DataSecurityModal').then((m) => ({ default: m.DataSecurityModal })));
 
+const RENEW_GUARD_MS = 800;
+
 const TAB_TITLES = {
-  dashboard: '我的订阅',
   subscriptions: '我的订阅',
   tokens: 'Token 密钥',
   vouchers: '礼品券直充',
@@ -43,7 +44,7 @@ export function App() {
   const isPasswordModalOpen = status === 'setup' || status === 'locked';
   const isInitialSetup = status === 'setup';
 
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'subscriptions' | 'tokens' | 'vouchers' | 'analytics'>('subscriptions');
+  const [activeTab, setActiveTab] = useState<'subscriptions' | 'tokens' | 'vouchers' | 'analytics'>('subscriptions');
   const [searchQuery, setSearchQuery] = useState('');
   const [isSecurityModalOpen, setIsSecurityModalOpen] = useState(false);
 
@@ -74,6 +75,21 @@ export function App() {
     if (status === 'locked') notifiedRef.current = false;
   }, [status, appData]);
 
+  // Locking must not leave decrypted values on screen in an open modal
+  useEffect(() => {
+    if (status !== 'locked') return;
+    setIsSecurityModalOpen(false);
+    setIsTokenModalOpen(false);
+    setEditingToken(null);
+    setIsSubModalOpen(false);
+    setEditingSub(null);
+    setIsVoucherModalOpen(false);
+    setEditingVoucher(null);
+    setIsAppleModalOpen(false);
+    setAppleVoucherCode('');
+    setAppleActiveSub(null);
+  }, [status]);
+
   const handleUnlock = (password: string, remember: boolean) => unlock(password, remember);
   const handleSetupPassword = (password: string, remember: boolean) => setup(password, remember);
   const handleLockVault = () => void lock();
@@ -100,7 +116,14 @@ export function App() {
   };
 
   // Mark a subscription as renewed
-  const handleMarkRenewed = (subId: string) => {
+  // The list re-sorts as soon as a date moves, so the second click of a double
+  // click can land on a different row. Guard globally, not per subscription.
+  const lastRenewAtRef = useRef(0);
+  const handleMarkRenewed = (subId: string): boolean => {
+    const now = Date.now();
+    if (now - lastRenewAtRef.current < RENEW_GUARD_MS) return false;
+    lastRenewAtRef.current = now;
+
     update((prev) => ({
       ...prev,
       subscriptions: prev.subscriptions.map((sub) => {
@@ -121,6 +144,7 @@ export function App() {
         };
       }),
     }));
+    return true;
   };
 
   // Open Apple Web Redeem Modal (Method 1)
@@ -153,7 +177,6 @@ export function App() {
   };
 
   const handleDeleteToken = (id: string) => {
-    if (!confirm('确定要删除该 Token 密钥吗？')) return;
     update((prev) => ({ ...prev, tokens: prev.tokens.filter(t => t.id !== id) }));
   };
 
@@ -178,7 +201,6 @@ export function App() {
   };
 
   const handleDeleteSubscription = (id: string) => {
-    if (!confirm('确定要删除该订阅账号记录吗？')) return;
     update((prev) => ({ ...prev, subscriptions: prev.subscriptions.filter(s => s.id !== id) }));
   };
 
@@ -201,7 +223,6 @@ export function App() {
   };
 
   const handleDeleteVoucher = (id: string) => {
-    if (!confirm('确定要删除该卡券记录吗？')) return;
     update((prev) => ({ ...prev, vouchers: prev.vouchers.filter(v => v.id !== id) }));
   };
 
@@ -295,6 +316,7 @@ export function App() {
                 }
               }}
               searchTerm={searchQuery}
+              usdToCnyRate={appData.settings.usdToCnyRate}
             />
           </div>
         )}
@@ -420,6 +442,7 @@ export function App() {
           onSave={handleSaveSubscription}
           onDelete={handleDeleteSubscription}
           initialData={editingSub}
+          usdToCnyRate={appData.settings.usdToCnyRate}
           onSaveToken={handleSaveToken}
         />
       )}

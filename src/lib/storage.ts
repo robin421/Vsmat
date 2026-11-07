@@ -413,6 +413,7 @@ export async function parseBackup(text: string, password?: string): Promise<AppD
  * Advance next billing date based on billing cycle when user clicks "我已续费"
  */
 export function advanceBillingDate(currentDateStr: string, cycle: string): string {
+  if (cycle === 'lifetime') return currentDateStr; // one-off purchase, nothing to renew
   const base = parseLocalDate(currentDateStr) ?? new Date();
   switch (cycle) {
     case 'quarterly':

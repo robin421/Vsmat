@@ -19,9 +19,7 @@ export const QuickRechargeBar: React.FC<QuickRechargeBarProps> = ({
   const [isCopied, setIsCopied] = useState(false);
 
   const detectedService = detectVoucherService(code);
-  const effectiveService = selectedService === 'auto'
-    ? (detectedService || getPresetByKey('openai'))
-    : getPresetByKey(selectedService);
+  const effectiveService = selectedService === 'auto' ? detectedService : getPresetByKey(selectedService);
 
   const handlePasteFromClipboard = async () => {
     try {
@@ -36,7 +34,7 @@ export const QuickRechargeBar: React.FC<QuickRechargeBarProps> = ({
     if (e) e.preventDefault();
     if (!code.trim()) return;
 
-    if (effectiveService.key === 'apple' && onOpenAppleWebRedeem) {
+    if (effectiveService?.key === 'apple' && onOpenAppleWebRedeem) {
       onOpenAppleWebRedeem(code.trim());
       return;
     }
@@ -168,21 +166,29 @@ export const QuickRechargeBar: React.FC<QuickRechargeBarProps> = ({
         {/* Channel Helper Tag */}
         <div className="flex flex-wrap items-center gap-2 text-sm text-muted pt-1">
           <span>目标通道:</span>
-          <span className="px-2 h-6 inline-flex items-center rounded-md font-semibold text-xs bg-brand-50 text-brand-700">
-            {effectiveService.name}
-          </span>
-          {effectiveService.key === 'apple' ? (
-            <span className="text-emerald-700 font-medium flex items-center gap-1">
-              ✓ 专享【网页端免退号】独立兑换通道
-            </span>
-          ) : effectiveService.directRedeemUrlPattern ? (
-            <span className="text-emerald-700 font-medium flex items-center gap-1">
-              ✓ 支持带码直达自动兑换
-            </span>
+          {effectiveService ? (
+            <>
+              <span className="px-2 h-6 inline-flex items-center rounded-md font-semibold text-xs bg-brand-50 text-brand-700">
+                {effectiveService.name}
+              </span>
+              {effectiveService.key === 'apple' ? (
+                <span className="text-emerald-700 font-medium flex items-center gap-1">
+                  ✓ 专享【网页端免退号】独立兑换通道
+                </span>
+              ) : effectiveService.directRedeemUrlPattern ? (
+                <span className="text-emerald-700 font-medium flex items-center gap-1">
+                  ✓ 支持带码直达自动兑换
+                </span>
+              ) : (
+                <span className="text-muted flex items-center gap-1">
+                  ✓ 自动复制券码并打开官方后台
+                </span>
+              )}
+            </>
+          ) : code.trim() ? (
+            <span className="text-amber-700 font-medium">未识别，请在左侧手动选择服务</span>
           ) : (
-            <span className="text-muted flex items-center gap-1">
-              ✓ 自动复制券码并打开官方后台
-            </span>
+            <span>粘贴券码后自动识别</span>
           )}
         </div>
       </form>

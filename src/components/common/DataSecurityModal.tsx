@@ -1,5 +1,6 @@
 import React from 'react';
 import { ShieldCheck, Lock, HardDrive, Cpu, EyeOff, CheckCircle2, X, Terminal, ExternalLink, Download } from 'lucide-react';
+import { useDismiss, closeOnBackdrop } from '../../hooks/useDismiss';
 
 interface DataSecurityModalProps {
   isOpen: boolean;
@@ -12,10 +13,11 @@ export const DataSecurityModal: React.FC<DataSecurityModalProps> = ({
   onClose,
   onOpenExport,
 }) => {
+  useDismiss(isOpen, onClose);
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-brand-950/50 backdrop-blur-sm animate-fadeIn">
+    <div role="dialog" aria-modal="true" className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-brand-950/50 backdrop-blur-sm animate-fadeIn" onClick={closeOnBackdrop(onClose)}>
       <div className="w-full max-w-2xl rounded-3xl bg-white border border-line p-6 sm:p-8 surface-card max-h-[90vh] overflow-y-auto text-ink shadow-pop">
         
         {/* Header */}

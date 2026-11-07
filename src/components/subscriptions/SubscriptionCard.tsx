@@ -27,8 +27,9 @@ interface SubscriptionCardProps {
   subscription: SubscriptionItem;
   onEdit: (sub: SubscriptionItem) => void;
   onDelete: (id: string) => void;
-  onMarkRenewed: (id: string) => void;
+  onMarkRenewed: (id: string) => boolean;
   onQuickRecharge: (serviceKey: string, sub?: SubscriptionItem) => void;
+  usdToCnyRate?: number;
 }
 
 export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
@@ -37,16 +38,18 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
   onDelete,
   onMarkRenewed,
   onQuickRecharge,
+  usdToCnyRate,
 }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [copiedEmail, setCopiedEmail] = useState(false);
   const [copiedPassword, setCopiedPassword] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
 
+  const isLifetime = subscription.cycle === 'lifetime';
   const days = getDaysUntil(subscription.nextBillingDate);
-  const isOverdue = days < 0;
-  const isToday = days === 0;
-  const isExpiringSoon = days > 0 && days <= 7;
+  const isOverdue = !isLifetime && days < 0;
+  const isToday = !isLifetime && days === 0;
+  const isExpiringSoon = !isLifetime && days > 0 && days <= 7;
 
   const handleCopyEmail = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -70,12 +73,12 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
 
   const handleRenew = (e: React.MouseEvent) => {
     e.stopPropagation();
+    if (!onMarkRenewed(subscription.id)) return;
     confetti({
       particleCount: 40,
       spread: 60,
       origin: { y: 0.6 }
     });
-    onMarkRenewed(subscription.id);
   };
 
   const cycleTextMap: Record<string, string> = {
@@ -123,7 +126,9 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
                   : 'bg-inset text-muted'
               }`}
             >
-              {isOverdue
+              {isLifetime
+                ? '买断'
+                : isOverdue
                 ? `已逾期 ${Math.abs(days)} 天`
                 : isToday
                 ? '今日到期'
@@ -189,7 +194,7 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
           <div className="flex items-center gap-1.5 whitespace-nowrap text-muted">
             <Calendar className="w-3.5 h-3.5 text-subtle shrink-0" />
             <span>下期:</span>
-            <span className="font-medium text-ink">{subscription.nextBillingDate}</span>
+            <span className="font-medium text-ink">{isLifetime ? '无需续费' : subscription.nextBillingDate}</span>
           </div>
           {(subscription.paymentMethod || subscription.notes) && (
             <div className="flex items-center gap-1.5 mt-1 text-xs text-muted min-w-0">
@@ -215,7 +220,7 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
           </div>
           {subscription.currency !== 'USD' && (
             <div className="text-xs text-muted mt-1 whitespace-nowrap" title="按全局汇率折算">
-              ≈ ${convertToUSD(subscription.price, subscription.currency).toFixed(2)} USD
+              ≈ ${convertToUSD(subscription.price, subscription.currency, usdToCnyRate).toFixed(2)} USD
             </div>
           )}
         </div>
@@ -226,7 +231,7 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
         <button
           type="button"
           onClick={() => onQuickRecharge(subscription.serviceKey, subscription)}
-          className={`h-9 px-3 rounded-lg font-semibold text-[13px] flex items-center justify-center gap-1 whitespace-nowrap transition-colors active:scale-[0.985] ${
+          className={`h-9 px-3 rounded-lg font-semibold text-[13px] flex items-center justify-center gap-1 whitespace-nowrap transition-colors active:scale-[0.985] ${isLifetime ? 'col-span-2' : ''} ${
             isUrgent ? 'btn-primary' : 'bg-brand-50 hover:bg-brand-100 text-brand-700'
           }`}
         >
@@ -234,14 +239,16 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
           <span>去充值</span>
         </button>
 
-        <button
-          type="button"
-          onClick={handleRenew}
-          className="h-9 px-3 rounded-lg bg-inset hover:bg-line text-ink-soft font-semibold text-[13px] transition-colors flex items-center justify-center gap-1 whitespace-nowrap active:scale-[0.985]"
-        >
-          <RefreshCw className="w-3.5 h-3.5" />
-          <span>我已续费</span>
-        </button>
+        {!isLifetime && (
+          <button
+            type="button"
+            onClick={handleRenew}
+            className="h-9 px-3 rounded-lg bg-inset hover:bg-line text-ink-soft font-semibold text-[13px] transition-colors flex items-center justify-center gap-1 whitespace-nowrap active:scale-[0.985]"
+          >
+            <RefreshCw className="w-3.5 h-3.5" />
+            <span>我已续费</span>
+          </button>
+        )}
 
         <div className="absolute top-3 right-3 row:static flex items-center">
           <button

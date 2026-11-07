@@ -15,7 +15,7 @@ import confetti from 'canvas-confetti';
 
 interface UrgentReminderBannerProps {
   subscriptions: SubscriptionItem[];
-  onMarkRenewed: (subId: string) => void;
+  onMarkRenewed: (subId: string) => boolean;
   onOpenRechargeWithService: (serviceKey: string, sub?: SubscriptionItem) => void;
 }
 
@@ -27,6 +27,7 @@ export const UrgentReminderBanner: React.FC<UrgentReminderBannerProps> = ({
   const [notificationStatus, setNotificationStatus] = useState<string | null>(null);
 
   const urgentSubs = subscriptions
+    .filter(sub => sub.cycle !== 'lifetime')
     .map(sub => ({ sub, days: getDaysUntil(sub.nextBillingDate) }))
     .filter(item => item.days <= 7)
     .sort((a, b) => a.days - b.days);
@@ -65,12 +66,12 @@ export const UrgentReminderBanner: React.FC<UrgentReminderBannerProps> = ({
   };
 
   const handleRenewClick = (subId: string) => {
+    if (!onMarkRenewed(subId)) return;
     confetti({
       particleCount: 40,
       spread: 60,
       origin: { y: 0.6 }
     });
-    onMarkRenewed(subId);
   };
 
   const quietButton = 'h-8 px-2.5 rounded-lg text-muted hover:text-ink hover:bg-inset transition-colors flex items-center gap-1.5 font-medium text-[13px] whitespace-nowrap';

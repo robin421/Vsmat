@@ -4,6 +4,7 @@ import { VoucherItem } from '../../types';
 import { PRESET_SERVICES, getPresetByKey } from '../../types/presets';
 import { detectVoucherService } from '../../lib/rechargeEngines';
 import { SUPPORTED_CURRENCIES } from '../../lib/currencies';
+import { useDismiss } from '../../hooks/useDismiss';
 
 interface VoucherModalProps {
   isOpen: boolean;
@@ -18,6 +19,7 @@ export const VoucherModal: React.FC<VoucherModalProps> = ({
   onSave,
   initialData,
 }) => {
+  useDismiss(isOpen, onClose);
   const [code, setCode] = useState('');
   const [serviceKey, setServiceKey] = useState('apple');
   const [serviceName, setServiceName] = useState('');
@@ -80,7 +82,7 @@ export const VoucherModal: React.FC<VoucherModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-brand-950/40 backdrop-blur-sm animate-fadeIn">
+    <div role="dialog" aria-modal="true" className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-brand-950/40 backdrop-blur-sm animate-fadeIn">
       <div className="w-full max-w-md rounded-3xl bg-white border border-line p-6 sm:p-7 surface-card overflow-y-auto max-h-[90vh] text-ink">
         <div className="flex items-center justify-between pb-4 border-b border-line">
           <div className="flex items-center gap-2.5">

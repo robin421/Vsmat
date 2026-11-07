@@ -74,7 +74,7 @@ export const MasterPasswordModal: React.FC<MasterPasswordModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-brand-950/40 backdrop-blur-sm animate-fadeIn">
+    <div role="dialog" aria-modal="true" className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-brand-950/40 backdrop-blur-sm animate-fadeIn">
       <div className="w-full max-w-md rounded-3xl bg-white border border-line p-7 surface-card text-ink">
         <div className="text-center mb-6">
           <div className="w-12 h-12 rounded-2xl bg-brand-700 text-white border border-ink/10 flex items-center justify-center mx-auto mb-3">

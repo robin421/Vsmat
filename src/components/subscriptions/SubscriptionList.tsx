@@ -9,9 +9,10 @@ interface SubscriptionListProps {
   onAddNew: () => void;
   onEdit: (sub: SubscriptionItem) => void;
   onDelete: (id: string) => void;
-  onMarkRenewed: (id: string) => void;
+  onMarkRenewed: (id: string) => boolean;
   onQuickRecharge: (serviceKey: string, sub?: SubscriptionItem) => void;
   searchTerm?: string;
+  usdToCnyRate?: number;
 }
 
 export const SubscriptionList: React.FC<SubscriptionListProps> = ({
@@ -22,6 +23,7 @@ export const SubscriptionList: React.FC<SubscriptionListProps> = ({
   onMarkRenewed,
   onQuickRecharge,
   searchTerm = '',
+  usdToCnyRate,
 }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [filterUrgentOnly, setFilterUrgentOnly] = useState(false);
@@ -47,7 +49,7 @@ export const SubscriptionList: React.FC<SubscriptionListProps> = ({
 
         if (filterUrgentOnly) {
           const days = getDaysUntil(sub.nextBillingDate);
-          return matchesSearch && matchesCat && days <= 7;
+          return matchesSearch && matchesCat && sub.cycle !== 'lifetime' && days <= 7;
         }
 
         return matchesSearch && matchesCat;
@@ -170,6 +172,7 @@ export const SubscriptionList: React.FC<SubscriptionListProps> = ({
               onDelete={onDelete}
               onMarkRenewed={onMarkRenewed}
               onQuickRecharge={onQuickRecharge}
+              usdToCnyRate={usdToCnyRate}
             />
           ))}
         </div>
