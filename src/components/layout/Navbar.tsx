@@ -130,7 +130,7 @@ export const Navbar: React.FC<NavbarProps> = ({
       {/* AISubDeal Ecosystem Link + Local-only trust signal (sidebar foot) */}
       <div className="hidden lg:flex lg:flex-col lg:gap-2 lg:order-5 lg:mt-auto mb-3">
         <a
-          href={buildAiSubDealUrl('/pricing/', language)}
+          href={buildAiSubDealUrl('/pricing/', language, { utm_medium: 'sidebar_nav' })}
           target="_blank"
           rel="noopener noreferrer"
           className="p-2.5 rounded-xl bg-brand-50/70 hover:bg-brand-100/80 border border-brand-200/60 text-left transition-colors block"
@@ -216,6 +216,18 @@ export const Navbar: React.FC<NavbarProps> = ({
 
       {/* Actions */}
       <div className="flex items-center gap-2 shrink-0 lg:contents">
+        {/* Mobile AISubDeal Deals Link */}
+        <a
+          href={buildAiSubDealUrl('/pricing/', language, { utm_medium: 'mobile_nav' })}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="lg:hidden h-9 px-2 rounded-lg bg-brand-50 hover:bg-brand-100 text-brand-700 border border-brand-200/60 font-semibold text-xs flex items-center gap-1 shrink-0 whitespace-nowrap transition-colors"
+          title={t.aisubdeal.navLink}
+        >
+          <Globe className="w-3.5 h-3.5 text-brand-700" />
+          <span>{t.aisubdeal.navShort}</span>
+        </a>
+
         <button
           onClick={onNewSubscription}
           className="h-9 lg:h-10 w-9 lg:w-auto lg:order-2 lg:mb-3 rounded-lg btn-primary font-semibold text-sm flex items-center justify-center gap-1.5"

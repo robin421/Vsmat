@@ -1,34 +1,39 @@
 import React, { useState, useMemo } from 'react';
-import { Plus, CreditCard, Search, X, ArrowLeftRight } from 'lucide-react';
+import { Plus, CreditCard, Search, X, ArrowLeftRight, Globe, ExternalLink, Zap } from 'lucide-react';
 import { SubscriptionItem } from '../../types';
 import { SubscriptionCard } from './SubscriptionCard';
 import { getDaysUntil } from '../../lib/notifications';
 import { monthlyAmountUSD } from '../../lib/currencies';
 import { useI18n } from '../../i18n';
 import { isLegacyDomain, requestMigrationFromOldDomain } from '../../lib/migration';
+import { AISUBDEAL_BENCHMARKS, buildAiSubDealUrl, getServicePricingUrl } from '../../lib/aisubdeal';
 
 interface SubscriptionListProps {
   subscriptions: SubscriptionItem[];
+  isLocked?: boolean;
   onAddNew: () => void;
   onEdit: (sub: SubscriptionItem) => void;
   onDelete: (id: string) => void;
   onMarkRenewed: (id: string) => boolean;
   onQuickRecharge: (serviceKey: string, sub?: SubscriptionItem) => void;
+  onQuickImportDeal?: (serviceKey: string) => void;
   searchTerm?: string;
   usdToCnyRate?: number;
 }
 
 export const SubscriptionList: React.FC<SubscriptionListProps> = ({
   subscriptions,
+  isLocked = false,
   onAddNew,
   onEdit,
   onDelete,
   onMarkRenewed,
   onQuickRecharge,
+  onQuickImportDeal,
   searchTerm = '',
   usdToCnyRate,
 }) => {
-  const { t } = useI18n();
+  const { t, language } = useI18n();
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [filterUrgentOnly, setFilterUrgentOnly] = useState(false);
   const [localSearch, setLocalSearch] = useState('');
@@ -175,6 +180,19 @@ export const SubscriptionList: React.FC<SubscriptionListProps> = ({
             <Plus className="w-4 h-4 stroke-[2.5]" />
             <span>{t.common.newSubscription}</span>
           </button>
+
+          {/* AISubDeal Price Ranking Link */}
+          <a
+            href={buildAiSubDealUrl('/pricing/', language, { utm_medium: 'sub_toolbar' })}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="h-10 px-3 rounded-xl bg-brand-50 hover:bg-brand-100 text-brand-700 transition-colors font-semibold text-xs inline-flex items-center gap-1.5 shrink-0 whitespace-nowrap"
+            title={t.aisubdeal.toolbarCompareBtn}
+          >
+            <Globe className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">{t.aisubdeal.toolbarCompareBtn}</span>
+            <ExternalLink className="w-3 h-3 text-brand-600" />
+          </a>
         </div>
       </div>
 
@@ -223,6 +241,94 @@ export const SubscriptionList: React.FC<SubscriptionListProps> = ({
               </button>
             )}
           </div>
+
+          {/* AISubDeal Floor Price Showcase for Empty Vault */}
+          {!isLocked && !effectiveSearch && !filterUrgentOnly && subscriptions.length === 0 && (
+            <div className="mt-8 pt-6 border-t border-line text-left">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+                <div>
+                  <h5 className="text-sm font-bold text-ink flex items-center gap-1.5">
+                    <span>{t.aisubdeal.emptyShowcaseTitle}</span>
+                  </h5>
+                  <p className="text-xs text-muted mt-0.5">
+                    {t.aisubdeal.emptyShowcaseDesc}
+                  </p>
+                </div>
+                <a
+                  href={buildAiSubDealUrl('/pricing/', language, { utm_medium: 'empty_showcase_header' })}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs font-semibold text-brand-700 hover:text-brand-800 inline-flex items-center gap-1 self-start sm:self-auto shrink-0 transition-colors"
+                >
+                  <span>{t.aisubdeal.exploreAllDealsBtn}</span>
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </a>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                {(['openai', 'claude', 'gemini', 'perplexity'] as const).map((key) => {
+                  const item = AISUBDEAL_BENCHMARKS[key];
+                  if (!item) return null;
+                  const nameMap: Record<string, string> = {
+                    openai: 'ChatGPT Plus',
+                    claude: 'Claude Pro',
+                    gemini: 'Gemini Advanced',
+                    perplexity: 'Perplexity Pro',
+                  };
+                  const displayName = nameMap[key] || item.productSlug;
+                  const pricingUrl = getServicePricingUrl(item.productSlug, language, undefined, 'empty_card');
+
+                  return (
+                    <div
+                      key={key}
+                      className="p-3.5 rounded-xl bg-white border border-line hover:border-brand-300 transition-all shadow-sm flex flex-col justify-between gap-3 group"
+                    >
+                      <div>
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="font-semibold text-sm text-ink truncate">{displayName}</span>
+                          <span className="px-1.5 py-0.5 rounded-md bg-emerald-50 text-emerald-700 text-[11px] font-bold whitespace-nowrap">
+                            省 {item.cheapest.savePercent}%
+                          </span>
+                        </div>
+                        <div className="mt-2 text-xs text-ink-soft font-medium flex items-center gap-1">
+                          <span>{item.cheapest.countryFlag}</span>
+                          <span className="font-bold">{item.cheapest.currency} {item.cheapest.localPrice}</span>
+                          <span className="text-muted text-[11px]">/月 (≈ ${item.cheapest.usdPrice})</span>
+                        </div>
+                        <div className="text-[11px] text-muted mt-0.5">
+                          {item.cheapest.regionLabelZh || item.cheapest.regionLabelEn} · 原价 ${item.usPriceUSD}
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-1.5 pt-2 border-t border-line/60">
+                        {onQuickImportDeal && (
+                          <button
+                            type="button"
+                            onClick={() => onQuickImportDeal(key)}
+                            className="flex-1 h-7 rounded-lg bg-brand-50 hover:bg-brand-100 text-brand-700 text-xs font-semibold inline-flex items-center justify-center gap-1 transition-colors"
+                            title={t.aisubdeal.quickImportAction}
+                          >
+                            <Zap className="w-3 h-3 text-brand-600" />
+                            <span>{t.aisubdeal.quickImportAction}</span>
+                          </button>
+                        )}
+                        <a
+                          href={pricingUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="h-7 px-2 rounded-lg bg-inset hover:bg-line text-muted hover:text-ink text-xs font-medium inline-flex items-center justify-center gap-1 transition-colors shrink-0"
+                          title={t.aisubdeal.compareLink}
+                        >
+                          <span>{t.aisubdeal.compareLink}</span>
+                          <ExternalLink className="w-3 h-3" />
+                        </a>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>

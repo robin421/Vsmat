@@ -344,6 +344,8 @@ export const zh: TranslationDictionary = {
   aisubdeal: {
     navLink: 'AISubDeal 全球比价',
     navSub: '各区 App Store 订阅底价与购卡指南',
+    navShort: '全球比价',
+    toolbarCompareBtn: 'AISubDeal 比价榜',
     floorHintTitle: 'AISubDeal 全球最低价参考',
     floorHintSave: '省 {percent}%',
     applyFloorBtn: '填入最低价',
@@ -363,6 +365,11 @@ export const zh: TranslationDictionary = {
     optimizeAction: '查看换区攻略',
     floorRegionInfo: '全球底价：{flag} {currency} {price} (≈ ${usd}/月)',
     importBanner: '已从 AISubDeal 自动带入跨区价格配置，补全账号后即可保存',
+    emptyShowcaseTitle: '🔥 AISubDeal 全球热门 AI 订阅跨区底价直通车',
+    emptyShowcaseDesc: '不知道怎么低价订阅？一键带入全球最低价方案，或前往 aisubdeal.com 查看换区与礼品卡教程',
+    quickImportAction: '一键填入底价',
+    exploreAllDealsBtn: '浏览 AISubDeal 全部 20+ 国比价榜单',
+    voucherEmptyHelper: '还没有跨区充值卡？前往 AISubDeal 查看各区安全购卡渠道与免税地址攻略：',
   },
   migration: {
     bannerText: 'Vsmat 已正式升级新域名 vsmat.aisubdeal.com，检测到当前页面存有历史数据。',

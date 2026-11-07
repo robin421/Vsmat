@@ -369,6 +369,8 @@ export interface TranslationDictionary {
   aisubdeal: {
     navLink: string;
     navSub: string;
+    navShort: string;
+    toolbarCompareBtn: string;
     floorHintTitle: string;
     floorHintSave: string;
     applyFloorBtn: string;
@@ -388,6 +390,11 @@ export interface TranslationDictionary {
     optimizeAction: string;
     floorRegionInfo: string;
     importBanner: string;
+    emptyShowcaseTitle: string;
+    emptyShowcaseDesc: string;
+    quickImportAction: string;
+    exploreAllDealsBtn: string;
+    voucherEmptyHelper: string;
   };
 
   // Cross-domain Migration

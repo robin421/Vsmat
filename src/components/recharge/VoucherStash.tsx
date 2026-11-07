@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { Gift, Plus, Copy, Check, CheckCheck, Zap, Trash2, Edit2 } from 'lucide-react';
+import { Gift, Plus, Copy, Check, CheckCheck, Zap, Trash2, Edit2, ExternalLink } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { VoucherItem } from '../../types';
 import { execute1ClickRecharge } from '../../lib/rechargeEngines';
 import { getPresetByKey } from '../../types/presets';
 import { BrandBadge } from '../common/BrandBadge';
 import { useI18n } from '../../i18n';
+import { getGiftCardGuideUrl, getAddressToolUrl } from '../../lib/aisubdeal';
 
 interface VoucherStashProps {
   vouchers: VoucherItem[];
@@ -24,7 +25,7 @@ export const VoucherStash: React.FC<VoucherStashProps> = ({
   onUpdateStatus,
   onOpenAppleWebRedeem,
 }) => {
-  const { t } = useI18n();
+  const { t, language } = useI18n();
   const [filter, setFilter] = useState<'all' | 'unredeemed' | 'redeemed'>('unredeemed');
   const [copiedId, setCopiedId] = useState<string | null>(null);
   // Opened the provider's page, waiting for the user to confirm the redemption
@@ -257,15 +258,63 @@ export const VoucherStash: React.FC<VoucherStashProps> = ({
           <p className="text-sm text-muted max-w-sm mx-auto mb-5">
             {t.vouchers.emptyDesc}
           </p>
-          <button
-            onClick={onAddNew}
-            className="h-10 px-5 rounded-lg btn-primary font-semibold text-sm inline-flex items-center gap-1.5"
-          >
-            <Plus className="w-4 h-4" />
-            <span>{t.vouchers.emptyCta}</span>
-          </button>
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            <button
+              onClick={onAddNew}
+              className="h-10 px-5 rounded-lg btn-primary font-semibold text-sm inline-flex items-center gap-1.5"
+            >
+              <Plus className="w-4 h-4" />
+              <span>{t.vouchers.emptyCta}</span>
+            </button>
+            <a
+              href={getGiftCardGuideUrl(undefined, language, 'voucher_empty')}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="h-10 px-4 rounded-lg bg-brand-50 hover:bg-brand-100 text-brand-700 font-semibold text-sm inline-flex items-center gap-1.5 transition-colors"
+            >
+              <span>🎁 {t.aisubdeal.giftCardGuideLink}</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
+            <a
+              href={getAddressToolUrl(undefined, language, 'voucher_empty')}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="h-10 px-4 rounded-lg bg-inset hover:bg-line text-ink-soft font-semibold text-sm inline-flex items-center gap-1.5 transition-colors"
+            >
+              <span>📍 {t.aisubdeal.addressToolLink}</span>
+              <ExternalLink className="w-3.5 h-3.5 text-muted" />
+            </a>
+          </div>
         </div>
       )}
+
+      {/* AISubDeal Gift Card & Address Helper Banner */}
+      <div className="p-3.5 rounded-2xl bg-brand-50/60 border border-brand-200/50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 text-xs">
+        <span className="text-brand-900 font-medium">
+          💡 {t.aisubdeal.voucherEmptyHelper}
+        </span>
+        <div className="flex items-center gap-3 shrink-0">
+          <a
+            href={getGiftCardGuideUrl(undefined, language, 'voucher_footer')}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-semibold text-brand-700 hover:text-brand-800 inline-flex items-center gap-1"
+          >
+            <span>{t.aisubdeal.giftCardGuideLink}</span>
+            <ExternalLink className="w-3 h-3" />
+          </a>
+          <span className="text-brand-300">·</span>
+          <a
+            href={getAddressToolUrl(undefined, language, 'voucher_footer')}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-semibold text-brand-700 hover:text-brand-800 inline-flex items-center gap-1"
+          >
+            <span>{t.aisubdeal.addressToolLink}</span>
+            <ExternalLink className="w-3 h-3" />
+          </a>
+        </div>
+      </div>
     </div>
   );
 };

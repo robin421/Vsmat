@@ -344,6 +344,8 @@ export const ko: TranslationDictionary = {
   aisubdeal: {
     navLink: 'AISubDeal 글로벌 가격 비교',
     navSub: '국가별 App Store 최저가 & 기프트카드 가이드',
+    navShort: '최저가',
+    toolbarCompareBtn: 'AISubDeal 가격 비교',
     floorHintTitle: 'AISubDeal 글로벌 최저가 참고',
     floorHintSave: '{percent}% 절약',
     applyFloorBtn: '최저가 자동 입력',
@@ -363,6 +365,11 @@ export const ko: TranslationDictionary = {
     optimizeAction: '전환 가이드 보기',
     floorRegionInfo: '글로벌 최저가: {flag} {currency} {price} (≈ ${usd}/월)',
     importBanner: 'AISubDeal에서 국가별 구독 가격 정보를 불러왔습니다. 확인 후 저장하세요.',
+    emptyShowcaseTitle: '🔥 AISubDeal 글로벌 인기 AI 구독 최저가 바로가기',
+    emptyShowcaseDesc: '더 저렴한 구독 방법을 찾고 계신가요? 원클릭으로 글로벌 최저가를 입력하거나 aisubdeal.com에서 국가 전환 및 기프트카드 가이드를 확인하세요.',
+    quickImportAction: '최저가 자동 입력',
+    exploreAllDealsBtn: 'AISubDeal에서 20개국 이상 전체 가격 비교 보기',
+    voucherEmptyHelper: '해외 기프트카드가 필요하신가요? AISubDeal에서 국가별 구매 가이드와 면세 주소를 확인하세요:',
   },
   migration: {
     bannerText: 'Vsmat이 새 도메인 vsmat.aisubdeal.com으로 이전되었습니다. 현재 도메인에 저장된 데이터가 있습니다.',

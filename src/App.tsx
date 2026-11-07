@@ -286,6 +286,14 @@ function AppContent({ vault }: AppContentProps) {
     update((prev) => ({ ...prev, subscriptions: prev.subscriptions.filter(s => s.id !== id) }));
   };
 
+  const handleQuickImportDeal = (serviceKey: string) => {
+    const imported = parseUrlImportParams(`?aisubdeal=${serviceKey}`);
+    if (imported) {
+      setEditingSub(imported as SubscriptionItem);
+      setIsSubModalOpen(true);
+    }
+  };
+
   const handleSaveVoucher = (vData: Partial<VoucherItem>) => {
     update((prev) => {
       if (vData.id) {
@@ -442,6 +450,7 @@ function AppContent({ vault }: AppContentProps) {
             {/* Subscription List */}
             <SubscriptionList
               subscriptions={appData.subscriptions}
+              isLocked={isLocked}
               onAddNew={() => {
                 setEditingSub(null);
                 setIsSubModalOpen(true);
@@ -459,6 +468,7 @@ function AppContent({ vault }: AppContentProps) {
                   setActiveTab('vouchers');
                 }
               }}
+              onQuickImportDeal={handleQuickImportDeal}
               searchTerm={searchQuery}
               usdToCnyRate={appData.settings.usdToCnyRate}
             />

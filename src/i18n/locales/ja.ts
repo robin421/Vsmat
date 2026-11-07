@@ -344,6 +344,8 @@ export const ja: TranslationDictionary = {
   aisubdeal: {
     navLink: 'AISubDeal 世界価格比較',
     navSub: '各国App Store最安値＆ギフト券ガイド',
+    navShort: '最安比較',
+    toolbarCompareBtn: 'AISubDeal 価格比較',
     floorHintTitle: 'AISubDeal 世界最安値データ',
     floorHintSave: '{percent}% お得',
     applyFloorBtn: '最安値を入力',
@@ -363,6 +365,11 @@ export const ja: TranslationDictionary = {
     optimizeAction: '最安プランを見る',
     floorRegionInfo: '世界最安：{flag} {currency} {price} (≈ ${usd}/月)',
     importBanner: 'AISubDeal から地域価格設定を自動入力しました。確認して保存してください。',
+    emptyShowcaseTitle: '🔥 AISubDeal 世界の人気AIサブスク最安値ダイレクト',
+    emptyShowcaseDesc: 'AIサブスクを安く契約したいですか？世界最安プランをワンクリックで自動入力、または aisubdeal.com で国変更・ギフト券ガイドを確認できます。',
+    quickImportAction: '最安値を自動入力',
+    exploreAllDealsBtn: 'AISubDeal で世界20カ国以上の価格ランキングを見る',
+    voucherEmptyHelper: '海外ギフトカードをお探しですか？AISubDeal で安全な購入方法と免税住所をチェック：',
   },
   migration: {
     bannerText: 'Vsmat は新ドメイン vsmat.aisubdeal.com に移行しました。現在のドメインにデータが保存されています。',

@@ -541,13 +541,15 @@ export function getSubscriptionBenchmark(
 export function getServicePricingUrl(
   serviceKeyOrSlug?: string,
   lang: SupportedLanguage = 'zh',
-  serviceName?: string
+  serviceName?: string,
+  medium?: string
 ): string {
+  const extra = medium ? { utm_medium: medium } : undefined;
   const benchmark = getSubscriptionBenchmark(serviceKeyOrSlug, serviceName);
   if (benchmark) {
-    return buildAiSubDealUrl(`/pricing/${benchmark.productSlug}/`, lang);
+    return buildAiSubDealUrl(`/pricing/${benchmark.productSlug}/`, lang, extra);
   }
-  return buildAiSubDealUrl('/pricing/', lang);
+  return buildAiSubDealUrl('/pricing/', lang, extra);
 }
 
 /**
@@ -555,14 +557,16 @@ export function getServicePricingUrl(
  */
 export function getGiftCardGuideUrl(
   currencyCode?: string,
-  lang: SupportedLanguage = 'zh'
+  lang: SupportedLanguage = 'zh',
+  medium?: string
 ): string {
+  const extra = medium ? { utm_medium: medium } : undefined;
   const code = (currencyCode || '').toUpperCase();
   const slug = CURRENCY_TO_GIFT_CARD_SLUG[code];
   if (slug) {
-    return buildAiSubDealUrl(`/gift-cards/${slug}/`, lang);
+    return buildAiSubDealUrl(`/gift-cards/${slug}/`, lang, extra);
   }
-  return buildAiSubDealUrl('/gift-cards/', lang);
+  return buildAiSubDealUrl('/gift-cards/', lang, extra);
 }
 
 /**
@@ -570,14 +574,16 @@ export function getGiftCardGuideUrl(
  */
 export function getAddressToolUrl(
   currencyCode?: string,
-  lang: SupportedLanguage = 'zh'
+  lang: SupportedLanguage = 'zh',
+  medium?: string
 ): string {
+  const extra = medium ? { utm_medium: medium } : undefined;
   const code = (currencyCode || '').toUpperCase();
   const cc = CURRENCY_TO_ADDRESS_CC[code];
   if (cc) {
-    return buildAiSubDealUrl(`/address/${cc}/`, lang);
+    return buildAiSubDealUrl(`/address/${cc}/`, lang, extra);
   }
-  return buildAiSubDealUrl('/address/', lang);
+  return buildAiSubDealUrl('/address/', lang, extra);
 }
 
 export interface SubscriptionDealEvaluation {
@@ -779,23 +785,28 @@ function applyDatasetRows(rows: RawDatasetRow[]): void {
 }
 
 /**
- * Silent, non-blocking background sync with aisubdeal.com's open price dataset.
- * Uses 24h localStorage cache and falls back silently to built-in snapshot if offline or blocked by CORS.
+ * Silent, non-blocking sync with aisubdeal.com's price dataset cache.
+ * Respects strict offline-first CSP (`connect-src 'self'`) by reading cached dataset rows
+ * without making unsolicited cross-origin requests unless explicitly requested.
  */
-export async function syncAiSubDealDataset(): Promise<boolean> {
+export async function syncAiSubDealDataset(options?: { allowNetwork?: boolean }): Promise<boolean> {
   try {
     const cachedRaw = localStorage.getItem(CACHE_STORAGE_KEY);
     if (cachedRaw) {
       const parsed = JSON.parse(cachedRaw) as { timestamp: number; data: RawDatasetRow[] };
       if (parsed?.data && Array.isArray(parsed.data)) {
         applyDatasetRows(parsed.data);
-        if (Date.now() - (parsed.timestamp || 0) < CACHE_TTL_MS) {
+        if (!options?.allowNetwork || Date.now() - (parsed.timestamp || 0) < CACHE_TTL_MS) {
           return true;
         }
       }
     }
   } catch {
     // Ignore storage read errors
+  }
+
+  if (!options?.allowNetwork) {
+    return true;
   }
 
   if (typeof navigator !== 'undefined' && navigator.onLine === false) {

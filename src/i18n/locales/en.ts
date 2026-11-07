@@ -344,6 +344,8 @@ export const en: TranslationDictionary = {
   aisubdeal: {
     navLink: 'AISubDeal Price Index',
     navSub: 'Global App Store prices & gift cards',
+    navShort: 'Deals',
+    toolbarCompareBtn: 'AISubDeal Prices',
     floorHintTitle: 'AISubDeal Global Floor Price',
     floorHintSave: 'Save {percent}%',
     applyFloorBtn: 'Use Floor Price',
@@ -363,6 +365,11 @@ export const en: TranslationDictionary = {
     optimizeAction: 'View Deal Guide',
     floorRegionInfo: 'Lowest: {flag} {currency} {price} (≈ ${usd}/mo)',
     importBanner: 'Regional pricing imported from AISubDeal. Verify details and save to vault.',
+    emptyShowcaseTitle: '🔥 AISubDeal Global AI Subscription Floor Prices',
+    emptyShowcaseDesc: 'Want to pay less for AI tools? 1-click prefill the cheapest regional deal, or visit aisubdeal.com for region-switch & gift card guides.',
+    quickImportAction: '1-Click Prefill',
+    exploreAllDealsBtn: 'Explore All 20+ Country Price Rankings on AISubDeal',
+    voucherEmptyHelper: 'Need regional gift cards? Check verified buying guides & tax-free billing addresses on AISubDeal:',
   },
   migration: {
     bannerText: 'Vsmat has upgraded to vsmat.aisubdeal.com. Vault data detected on this domain.',
