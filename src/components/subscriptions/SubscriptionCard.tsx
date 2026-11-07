@@ -115,11 +115,11 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
             <span
               className={`text-xs px-1.5 h-5 inline-flex items-center rounded-md font-semibold whitespace-nowrap ${
                 isOverdue
-                  ? 'bg-rose-600 text-white'
+                  ? 'bg-rose-50 text-rose-700'
                   : isToday
                   ? 'bg-ink text-white'
                   : isExpiringSoon
-                  ? 'bg-amber-100 text-amber-800'
+                  ? 'bg-amber-50 text-amber-700'
                   : 'bg-inset text-muted'
               }`}
             >

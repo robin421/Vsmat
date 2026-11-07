@@ -12,13 +12,13 @@ export default {
       screens: { row: '1360px' }, // wide enough for list rows; below this items are cards
       colors: {
         brand: {
-          50: '#EEF1FE', 100: '#DFE4FD', 200: '#C3CCFB', 300: '#9BAAF7', 400: '#6C80F1',
-          500: '#4660E9', 600: '#2F49DC', 700: '#2639BE', 800: '#213097', 900: '#1E2B78', 950: '#141B4D',
+          50: '#F0F4FF', 100: '#E3EAFF', 200: '#CAD7FF', 300: '#A8BBFF', 400: '#7F98FB', 500: '#5F7DF7',
+          600: '#4C6DF3', 700: '#3F60EC', 800: '#3351D6', 900: '#2A43B0', 950: '#1E2F7D',
         },
         ink: { DEFAULT: '#16192B', soft: '#3F4459' },
         muted: '#646A80', // secondary text (5.2:1 on white)
         subtle: '#8E93A6', // placeholders / disabled only
-        canvas: '#F4F5FA', // page background
+        canvas: '#F6F7FB', // page background
         inset: '#EFF0F6', // recessed fills
         line: { DEFAULT: '#E6E8F0', strong: '#D3D6E2' },
         emerald: { 50: '#E6F6F1', 100: '#CCEDE3', 200: '#9EDCCB', 300: '#66C6AC', 400: '#2FA98A', 500: '#0F9274', 600: '#0B7D63', 700: '#0A6651', 800: '#0A5241', 900: '#093F33' },

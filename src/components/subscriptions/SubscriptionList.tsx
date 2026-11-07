@@ -150,10 +150,10 @@ export const SubscriptionList: React.FC<SubscriptionListProps> = ({
           {/* Add New Subscription (Executive Primary CTA) */}
           <button
             onClick={onAddNew}
-            className="h-10 px-4 rounded-xl btn-primary font-semibold text-sm flex items-center justify-center gap-1.5 shrink-0 whitespace-nowrap"
+            className="h-10 px-4 rounded-xl bg-brand-50 hover:bg-brand-100 text-brand-700 transition-colors font-semibold text-sm flex items-center justify-center gap-1.5 shrink-0 whitespace-nowrap"
             title="新建订阅（支持截图智能识别与手动录入）"
           >
-            <Plus className="w-4 h-4 text-white stroke-[2.5]" />
+            <Plus className="w-4 h-4 stroke-[2.5]" />
             <span>新建订阅</span>
           </button>
         </div>

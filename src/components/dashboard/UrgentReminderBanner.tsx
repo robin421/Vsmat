@@ -5,14 +5,12 @@ import {
   CheckCircle2,
   RefreshCw,
   ArrowUpRight,
-  ShieldAlert,
   ShieldCheck
 } from 'lucide-react';
 import { SubscriptionItem } from '../../types';
 import { getDaysUntil, requestNotificationPermission, checkAndSendRenewalNotifications } from '../../lib/notifications';
 import { downloadICalendarFile } from '../../lib/calendar';
 import { BrandBadge } from '../common/BrandBadge';
-import { VaultDial } from '../common/VaultDial';
 import confetti from 'canvas-confetti';
 
 interface UrgentReminderBannerProps {
@@ -75,36 +73,33 @@ export const UrgentReminderBanner: React.FC<UrgentReminderBannerProps> = ({
     onMarkRenewed(subId);
   };
 
-  const heroButton = 'h-9 px-3 rounded-lg bg-white/15 hover:bg-white/25 text-white transition-colors flex items-center gap-1.5 font-semibold text-[13px] whitespace-nowrap active:scale-[0.985]';
+  const quietButton = 'h-8 px-2.5 rounded-lg text-muted hover:text-ink hover:bg-inset transition-colors flex items-center gap-1.5 font-medium text-[13px] whitespace-nowrap';
 
   return (
-    <section className="relative overflow-hidden rounded-3xl bg-brand-700 text-white p-5 sm:p-6">
-      <VaultDial className="absolute -right-24 -top-32 w-[26rem] h-[26rem] text-white/[0.07]" />
-
-      <div className="relative flex flex-col row:flex-row row:items-start justify-between gap-4 mb-5">
+    <section>
+      <div className="flex flex-col row:flex-row row:items-center justify-between gap-x-4 gap-y-2 mb-3">
         <div className="min-w-0">
-          <div className="flex items-center gap-2.5">
-            <ShieldAlert className="w-5 h-5 text-amber-300 shrink-0" />
-            <h3 className="text-lg font-bold tracking-tight whitespace-nowrap">充值与续费提醒</h3>
-            <span className="text-xs px-2 h-5 inline-flex items-center rounded-full bg-amber-300 text-amber-900 font-bold whitespace-nowrap">
+          <div className="flex items-center gap-2">
+            <h3 className="text-base font-semibold text-ink tracking-tight whitespace-nowrap">充值与续费提醒</h3>
+            <span className="text-xs px-1.5 h-5 inline-flex items-center rounded-md bg-amber-100 text-amber-800 font-semibold whitespace-nowrap">
               {urgentSubs.length} 项待处理
             </span>
           </div>
-          <p className="text-sm text-brand-100 mt-1.5 max-w-xl text-pretty">
+          <p className="text-[13px] text-muted mt-0.5 text-pretty">
             及时充值确保 API 与服务正常运转。支持导出至系统日历设置 Mac / iPhone 强力响铃提醒。
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2 shrink-0">
+        <div className="flex flex-wrap items-center gap-1 -ml-2.5 row:ml-0 shrink-0">
           <button
             onClick={() => downloadICalendarFile(subscriptions)}
-            className={heroButton}
+            className={quietButton}
             title="把所有续费日程导入 Mac / iPhone 日历，提前1天和3天响铃提醒"
           >
             <Calendar className="w-3.5 h-3.5" />
             <span>一键同步日历 (.ics)</span>
           </button>
-          <button onClick={handleEnableNotification} className={heroButton} title="开启网页桌面系统通知">
+          <button onClick={handleEnableNotification} className={quietButton} title="开启网页桌面系统通知">
             <Bell className="w-3.5 h-3.5" />
             <span>桌面通知</span>
           </button>
@@ -112,22 +107,22 @@ export const UrgentReminderBanner: React.FC<UrgentReminderBannerProps> = ({
       </div>
 
       {notificationStatus && (
-        <div className="relative mb-3 py-2 px-3 rounded-lg bg-white/15 text-sm font-medium animate-fadeIn">
+        <div className="mb-3 py-2 px-3 rounded-lg bg-amber-50 text-amber-800 text-sm font-medium animate-fadeIn">
           {notificationStatus}
         </div>
       )}
 
-      <div className="relative grid grid-cols-1 sm:grid-cols-2 min-[1100px]:grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 min-[1100px]:grid-cols-3 gap-3">
         {urgentSubs.map(({ sub, days }) => {
           const isOverdue = days < 0;
           const isToday = days === 0;
 
           return (
-            <div key={sub.id} className="rounded-2xl bg-white text-ink p-3.5 flex flex-col gap-3">
+            <div key={sub.id} className="rounded-2xl surface-card p-3.5">
               <div className="flex items-center gap-2.5 min-w-0">
                 <BrandBadge serviceKey={sub.serviceKey} name={sub.name} size="sm" />
                 <div className="min-w-0 flex-1">
-                  <div className="text-sm font-semibold truncate" title={sub.name}>{sub.name}</div>
+                  <div className="text-sm font-semibold text-ink truncate" title={sub.name}>{sub.name}</div>
                   <div className="text-xs text-muted mt-0.5 whitespace-nowrap">
                     {sub.currency} {sub.price} · {sub.nextBillingDate}
                   </div>
@@ -135,21 +130,21 @@ export const UrgentReminderBanner: React.FC<UrgentReminderBannerProps> = ({
                 <span
                   className={`text-xs px-1.5 h-5 inline-flex items-center rounded-md font-semibold shrink-0 whitespace-nowrap ${
                     isOverdue
-                      ? 'bg-rose-600 text-white'
+                      ? 'bg-rose-50 text-rose-700'
                       : isToday
                       ? 'bg-ink text-white'
-                      : 'bg-amber-100 text-amber-800'
+                      : 'bg-amber-50 text-amber-700'
                   }`}
                 >
                   {isOverdue ? `已逾期 ${Math.abs(days)}d` : isToday ? '今日到期' : `还剩 ${days}d`}
                 </span>
               </div>
 
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-2 gap-2 mt-3">
                 <button
                   type="button"
                   onClick={() => onOpenRechargeWithService(sub.serviceKey, sub)}
-                  className="h-8 rounded-lg btn-primary text-[13px] font-semibold flex items-center justify-center gap-1 whitespace-nowrap"
+                  className="h-8 rounded-lg bg-brand-50 hover:bg-brand-100 text-brand-700 text-[13px] font-semibold transition-colors flex items-center justify-center gap-1 whitespace-nowrap active:scale-95"
                 >
                   <ArrowUpRight className="w-3.5 h-3.5" />
                   <span>去充值</span>
