@@ -21,6 +21,7 @@ export interface TokenItem {
   serviceKey: string;
   token: string;
   baseUrl?: string;
+  modelName?: string;
   accountEmail?: string;
   organizationId?: string;
   tags: string[];
@@ -101,5 +102,6 @@ export interface PresetService {
   rechargeUrl: string;
   consoleUrl?: string;
   defaultBaseUrl?: string;
+  defaultModel?: string;
   directRedeemUrlPattern?: string; // e.g. "https://apps.apple.com/redeem?code={CODE}"
 }

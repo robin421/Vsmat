@@ -30,6 +30,7 @@ export interface TranslationDictionary {
     newSubscription: string;
     switchCurrency: string;
     backupAndRestore: string;
+    backupAndRestoreTitle?: string;
     dataSecurityTitle: string;
     dataSecurityDesc: string;
     exportBackup: string;
@@ -83,6 +84,7 @@ export interface TranslationDictionary {
     categoryDev: string;
     categoryServer: string;
     filterUrgent: string;
+    sortAriaLabel: string;
     sortDue: string;
     sortPrice: string;
     sortName: string;
@@ -93,6 +95,8 @@ export interface TranslationDictionary {
     emptyCta: string;
     // Card
     lifetime: string;
+    moreActions: string;
+    deleteSub: string;
     noAccount: string;
     copyAccount: string;
     showPassword: string;
@@ -161,6 +165,12 @@ export interface TranslationDictionary {
     cycleLifetime: string;
     urgentBadgeToday: string;
     urgentBadgeDays: string;
+    confirmAndAdd: string;
+    saveChanges: string;
+    moreOptions: string;
+    hideMoreOptions: string;
+    quickAdd1Month: string;
+    quickAdd1Year: string;
   };
 
   // Tokens
@@ -176,6 +186,11 @@ export interface TranslationDictionary {
     copiedKey: string;
     tokenLabel: string;
     statusOk: string;
+    moreActions: string;
+    deleteToken: string;
+    editToken: string;
+    placeholderName: string;
+    searchAriaLabel: string;
     modalTitleNew: string;
     modalTitleEdit: string;
     modalDesc: string;
@@ -183,6 +198,9 @@ export interface TranslationDictionary {
     fieldService: string;
     fieldKey: string;
     fieldBaseUrl: string;
+    fieldModel: string;
+    modelPlaceholder: string;
+    baseUrlPlaceholder: string;
     fieldEmail: string;
     fieldOrgId: string;
     fieldBalance: string;
@@ -190,6 +208,16 @@ export interface TranslationDictionary {
     fieldNotes: string;
     fieldConsoleUrl: string;
     deleteConfirm: string;
+    copyConfig: string;
+    copyConfigText: string;
+    copyConfigJson: string;
+    copyConfigEnv: string;
+    copyKeyOnly: string;
+    copyUrlOnly: string;
+    copyModelOnly: string;
+    moreOptions: string;
+    hideMoreOptions: string;
+    toastConfigCopied: string;
   };
 
   // Vouchers / Recharge
@@ -218,6 +246,17 @@ export interface TranslationDictionary {
     statusExpired: string;
     markAsRedeemed: string;
     markAsUnredeemed: string;
+    undoRedeemed: string;
+    oneClickRecharge: string;
+    editVoucher: string;
+    deleteVoucher: string;
+    deleteConfirm: string;
+    quickStoredConfirm: string;
+    unrecognizedCode: string;
+    cannotRecognizeCode: string;
+    saveChanges: string;
+    pendingConfirmNotice: string;
+    pendingConfirmBtn: string;
     confirmRedeemedToast: string;
     confirmRedeemedAction: string;
     appleWebModalTitle: string;
@@ -226,6 +265,7 @@ export interface TranslationDictionary {
     appleStep2: string;
     appleStep3: string;
     appleCopyCode: string;
+    appleCopyAccount: string;
     appleOpenPage: string;
     appleConfirmDone: string;
   };

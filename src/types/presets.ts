@@ -14,6 +14,7 @@ export const PRESET_SERVICES: PresetService[] = [
     rechargeUrl: 'https://platform.openai.com/settings/organization/billing/overview',
     consoleUrl: 'https://platform.openai.com/api-keys',
     defaultBaseUrl: 'https://api.openai.com/v1',
+    defaultModel: 'gpt-4o',
   },
   {
     key: 'claude',
@@ -28,6 +29,7 @@ export const PRESET_SERVICES: PresetService[] = [
     rechargeUrl: 'https://console.anthropic.com/settings/billing',
     consoleUrl: 'https://console.anthropic.com/settings/keys',
     defaultBaseUrl: 'https://api.anthropic.com/v1',
+    defaultModel: 'claude-3-7-sonnet-20250219',
   },
   {
     key: 'deepseek',
@@ -42,6 +44,7 @@ export const PRESET_SERVICES: PresetService[] = [
     rechargeUrl: 'https://platform.deepseek.com/top_up',
     consoleUrl: 'https://platform.deepseek.com/api_keys',
     defaultBaseUrl: 'https://api.deepseek.com',
+    defaultModel: 'deepseek-chat',
   },
   {
     key: 'gemini',
@@ -56,6 +59,7 @@ export const PRESET_SERVICES: PresetService[] = [
     rechargeUrl: 'https://aistudio.google.com/',
     consoleUrl: 'https://aistudio.google.com/app/apikey',
     defaultBaseUrl: 'https://generativelanguage.googleapis.com',
+    defaultModel: 'gemini-2.5-pro',
   },
   {
     key: 'cursor',
@@ -109,6 +113,7 @@ export const PRESET_SERVICES: PresetService[] = [
     rechargeUrl: 'https://x.com/i/premium_sign_up',
     consoleUrl: 'https://console.x.ai',
     defaultBaseUrl: 'https://api.x.ai/v1',
+    defaultModel: 'grok-2',
   },
   {
     key: 'perplexity',
@@ -148,6 +153,7 @@ export const PRESET_SERVICES: PresetService[] = [
     rechargeUrl: 'https://platform.moonshot.cn/pricing',
     consoleUrl: 'https://platform.moonshot.cn/console/api-keys',
     defaultBaseUrl: 'https://api.moonshot.cn/v1',
+    defaultModel: 'moonshot-v1-auto',
   },
   {
     key: 'zhipu',
@@ -162,6 +168,7 @@ export const PRESET_SERVICES: PresetService[] = [
     rechargeUrl: 'https://open.bigmodel.cn/billing',
     consoleUrl: 'https://open.bigmodel.cn/usercenter/apikeys',
     defaultBaseUrl: 'https://open.bigmodel.cn/api/paas/v4',
+    defaultModel: 'glm-4-plus',
   },
   {
     key: 'suno',
@@ -226,6 +233,7 @@ export const PRESET_SERVICES: PresetService[] = [
     rechargeUrl: 'https://console.mistral.ai/billing',
     consoleUrl: 'https://console.mistral.ai/api-keys',
     defaultBaseUrl: 'https://api.mistral.ai/v1',
+    defaultModel: 'mistral-large-latest',
   },
   {
     key: 'poe',

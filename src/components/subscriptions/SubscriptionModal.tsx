@@ -19,7 +19,8 @@ import {
   ExternalLink,
   ShieldCheck,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  Plus
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { SubscriptionItem, BillingCycle, ServiceCategory, CurrencyCode, TokenItem } from '../../types';
@@ -56,6 +57,28 @@ const COMMON_PAYMENT_METHODS = [
   '礼品卡直充',
 ];
 
+const POPULAR_PRESET_KEYS = ['chatgpt', 'claude', 'deepseek', 'grok', 'spotify', 'youtube', 'netflix', 'github'];
+
+const addMonthsToDateStr = (dateStr: string, months: number): string => {
+  const base = dateStr ? new Date(dateStr) : new Date();
+  if (isNaN(base.getTime())) return todayLocal();
+  base.setMonth(base.getMonth() + months);
+  const yyyy = base.getFullYear();
+  const mm = String(base.getMonth() + 1).padStart(2, '0');
+  const dd = String(base.getDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}`;
+};
+
+const addYearsToDateStr = (dateStr: string, years: number): string => {
+  const base = dateStr ? new Date(dateStr) : new Date();
+  if (isNaN(base.getTime())) return todayLocal();
+  base.setFullYear(base.getFullYear() + years);
+  const yyyy = base.getFullYear();
+  const mm = String(base.getMonth() + 1).padStart(2, '0');
+  const dd = String(base.getDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}`;
+};
+
 export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
   isOpen,
   onClose,
@@ -69,6 +92,7 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
 }) => {
   useDismiss(isOpen, onClose);
   const { t, format } = useI18n();
+
   // Mode selection: smart scanner or manual form
   const [entryMode, setEntryMode] = useState<'smart' | 'manual'>('smart');
   const [smartTab, setSmartTab] = useState<'image' | 'text'>('image');
@@ -99,7 +123,9 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
   const [notes, setNotes] = useState('');
   const [extractedApiKey, setExtractedApiKey] = useState<string | undefined>(undefined);
   const [alsoSaveToken, setAlsoSaveToken] = useState(true);
-  const [showAdvanced, setShowAdvanced] = useState(false);
+
+  // Progressive disclosure for optional fields
+  const [showMoreOptions, setShowMoreOptions] = useState(false);
 
   // Initialize or reset form state on open/initialData changes
   useEffect(() => {
@@ -121,6 +147,18 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
       setNotes(initialData.notes || '');
       setHasExtractedFromSmart(false);
       setPreviewImageUrl(null);
+      // Auto expand if optional fields are already populated
+      if (
+        initialData.accountEmail ||
+        initialData.paymentMethod ||
+        initialData.passwordNote ||
+        initialData.portalUrl ||
+        initialData.notes
+      ) {
+        setShowMoreOptions(true);
+      } else {
+        setShowMoreOptions(false);
+      }
     } else {
       setEntryMode('smart');
       setName('');
@@ -146,6 +184,7 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
       setPreviewImageUrl(null);
       setSmartText('');
       setExtractedApiKey(undefined);
+      setShowMoreOptions(false);
     }
   }, [initialData, isOpen]);
 
@@ -196,6 +235,10 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
       if (p?.rechargeUrl && !rechargeUrl) setRechargeUrl(p.rechargeUrl);
     }
 
+    if (parsed.accountEmail || parsed.paymentMethod || parsed.password || parsed.notes) {
+      setShowMoreOptions(true);
+    }
+
     setHasExtractedFromSmart(true);
   };
 
@@ -241,16 +284,13 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
     } catch {}
   };
 
-  const handleServiceChange = (key: string) => {
+  const handleSelectPreset = (key: string) => {
     setServiceKey(key);
     if (key === 'custom') return;
     const p = getPresetByKey(key);
     if (p) {
-      if (!name || PRESET_SERVICES.some((s) => s.name === name)) {
-        setName(p.name);
-      }
+      setName(p.name);
       setCategory(p.category);
-      // 价格与币种严格以用户的截图录入为准，绝不擅自覆盖或篡改！
       if (!price && p.defaultPrice) setPrice(String(p.defaultPrice));
       if (!currency && p.defaultCurrency) setCurrency(p.defaultCurrency);
       if (p.defaultCycle) setCycle(p.defaultCycle);
@@ -265,14 +305,6 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
   const numPrice = parseFloat(price) || 0;
   const usdConverted = convertToUSD(numPrice, currency, usdToCnyRate);
   const daysUntil = getDaysUntil(nextBillingDate);
-  const cycleTextMap: Record<string, string> = {
-    monthly: '月',
-    quarterly: '季',
-    'semi-annually': '半年',
-    annually: '年',
-    prepaid: '按量',
-    lifetime: '终身',
-  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -357,11 +389,11 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
               onClick={() => setEntryMode('smart')}
               className={`py-2 px-1.5 sm:px-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 whitespace-nowrap transition ${
                 entryMode === 'smart'
-                  ? 'bg-white text-ink border border-line-strong'
+                  ? 'bg-white text-ink border border-line-strong shadow-xs'
                   : 'text-muted hover:text-ink'
               }`}
             >
-              <Sparkles className="hidden sm:block w-3.5 h-3.5 text-ink" />
+              <Sparkles className="hidden sm:block w-3.5 h-3.5 text-brand-600" />
               <span>{t.subModal.tabSmart}</span>
             </button>
             <button
@@ -369,11 +401,11 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
               onClick={() => setEntryMode('manual')}
               className={`py-2 px-1.5 sm:px-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 whitespace-nowrap transition ${
                 entryMode === 'manual'
-                  ? 'bg-white text-ink border border-line-strong'
+                  ? 'bg-white text-ink border border-line-strong shadow-xs'
                   : 'text-muted hover:text-ink'
               }`}
             >
-              <Edit3 className="w-3.5 h-3.5 text-ink" />
+              <Edit3 className="w-3.5 h-3.5 text-brand-600" />
               <span>{t.subModal.tabManual}</span>
             </button>
           </div>
@@ -519,7 +551,7 @@ SuperGrok 印度区 700 INR/月
           )}
 
           {/* ========================================================= */}
-          {/* 核心录入信息区域（包含全部用户要求字段，支持手动编辑与补全账号） */}
+          {/* 精简核心三要素：服务名、金额周期、扣费日 */}
           {/* ========================================================= */}
           <div className="pt-2 border-t border-line space-y-3.5">
             <div className="flex items-center justify-between">
@@ -527,11 +559,11 @@ SuperGrok 印度区 700 INR/月
                 {entryMode === 'smart' && hasExtractedFromSmart ? (
                   <>
                     <Check className="w-4 h-4 text-emerald-600" />
-                    <span>识别结果与详情核对（可直接编辑）</span>
+                    <span>识别结果与详情核对</span>
                   </>
                 ) : (
                   <>
-                    <CreditCard className="w-4 h-4 text-ink" />
+                    <CreditCard className="w-4 h-4 text-brand-700" />
                     <span>订阅核心信息</span>
                   </>
                 )}
@@ -543,17 +575,17 @@ SuperGrok 印度区 700 INR/月
               )}
             </div>
 
-            {/* 1. 服务名称 */}
+            {/* 1. 服务名称与快捷预设芯片 */}
             <div>
-              <div className="flex items-center justify-between gap-2 mb-1">
-                <label className="text-xs font-semibold text-ink flex items-center gap-1 whitespace-nowrap shrink-0">
+              <div className="flex items-center justify-between gap-2 mb-1.5">
+                <label className="text-xs font-semibold text-ink flex items-center gap-1">
                   服务名称 <span className="text-rose-500">*</span>
                 </label>
                 <div className="flex items-center gap-1 min-w-0">
-                  <span className="text-xs text-muted whitespace-nowrap">快捷模板:</span>
+                  <span className="text-[11px] text-muted whitespace-nowrap">全部模板:</span>
                   <select
                     value={serviceKey}
-                    onChange={(e) => handleServiceChange(e.target.value)}
+                    onChange={(e) => handleSelectPreset(e.target.value)}
                     className="min-w-0 max-w-full text-xs bg-inset border border-line-strong rounded-lg px-1.5 py-0.5 text-ink outline-none"
                   >
                     <option value="custom">自定义 / 手输</option>
@@ -565,49 +597,72 @@ SuperGrok 印度区 700 INR/月
                   </select>
                 </div>
               </div>
+
+              {/* 常用热门服务芯片快捷填入 */}
+              <div className="flex flex-wrap gap-1.5 mb-2">
+                {POPULAR_PRESET_KEYS.map((k) => {
+                  const p = getPresetByKey(k);
+                  const isSelected = serviceKey === k;
+                  return (
+                    <button
+                      key={k}
+                      type="button"
+                      onClick={() => handleSelectPreset(k)}
+                      className={`px-2.5 py-1 rounded-lg text-xs font-medium transition ${
+                        isSelected
+                          ? 'bg-brand-700 text-white shadow-xs'
+                          : 'bg-inset hover:bg-line text-ink border border-line'
+                      }`}
+                    >
+                      {p.name}
+                    </button>
+                  );
+                })}
+              </div>
+
               <input
                 type="text"
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="例如: SuperGrok / ChatGPT Plus / Claude Pro"
-                className="w-full h-10 bg-inset border border-line-strong focus:border-ink focus:bg-white rounded-lg px-3 text-sm font-semibold text-ink outline-none transition"
+                className="w-full h-10 bg-inset border border-line-strong focus:border-ink focus:bg-white rounded-xl px-3 text-sm font-semibold text-ink outline-none transition"
               />
             </div>
 
-            {/* 2. 续费金额与币种 (含折算 USD 实时统计) */}
+            {/* 2. 续费金额、币种与周期组合 */}
             <div className="p-3 rounded-2xl bg-inset border border-line space-y-2">
               <div className="flex items-center justify-between">
                 <label className="text-xs font-semibold text-ink flex items-center gap-1">
-                  <DollarSign className="w-3.5 h-3.5 text-ink" />
-                  <span>续费金额与币种</span>
+                  <DollarSign className="w-3.5 h-3.5 text-brand-700" />
+                  <span>续费金额与周期</span>
                 </label>
                 {currency !== 'USD' && numPrice > 0 && (
                   <span className="text-xs text-muted">
-                    折合约 <strong className="text-ink">${usdConverted.toFixed(2)} USD</strong>，按全局汇率自动统计
+                    折合约 <strong className="text-ink">${usdConverted.toFixed(2)} USD</strong>
                   </span>
                 )}
               </div>
 
               <div className="grid grid-cols-12 gap-2">
                 {/* 币种选择 */}
-                <div className="col-span-5 sm:col-span-5">
+                <div className="col-span-5 sm:col-span-4">
                   <select
                     value={currency}
-                    onChange={(e) => setCurrency(e.target.value)}
-                    className="w-full h-10 bg-white border border-line-strong focus:border-ink rounded-lg px-2 text-sm font-medium text-ink outline-none"
+                    onChange={(e) => setCurrency(e.target.value as CurrencyCode)}
+                    className="w-full h-10 bg-white border border-line-strong focus:border-ink rounded-xl px-2 text-xs sm:text-sm font-medium text-ink outline-none"
                   >
-                    <optgroup label="🔥 热门低价与跨区订阅 (aisubdeal 推荐)">
+                    <optgroup label="🔥 热门跨区订阅 (aisubdeal 推荐)">
                       {SUPPORTED_CURRENCIES.filter((c) => c.popularRank < 20).map((c) => (
                         <option key={c.code} value={c.code}>
-                          {c.flag} {c.code} ({c.symbol} {c.nameZh})
+                          {c.flag} {c.code} ({c.symbol})
                         </option>
                       ))}
                     </optgroup>
                     <optgroup label="🌐 全球主流货币">
                       {SUPPORTED_CURRENCIES.filter((c) => c.popularRank >= 20).map((c) => (
                         <option key={c.code} value={c.code}>
-                          {c.flag} {c.code} ({c.symbol} {c.nameZh})
+                          {c.flag} {c.code} ({c.symbol})
                         </option>
                       ))}
                     </optgroup>
@@ -615,15 +670,15 @@ SuperGrok 印度区 700 INR/月
                 </div>
 
                 {/* 金额数值 */}
-                <div className="col-span-4 sm:col-span-4">
+                <div className="col-span-4 sm:col-span-5">
                   <input
                     type="number"
                     step="0.01"
                     required
                     value={price}
                     onChange={(e) => setPrice(e.target.value)}
-                    placeholder="700"
-                    className="w-full h-10 bg-white border border-line-strong focus:border-ink rounded-lg px-3 font-semibold text-sm text-ink outline-none"
+                    placeholder="20"
+                    className="w-full h-10 bg-white border border-line-strong focus:border-ink rounded-xl px-3 font-semibold text-sm text-ink outline-none"
                   />
                 </div>
 
@@ -632,7 +687,7 @@ SuperGrok 印度区 700 INR/月
                   <select
                     value={cycle}
                     onChange={(e) => setCycle(e.target.value as BillingCycle)}
-                    className="w-full h-10 bg-white border border-line-strong focus:border-ink rounded-lg px-2 text-sm text-ink outline-none font-medium"
+                    className="w-full h-10 bg-white border border-line-strong focus:border-ink rounded-xl px-2 text-xs sm:text-sm text-ink outline-none font-medium"
                   >
                     <option value="monthly">/{t.subModal.cycleMonthly}</option>
                     <option value="quarterly">/{t.subModal.cycleQuarterly}</option>
@@ -645,11 +700,11 @@ SuperGrok 印度区 700 INR/月
               </div>
             </div>
 
-            {/* 3. 扣费时间与倒计时 */}
+            {/* 3. 下次扣费时间 (带快捷 +1月 / +1年 按钮) */}
             <div>
-              <div className="flex items-center justify-between mb-1">
+              <div className="flex items-center justify-between mb-1.5">
                 <label className="text-xs font-semibold text-ink flex items-center gap-1">
-                  <Calendar className="w-3.5 h-3.5 text-ink" />
+                  <Calendar className="w-3.5 h-3.5 text-brand-700" />
                   <span>扣费时间 (更新日) <span className="text-rose-500">*</span></span>
                 </label>
                 {nextBillingDate && (
@@ -666,92 +721,104 @@ SuperGrok 印度区 700 INR/月
                   </span>
                 )}
               </div>
-              <input
-                type="date"
-                required
-                value={nextBillingDate}
-                onChange={(e) => setNextBillingDate(e.target.value)}
-                className="w-full h-10 bg-inset border border-line-strong focus:border-ink focus:bg-white rounded-lg px-3 font-semibold text-sm text-ink outline-none transition"
-              />
-            </div>
-
-            {/* 4. 支付渠道 (快捷建议与自填) */}
-            <div>
-              <label className="block text-xs font-semibold text-ink mb-1">
-                支付渠道
-              </label>
-              <input
-                type="text"
-                value={paymentMethod}
-                onChange={(e) => setPaymentMethod(e.target.value)}
-                placeholder="例如: Apple 订阅 (印区) / 美区礼品卡 / 虚拟卡"
-                className="w-full h-10 bg-inset border border-line-strong focus:border-ink focus:bg-white rounded-lg px-3 text-sm font-medium text-ink outline-none transition"
-              />
-              {/* Quick suggestion chips */}
-              <div className="flex flex-wrap gap-1.5 mt-1.5">
-                {COMMON_PAYMENT_METHODS.slice(0, 5).map((m) => (
-                  <button
-                    key={m}
-                    type="button"
-                    onClick={() => setPaymentMethod(m)}
-                    className={`text-xs px-2 py-0.5 rounded-lg border transition ${
-                      paymentMethod === m
-                        ? 'bg-ink text-white border-ink'
-                        : 'bg-white text-muted hover:text-ink border-line-strong'
-                    }`}
-                  >
-                    {m}
-                  </button>
-                ))}
+              <div className="flex items-center gap-2">
+                <input
+                  type="date"
+                  required
+                  value={nextBillingDate}
+                  onChange={(e) => setNextBillingDate(e.target.value)}
+                  className="flex-1 h-10 bg-inset border border-line-strong focus:border-ink focus:bg-white rounded-xl px-3 font-semibold text-sm text-ink outline-none transition"
+                />
+                <button
+                  type="button"
+                  onClick={() => setNextBillingDate(addMonthsToDateStr(nextBillingDate, 1))}
+                  className="h-10 px-2.5 rounded-xl bg-inset hover:bg-white border border-line-strong text-xs font-semibold text-ink transition active:scale-95 whitespace-nowrap"
+                  title="推迟 1 个月"
+                >
+                  {t.subModal.quickAdd1Month}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setNextBillingDate(addYearsToDateStr(nextBillingDate, 1))}
+                  className="h-10 px-2.5 rounded-xl bg-inset hover:bg-white border border-line-strong text-xs font-semibold text-ink transition active:scale-95 whitespace-nowrap"
+                  title="推迟 1 年"
+                >
+                  {t.subModal.quickAdd1Year}
+                </button>
               </div>
             </div>
 
-            {/* 5. 账号 (若截图未识别到，清晰提示并支持手动输入) */}
-            <div className="p-3 rounded-2xl bg-white border border-line space-y-1.5">
-              <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-1">
-                <label className="text-xs font-semibold text-ink flex items-center gap-1.5 whitespace-nowrap">
-                  <Mail className="w-3.5 h-3.5 text-ink" />
-                  <span>服务账号 / 登录邮箱</span>
-                </label>
-                {!accountEmail.trim() ? (
-                  <span className="text-xs text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full font-medium flex items-center gap-1 whitespace-nowrap">
-                    <AlertCircle className="w-3 h-3 text-amber-600" />
-                    未从截图识别到，可在此手动添加
-                  </span>
-                ) : (
-                  <span className="text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full font-medium flex items-center gap-1">
-                    <Check className="w-3 h-3 text-emerald-600" />
-                    已录入
-                  </span>
-                )}
-              </div>
-              <input
-                type="text"
-                value={accountEmail}
-                onChange={(e) => setAccountEmail(e.target.value)}
-                placeholder="请输入登录邮箱或账号 (例如: user@gmail.com)"
-                className={`w-full h-10 rounded-xl px-3 text-xs text-ink outline-none transition ${
-                  !accountEmail.trim()
-                    ? 'bg-amber-50/40 border border-amber-300 focus:border-ink focus:bg-white'
-                    : 'bg-inset border border-line-strong focus:border-ink focus:bg-white'
-                }`}
-              />
-            </div>
-
-            {/* 展开更多信息 (密码备忘、2FA、直达充值链接) */}
+            {/* ========================================================= */}
+            {/* 渐进式折叠选填信息 (账号邮箱 / 支付渠道 / 密码备忘 / 链接) */}
+            {/* ========================================================= */}
             <div className="pt-1">
               <button
                 type="button"
-                onClick={() => setShowAdvanced(!showAdvanced)}
-                className="text-xs text-muted hover:text-ink font-semibold flex items-center gap-1 transition"
+                onClick={() => setShowMoreOptions(!showMoreOptions)}
+                className="w-full py-2.5 px-3 rounded-xl bg-inset hover:bg-line/60 border border-line text-xs text-muted hover:text-ink font-semibold flex items-center justify-between transition"
               >
-                <span>{showAdvanced ? '收起高级设置' : '展开高级选项 (密码备忘、分类、直达链接)'}</span>
-                {showAdvanced ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                <div className="flex items-center gap-2">
+                  <Plus className={`w-3.5 h-3.5 transition-transform ${showMoreOptions ? 'rotate-45' : ''}`} />
+                  <span>{showMoreOptions ? t.subModal.hideMoreOptions : t.subModal.moreOptions}</span>
+                </div>
+                {showMoreOptions ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
               </button>
 
-              {showAdvanced && (
-                <div className="mt-2.5 p-3.5 rounded-2xl bg-inset border border-line space-y-3 animate-fadeIn text-xs">
-                  {/* Category & Password */}
+              {showMoreOptions && (
+                <div className="mt-2.5 p-3.5 rounded-2xl bg-inset border border-line space-y-3.5 animate-fadeIn text-xs">
+                  {/* 服务账号 / 邮箱 */}
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="text-xs font-semibold text-ink flex items-center gap-1.5">
+                        <Mail className="w-3.5 h-3.5 text-muted" />
+                        <span>服务账号 / 登录邮箱 (选填)</span>
+                      </label>
+                      {accountEmail.trim() && (
+                        <span className="text-[11px] text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">
+                          已录入
+                        </span>
+                      )}
+                    </div>
+                    <input
+                      type="text"
+                      value={accountEmail}
+                      onChange={(e) => setAccountEmail(e.target.value)}
+                      placeholder="user@example.com"
+                      className="w-full h-9 bg-white border border-line-strong rounded-xl px-3 text-xs text-ink outline-none"
+                    />
+                  </div>
+
+                  {/* 支付渠道 */}
+                  <div>
+                    <label className="block text-xs font-semibold text-ink mb-1">
+                      支付渠道 (选填)
+                    </label>
+                    <input
+                      type="text"
+                      value={paymentMethod}
+                      onChange={(e) => setPaymentMethod(e.target.value)}
+                      placeholder="例如: Apple 订阅 (印区) / 美区礼品卡 / 虚拟卡"
+                      className="w-full h-9 bg-white border border-line-strong rounded-xl px-3 text-xs text-ink outline-none mb-1.5"
+                    />
+                    <div className="flex flex-wrap gap-1">
+                      {COMMON_PAYMENT_METHODS.slice(0, 5).map((m) => (
+                        <button
+                          key={m}
+                          type="button"
+                          onClick={() => setPaymentMethod(m)}
+                          className={`text-[11px] px-2 py-0.5 rounded-md border transition ${
+                            paymentMethod === m
+                              ? 'bg-brand-700 text-white border-brand-700'
+                              : 'bg-white text-muted hover:text-ink border-line'
+                          }`}
+                        >
+                          {m}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* 分类与密码备忘 */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                     <div>
                       <label className="block text-xs font-semibold text-ink mb-1">所属分类</label>
@@ -781,7 +848,7 @@ SuperGrok 印度区 700 INR/月
                     </div>
                   </div>
 
-                  {/* Portal & Recharge URLs */}
+                  {/* 官方后台与充值 URL */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                     <div>
                       <label className="block text-xs font-semibold text-ink mb-1">官方管理后台 URL</label>
@@ -805,7 +872,7 @@ SuperGrok 印度区 700 INR/月
                     </div>
                   </div>
 
-                  {/* Notes */}
+                  {/* 备注说明 */}
                   <div>
                     <label className="block text-xs font-semibold text-ink mb-1">备注说明</label>
                     <input
@@ -831,7 +898,7 @@ SuperGrok 印度区 700 INR/月
                 if (!latest?.previousBillingDate) return;
                 if (confirm(`撤销最近一次续费？下期扣费日将恢复为 ${latest.previousBillingDate}。`)) {
                   onUndoRenewal?.(initialData.id);
-                  onClose(); // the open form still holds the old date; saving it would overwrite the undo
+                  onClose();
                 }
               }}
             />
@@ -851,7 +918,7 @@ SuperGrok 印度区 700 INR/月
                 className="px-3.5 py-2 rounded-xl text-rose-700 hover:bg-rose-50 text-xs font-semibold flex items-center gap-1.5 transition active:scale-95"
               >
                 <Trash2 className="w-3.5 h-3.5" />
-                <span>{t.common.delete}</span>
+                <span>{t.subscriptions.deleteSub}</span>
               </button>
             ) : (
               <div className="text-xs text-muted flex items-center gap-1">
@@ -873,7 +940,7 @@ SuperGrok 印度区 700 INR/月
                 disabled={ocrLoading || !name.trim()}
                 className="h-10 px-5 rounded-lg bg-brand-700 hover:bg-brand-800 disabled:opacity-40 disabled:cursor-not-allowed text-white font-semibold text-xs flex items-center gap-1.5 transition active:scale-95"
               >
-                <span>{initialData ? t.common.save : t.common.confirm}</span>
+                <span>{initialData ? t.subModal.saveChanges : t.subModal.confirmAndAdd}</span>
                 <ArrowRight className="w-3.5 h-3.5 text-white" />
               </button>
             </div>

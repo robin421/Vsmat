@@ -27,6 +27,7 @@ export const VoucherStash: React.FC<VoucherStashProps> = ({
   const { t } = useI18n();
   const [filter, setFilter] = useState<'all' | 'unredeemed' | 'redeemed'>('unredeemed');
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  // Opened the provider's page, waiting for the user to confirm the redemption
   const [pendingIds, setPendingIds] = useState<string[]>([]);
 
   const filteredVouchers = vouchers.filter(v => {
@@ -79,7 +80,7 @@ export const VoucherStash: React.FC<VoucherStashProps> = ({
           <div className="flex items-center p-1 rounded-xl bg-inset text-sm max-w-full overflow-x-auto">
             <button
               onClick={() => setFilter('unredeemed')}
-              className={`px-3 h-8 rounded-lg transition-colors font-medium select-none whitespace-nowrap ${
+              className={`px-3 h-8 rounded-lg transition-colors select-none font-medium whitespace-nowrap ${
                 filter === 'unredeemed'
                   ? 'bg-white text-ink font-semibold'
                   : 'text-muted hover:text-ink'
@@ -89,7 +90,7 @@ export const VoucherStash: React.FC<VoucherStashProps> = ({
             </button>
             <button
               onClick={() => setFilter('redeemed')}
-              className={`px-3 h-8 rounded-lg transition-colors font-medium select-none whitespace-nowrap ${
+              className={`px-3 h-8 rounded-lg transition-colors select-none font-medium whitespace-nowrap ${
                 filter === 'redeemed'
                   ? 'bg-white text-ink font-semibold'
                   : 'text-muted hover:text-ink'
@@ -99,7 +100,7 @@ export const VoucherStash: React.FC<VoucherStashProps> = ({
             </button>
             <button
               onClick={() => setFilter('all')}
-              className={`px-3 h-8 rounded-lg transition-colors font-medium select-none whitespace-nowrap ${
+              className={`px-3 h-8 rounded-lg transition-colors select-none font-medium whitespace-nowrap ${
                 filter === 'all'
                   ? 'bg-white text-ink font-semibold'
                   : 'text-muted hover:text-ink'
@@ -121,120 +122,125 @@ export const VoucherStash: React.FC<VoucherStashProps> = ({
 
       {/* Grid of Vouchers */}
       {filteredVouchers.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
-          {filteredVouchers.map((voucher) => {
-            const preset = getPresetByKey(voucher.serviceKey);
-            const isPending = pendingIds.includes(voucher.id);
+        <div className="grid grid-cols-1 sm:grid-cols-2 row:grid-cols-3 gap-4">
+          {filteredVouchers.map(voucher => {
             const isRedeemed = voucher.status === 'redeemed';
+            const tone = getPresetByKey(voucher.serviceKey).brandColor;
 
             return (
-              <div
-                key={voucher.id}
-                className={`rounded-2xl surface-card p-4 flex flex-col justify-between gap-4 transition border ${
-                  isRedeemed ? 'opacity-65' : ''
-                }`}
-              >
-                <div>
-                  <div className="flex items-start justify-between gap-2 mb-3">
-                    <div className="flex items-center gap-2.5 min-w-0">
+              <div key={voucher.id} className={`rounded-2xl overflow-hidden surface-card flex flex-col ${isRedeemed ? 'opacity-70' : ''}`}>
+                {/* The card face, in the provider's colour */}
+                <div
+                  className="relative p-4 h-32 flex flex-col justify-between text-white"
+                  style={{ background: isRedeemed ? '#8E93A6' : `color-mix(in srgb, ${tone} 55%, #141B4D)` }}
+                >
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <span className="rounded-lg bg-white shrink-0">
                       <BrandBadge serviceKey={voucher.serviceKey} name={voucher.serviceName} size="sm" />
-                      <div className="min-w-0">
-                        <h4 className="text-sm font-semibold text-ink truncate" title={voucher.serviceName}>
-                          {voucher.serviceName || preset.name}
-                        </h4>
-                        {voucher.amount !== undefined && (
-                          <div className="text-xs text-muted mt-0.5">
-                            {voucher.currency} {voucher.amount}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-1">
-                      <button
-                        onClick={() => onEdit(voucher)}
-                        className="w-7 h-7 rounded-md text-muted hover:text-ink hover:bg-inset flex items-center justify-center transition"
-                        title={t.common.edit}
-                      >
-                        <Edit2 className="w-3.5 h-3.5" />
-                      </button>
-                      <button
-                        onClick={() => {
-                          if (confirm('确定要删除这张卡券吗？')) {
-                            onDelete(voucher.id);
-                          }
-                        }}
-                        className="w-7 h-7 rounded-md text-muted hover:text-rose-600 hover:bg-rose-50 flex items-center justify-center transition"
-                        title={t.common.delete}
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
+                    </span>
+                    <h4 className="text-sm font-semibold truncate" title={voucher.serviceName}>
+                      {voucher.serviceName}
+                    </h4>
                   </div>
+                  <div className="flex items-end justify-between gap-3">
+                    <span className="text-xs text-white/75 whitespace-nowrap">{voucher.createdAt}</span>
+                    {voucher.amount ? (
+                      <span className="text-2xl font-bold tracking-tight leading-none whitespace-nowrap">
+                        {voucher.currency} {voucher.amount}
+                      </span>
+                    ) : null}
+                  </div>
+                </div>
 
-                  {/* Code Block */}
-                  <div className="p-2.5 rounded-xl bg-inset font-mono text-xs flex items-center justify-between gap-2 border border-line">
-                    <span className="truncate select-all text-ink font-semibold">{voucher.code}</span>
+                <div className="p-4 flex-1 flex flex-col gap-3">
+                  <div className="flex items-center justify-between gap-2 pl-3 pr-1 h-10 rounded-lg bg-inset font-mono text-[13px]">
+                    <span className="truncate text-ink select-all">{voucher.code}</span>
                     <button
                       type="button"
                       onClick={() => handleCopy(voucher.id, voucher.code)}
-                      className="text-muted hover:text-ink transition flex items-center gap-1 shrink-0"
+                      className="w-8 h-8 rounded-md hover:bg-line text-muted hover:text-ink flex items-center justify-center shrink-0 transition-colors"
+                      title={t.vouchers.appleCopyCode}
+                      aria-label={t.vouchers.appleCopyCode}
                     >
-                      {copiedId === voucher.id ? (
-                        <Check className="w-3.5 h-3.5 text-emerald-600" />
-                      ) : (
-                        <Copy className="w-3.5 h-3.5" />
-                      )}
+                      {copiedId === voucher.id ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
                     </button>
                   </div>
 
                   {voucher.notes && (
-                    <p className="text-xs text-muted mt-2 truncate" title={voucher.notes}>
+                    <p className="text-[13px] text-muted truncate" title={voucher.notes}>
                       {voucher.notes}
                     </p>
                   )}
-                </div>
 
-                {/* Actions */}
-                <div className="pt-2 border-t border-line flex items-center justify-between gap-2">
-                  {isPending ? (
-                    <button
-                      type="button"
-                      onClick={() => markRedeemed(voucher.id)}
-                      className="w-full h-8 px-3 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs flex items-center justify-center gap-1.5 transition active:scale-95"
-                    >
-                      <Check className="w-3.5 h-3.5" />
-                      <span>{t.vouchers.confirmRedeemedAction}</span>
-                    </button>
-                  ) : isRedeemed ? (
-                    <button
-                      type="button"
-                      onClick={() => onUpdateStatus(voucher.id, 'unredeemed')}
-                      className="w-full h-8 px-3 rounded-lg bg-inset hover:bg-line text-muted font-medium text-xs flex items-center justify-center gap-1.5 transition"
-                    >
-                      <CheckCheck className="w-3.5 h-3.5" />
-                      <span>{t.vouchers.markAsUnredeemed}</span>
-                    </button>
-                  ) : (
-                    <div className="w-full grid grid-cols-2 gap-2">
-                      <button
-                        type="button"
-                        onClick={() => handle1ClickRecharge(voucher)}
-                        className="h-8 px-2.5 rounded-lg bg-brand-50 hover:bg-brand-100 text-brand-700 font-semibold text-xs flex items-center justify-center gap-1 transition active:scale-95"
-                      >
-                        <Zap className="w-3.5 h-3.5" />
-                        <span>{t.vouchers.rechargeBtn}</span>
-                      </button>
+                  {pendingIds.includes(voucher.id) && !isRedeemed && (
+                    <div className="flex items-center justify-between gap-2 pl-3 pr-1.5 h-10 rounded-lg bg-amber-50 text-[13px] text-amber-800">
+                      <span className="truncate">{t.vouchers.pendingConfirmNotice}</span>
                       <button
                         type="button"
                         onClick={() => markRedeemed(voucher.id)}
-                        className="h-8 px-2.5 rounded-lg bg-inset hover:bg-line text-ink-soft font-semibold text-xs flex items-center justify-center gap-1 transition active:scale-95"
+                        className="h-7 px-2.5 rounded-md bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold whitespace-nowrap transition-colors shrink-0"
                       >
-                        <Check className="w-3.5 h-3.5" />
-                        <span>{t.vouchers.statusRedeemed}</span>
+                        {t.vouchers.pendingConfirmBtn}
                       </button>
                     </div>
                   )}
+
+                  <div className="mt-auto flex items-center gap-1">
+                    {!isRedeemed ? (
+                      <button
+                        type="button"
+                        onClick={() => handle1ClickRecharge(voucher)}
+                        className="flex-1 h-10 px-4 rounded-lg btn-primary font-semibold text-sm flex items-center justify-center gap-1.5 whitespace-nowrap"
+                      >
+                        <Zap className="w-3.5 h-3.5" />
+                        <span>{t.vouchers.oneClickRecharge}</span>
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => onUpdateStatus(voucher.id, 'unredeemed')}
+                        className="flex-1 h-10 px-4 rounded-lg bg-inset hover:bg-line text-ink-soft text-sm font-semibold transition-colors"
+                      >
+                        {t.vouchers.undoRedeemed}
+                      </button>
+                    )}
+
+                    {!isRedeemed && (
+                      <button
+                        type="button"
+                        onClick={() => markRedeemed(voucher.id)}
+                        className="w-10 h-10 rounded-lg text-muted hover:text-emerald-700 hover:bg-emerald-50 flex items-center justify-center transition-colors shrink-0"
+                        title={t.vouchers.markAsRedeemed}
+                        aria-label={t.vouchers.markAsRedeemed}
+                      >
+                        <CheckCheck className="w-4 h-4" />
+                      </button>
+                    )}
+
+                    <button
+                      type="button"
+                      onClick={() => onEdit(voucher)}
+                      className="w-10 h-10 rounded-lg text-muted hover:text-ink hover:bg-inset flex items-center justify-center transition-colors shrink-0"
+                      title={t.vouchers.editVoucher}
+                      aria-label={t.vouchers.editVoucher}
+                    >
+                      <Edit2 className="w-4 h-4" />
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (confirm(t.vouchers.deleteConfirm)) {
+                          onDelete(voucher.id);
+                        }
+                      }}
+                      className="w-10 h-10 rounded-lg text-muted hover:text-rose-700 hover:bg-rose-50 flex items-center justify-center transition-colors shrink-0"
+                      title={t.vouchers.deleteVoucher}
+                      aria-label={t.vouchers.deleteVoucher}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
               </div>
             );
@@ -245,7 +251,9 @@ export const VoucherStash: React.FC<VoucherStashProps> = ({
           <div className="w-12 h-12 rounded-lg bg-brand-700 text-white flex items-center justify-center mx-auto mb-4">
             <Gift className="w-6 h-6" />
           </div>
-          <h4 className="text-base font-semibold text-ink mb-1">{t.vouchers.emptyTitle}</h4>
+          <h4 className="text-base font-semibold text-ink mb-1">
+            {filter === 'redeemed' ? '暂无已核销的卡券' : t.vouchers.emptyTitle}
+          </h4>
           <p className="text-sm text-muted max-w-sm mx-auto mb-5">
             {t.vouchers.emptyDesc}
           </p>

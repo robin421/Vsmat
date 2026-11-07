@@ -172,7 +172,7 @@ export const QuickRechargeBar: React.FC<QuickRechargeBarProps> = ({
                   )}
                 </>
               ) : (
-                <span className="text-amber-700 font-medium">{t.vouchers.autoDetect}</span>
+                <span className="text-amber-700 font-medium">{t.vouchers.unrecognizedCode}</span>
               )}
             </div>
             {isCopied && (

@@ -536,8 +536,8 @@ function AppContent({ vault }: AppContentProps) {
         onUnlock={handleUnlock}
         onSetup={async (pw, remember, enableBio) => {
           await setup(pw, remember);
-          if (enableBio) {
-            await toggleBiometrics(true).catch((err) => console.warn('Biometrics setup skipped:', err));
+          if (enableBio && isBiometricsSupported) {
+            void toggleBiometrics(true).catch((err) => console.warn('Biometrics setup skipped:', err));
           }
         }}
         isBiometricsSupported={isBiometricsSupported}

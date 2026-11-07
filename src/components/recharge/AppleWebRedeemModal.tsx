@@ -163,7 +163,7 @@ export const AppleWebRedeemModal: React.FC<AppleWebRedeemModalProps> = ({
                   <span className="text-muted truncate select-all">{accountEmail}</span>
                   <button onClick={handleCopyEmail} className="text-brand-700 hover:text-brand-800 font-semibold flex items-center gap-1 shrink-0">
                     {copiedEmail ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
-                    <span>{copiedEmail ? t.common.copied : t.common.copy}</span>
+                    <span>{copiedEmail ? t.common.copied : t.vouchers.appleCopyAccount}</span>
                   </button>
                 </div>
                 {passwordNote && (

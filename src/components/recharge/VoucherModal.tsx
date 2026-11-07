@@ -219,7 +219,7 @@ export const VoucherModal: React.FC<VoucherModalProps> = ({
               type="submit"
               className="h-10 px-5 rounded-lg bg-brand-700 hover:bg-brand-800 text-white font-semibold text-xs flex items-center gap-1.5 transition active:scale-95"
             >
-              <span>{initialData ? t.common.save : t.vouchers.addNew}</span>
+              <span>{initialData ? t.vouchers.saveChanges : t.vouchers.addNew}</span>
             </button>
           </div>
         </form>

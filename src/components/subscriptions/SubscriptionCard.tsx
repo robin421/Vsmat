@@ -272,8 +272,8 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
               type="button"
               onClick={() => setShowMenu(!showMenu)}
               className="w-8 h-8 rounded-lg text-muted hover:text-ink hover:bg-inset flex items-center justify-center transition-colors"
-              title="More"
-              aria-label="More"
+              title={t.subscriptions.moreActions}
+              aria-label={t.subscriptions.moreActions}
               aria-expanded={showMenu}
             >
               <MoreHorizontal className="w-4 h-4" />
@@ -317,7 +317,7 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
                   className="w-full text-left px-3 py-2 rounded-lg hover:bg-rose-50 text-rose-700 font-medium flex items-center gap-2"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
-                  <span>{t.common.delete}</span>
+                  <span>{t.subscriptions.deleteSub}</span>
                 </button>
               </div>
             )}

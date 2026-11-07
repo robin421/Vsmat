@@ -62,7 +62,7 @@ export const TokenList: React.FC<TokenListProps> = ({
             value={searchTerm}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder={t.tokens.searchPlaceholder}
-            aria-label={t.tokens.searchPlaceholder}
+            aria-label={t.tokens.searchAriaLabel}
             className="w-full min-w-0 text-sm text-ink placeholder:text-muted outline-none bg-transparent"
           />
         </div>

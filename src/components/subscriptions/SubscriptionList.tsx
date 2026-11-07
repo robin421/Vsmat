@@ -135,7 +135,7 @@ export const SubscriptionList: React.FC<SubscriptionListProps> = ({
         {/* Right: Search & Action Buttons */}
         <div className="flex items-center gap-2.5 flex-wrap sm:flex-nowrap">
           <select
-            aria-label="Sort"
+            aria-label={t.subscriptions.sortAriaLabel}
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
             className="field h-10 rounded-xl px-2.5 text-sm text-ink-soft outline-none shrink-0"
