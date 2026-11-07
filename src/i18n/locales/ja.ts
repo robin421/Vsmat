@@ -248,6 +248,11 @@ export const ja: TranslationDictionary = {
     appleCopyAccount: 'アカウントをコピー',
     appleOpenPage: '新しいタブで開く',
     appleConfirmDone: 'チャージ完了（次期更新を自動順延）',
+    appleWebPortalBtn: 'Apple 公式アカウント管理ページを開く (App Store起動防止)',
+    appleIncognitoBtn: '引き換えリンクをコピー (シークレットウィンドウで開く)',
+    appleLaunchAppStoreBtn: 'この海外IDがMacでログイン済みの場合のみApp Storeを開く',
+    appleMacNoticeTitle: 'MacでのApp Store自動起動防止ヒント',
+    appleMacNoticeDesc: 'macOS ではリンクからローカルの App Store が自動起動することがあります。国内アカウントの場合チャージ失敗の原因になるため、以下の Web 専用ルートをご利用ください：',
   },
 
   analytics: {

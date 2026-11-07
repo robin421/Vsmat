@@ -30,6 +30,13 @@ export const AppleWebRedeemModal: React.FC<AppleWebRedeemModalProps> = ({
   const [copiedPassword, setCopiedPassword] = useState(false);
   const [copiedCode, setCopiedCode] = useState(false);
   const [copiedUrl, setCopiedUrl] = useState(false);
+  const [copiedToast, setCopiedToast] = useState<string | null>(null);
+
+  const isMac =
+    typeof navigator !== 'undefined' &&
+    (/Macintosh|Mac OS X/i.test(navigator.userAgent) ||
+      (navigator as unknown as { userAgentData?: { platform?: string } }).userAgentData?.platform === 'macOS' ||
+      navigator.platform?.includes('Mac'));
 
   if (!isOpen) return null;
 
@@ -68,14 +75,23 @@ export const AppleWebRedeemModal: React.FC<AppleWebRedeemModalProps> = ({
     }
   };
 
-  const handleOpenWebRedeem = async () => {
-    // 1. Copy code to clipboard
+  // Pure Web portal route (Safe for Mac: zero Universal Link interception)
+  const handleOpenAppleWebPortal = async () => {
+    try {
+      await navigator.clipboard.writeText(cleanCode);
+      setCopiedCode(true);
+      setCopiedToast('礼品卡密已复制到剪贴板！');
+      setTimeout(() => setCopiedToast(null), 3000);
+    } catch {}
+    window.open('https://account.apple.com/', '_blank', 'noopener,noreferrer');
+  };
+
+  // Direct app store client route
+  const handleOpenAppStoreClient = async () => {
     try {
       await navigator.clipboard.writeText(cleanCode);
       setCopiedCode(true);
     } catch {}
-
-    // 2. Open official Apple web redeem page
     window.open(webRedeemUrl, '_blank', 'noopener,noreferrer');
   };
 
@@ -83,7 +99,11 @@ export const AppleWebRedeemModal: React.FC<AppleWebRedeemModalProps> = ({
     try {
       await navigator.clipboard.writeText(webRedeemUrl);
       setCopiedUrl(true);
-      setTimeout(() => setCopiedUrl(false), 2500);
+      setCopiedToast('直兑链接已复制！请在浏览器无痕窗口 (Cmd+Shift+N) 中粘贴打开。');
+      setTimeout(() => {
+        setCopiedUrl(false);
+        setCopiedToast(null);
+      }, 3500);
     } catch {}
   };
 
@@ -125,6 +145,26 @@ export const AppleWebRedeemModal: React.FC<AppleWebRedeemModalProps> = ({
             <X className="w-4 h-4" />
           </button>
         </div>
+
+        {/* Mac Platform Web-Only Notice */}
+        {isMac && (
+          <div className="mt-4 p-3.5 rounded-2xl bg-amber-50/80 border border-amber-200/80 text-xs text-amber-900 space-y-1">
+            <div className="font-semibold flex items-center gap-1.5 text-amber-950">
+              <span>💻 {t.vouchers.appleMacNoticeTitle}</span>
+            </div>
+            <p className="text-amber-800 leading-relaxed text-[11px]">
+              {t.vouchers.appleMacNoticeDesc}
+            </p>
+          </div>
+        )}
+
+        {/* Toast feedback */}
+        {copiedToast && (
+          <div role="status" className="mt-3 p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-medium flex items-center gap-2 animate-fadeIn">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+            <span>{copiedToast}</span>
+          </div>
+        )}
 
         {/* Step Guide List */}
         <div className="mt-4 space-y-3">
@@ -189,23 +229,62 @@ export const AppleWebRedeemModal: React.FC<AppleWebRedeemModalProps> = ({
 
           {/* Action Step 2 & Step 3 */}
           <div className="pt-2 space-y-2.5">
-            <button
-              type="button"
-              onClick={handleOpenWebRedeem}
-              className="w-full h-11 rounded-xl bg-[#0071E3] hover:bg-[#0077ED] text-white font-semibold text-sm flex items-center justify-center gap-2 transition active:scale-95 shadow-sm"
-            >
-              <span>{t.vouchers.appleOpenPage}</span>
-              <ExternalLink className="w-4 h-4" />
-            </button>
+            {isMac ? (
+              <>
+                {/* Mac Primary: Pure Web Portal Route (Zero Universal Link Interception) */}
+                <button
+                  type="button"
+                  onClick={handleOpenAppleWebPortal}
+                  className="w-full h-11 rounded-xl bg-[#0071E3] hover:bg-[#0077ED] text-white font-semibold text-sm flex items-center justify-center gap-2 transition active:scale-95 shadow-sm"
+                  title={t.vouchers.appleWebPortalBtn}
+                >
+                  <Globe className="w-4 h-4" />
+                  <span>{t.vouchers.appleWebPortalBtn}</span>
+                  <ExternalLink className="w-4 h-4 opacity-80" />
+                </button>
 
-            <button
-              type="button"
-              onClick={handleCopyIncognitoLink}
-              className="w-full h-9 rounded-xl border border-line text-xs font-semibold text-muted hover:text-ink hover:bg-inset transition flex items-center justify-center gap-1.5"
-            >
-              <Copy className="w-3.5 h-3.5" />
-              <span>{copiedUrl ? '链接已复制，请粘贴到无痕窗口打开' : '复制直达链接（建议在浏览器无痕/隐私窗口打开）'}</span>
-            </button>
+                {/* Mac Secondary: Copy Link for Private / Incognito Window */}
+                <button
+                  type="button"
+                  onClick={handleCopyIncognitoLink}
+                  className="w-full h-9 rounded-xl border border-line text-xs font-semibold text-ink-soft hover:text-ink hover:bg-inset transition flex items-center justify-center gap-1.5"
+                >
+                  <Copy className="w-3.5 h-3.5" />
+                  <span>{copiedUrl ? '直兑链接已复制！请在无痕窗口 (Cmd+Shift+N) 打开' : t.vouchers.appleIncognitoBtn}</span>
+                </button>
+
+                {/* Mac Tertiary: Native App Store client (Explicit User Opt-in) */}
+                <div className="text-center pt-1">
+                  <button
+                    type="button"
+                    onClick={handleOpenAppStoreClient}
+                    className="text-[11px] text-muted hover:text-ink underline-offset-2 hover:underline transition"
+                  >
+                    {t.vouchers.appleLaunchAppStoreBtn}
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  onClick={handleOpenAppStoreClient}
+                  className="w-full h-11 rounded-xl bg-[#0071E3] hover:bg-[#0077ED] text-white font-semibold text-sm flex items-center justify-center gap-2 transition active:scale-95 shadow-sm"
+                >
+                  <span>{t.vouchers.appleOpenPage}</span>
+                  <ExternalLink className="w-4 h-4" />
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleCopyIncognitoLink}
+                  className="w-full h-9 rounded-xl border border-line text-xs font-semibold text-muted hover:text-ink hover:bg-inset transition flex items-center justify-center gap-1.5"
+                >
+                  <Copy className="w-3.5 h-3.5" />
+                  <span>{copiedUrl ? '链接已复制，请粘贴到无痕窗口打开' : '复制直达链接（建议在浏览器无痕/隐私窗口打开）'}</span>
+                </button>
+              </>
+            )}
 
             <button
               type="button"

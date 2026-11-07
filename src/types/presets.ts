@@ -283,7 +283,7 @@ export const PRESET_SERVICES: PresetService[] = [
     brandColor: '#94a3b8',
     iconBg: 'bg-zinc-800 text-white border-zinc-700',
     portalUrl: 'https://account.apple.com',
-    rechargeUrl: 'https://apps.apple.com/redeem',
+    rechargeUrl: 'https://account.apple.com',
     directRedeemUrlPattern: 'https://apps.apple.com/redeem?code={CODE}',
   },
   {

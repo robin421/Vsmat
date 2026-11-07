@@ -248,6 +248,11 @@ export const zh: TranslationDictionary = {
     appleCopyAccount: '复制账号',
     appleOpenPage: '在新标签页打开 Apple 官方兑换页',
     appleConfirmDone: '我已完成充值 (自动顺延下期续费)',
+    appleWebPortalBtn: '在新标签页打开 Apple 官方网页管理中心 (免跳 App Store)',
+    appleIncognitoBtn: '复制直兑链接 (粘贴至无痕窗口打开免跳 App Store)',
+    appleLaunchAppStoreBtn: '我的 Mac 正登录外区号，直接唤起 App Store',
+    appleMacNoticeTitle: 'Mac 电脑免跳 App Store 提示',
+    appleMacNoticeDesc: 'macOS 会默认将直兑链接拦截并唤起本地 App Store 客户端（若当前是国区主号会导致跨区充值失败）。建议使用下方纯网页通道：',
   },
 
   analytics: {

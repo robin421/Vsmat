@@ -248,6 +248,11 @@ export const en: TranslationDictionary = {
     appleCopyAccount: 'Copy Account',
     appleOpenPage: 'Open in new tab',
     appleConfirmDone: 'I have completed redemption (advance renewal)',
+    appleWebPortalBtn: 'Open Apple Account Web Portal (No App Store Launch)',
+    appleIncognitoBtn: 'Copy Redeem Link (Paste in Private/Incognito Window)',
+    appleLaunchAppStoreBtn: 'My Mac is signed into this regional ID, launch App Store',
+    appleMacNoticeTitle: 'Mac Web-Only Redemption Tip',
+    appleMacNoticeDesc: 'macOS may intercept redeem links and launch the Mac App Store app. If signed into your primary home ID, regional redemption will fail. Use the web-only options below:',
   },
 
   analytics: {

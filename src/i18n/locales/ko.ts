@@ -248,6 +248,11 @@ export const ko: TranslationDictionary = {
     appleCopyAccount: '계정 복사',
     appleOpenPage: '새 탭에서 열기',
     appleConfirmDone: '충전 완료 (다음 갱신 자동 연장)',
+    appleWebPortalBtn: 'Apple 공식 계정 관리 웹페이지 열기 (App Store 실행 방지)',
+    appleIncognitoBtn: '직접 교환 링크 복사 (시크릿 창에서 열기)',
+    appleLaunchAppStoreBtn: '현재 Mac에 해당 해외 계정이 로그인된 경우 App Store 열기',
+    appleMacNoticeTitle: 'Mac 사용자 전용 웹 충전 안내',
+    appleMacNoticeDesc: 'macOS에서는 기본적으로 로컬 App Store 앱이 자동 실행될 수 있습니다. 국내 기본 계정인 경우 충전에 실패하므로 아래 웹 전용 충전 경로를 이용하세요:',
   },
 
   analytics: {

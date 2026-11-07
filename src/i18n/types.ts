@@ -268,6 +268,11 @@ export interface TranslationDictionary {
     appleCopyAccount: string;
     appleOpenPage: string;
     appleConfirmDone: string;
+    appleWebPortalBtn: string;
+    appleIncognitoBtn: string;
+    appleLaunchAppStoreBtn: string;
+    appleMacNoticeTitle: string;
+    appleMacNoticeDesc: string;
   };
 
   // Analytics
