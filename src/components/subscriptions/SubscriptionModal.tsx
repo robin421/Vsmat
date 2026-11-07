@@ -30,6 +30,7 @@ import { parseSmartText, ParsedSmartInput } from '../../lib/parser';
 import { recognizeSubscriptionScreenshot } from '../../lib/ocrEngine';
 import { todayLocal } from '../../lib/date';
 import { useDismiss } from '../../hooks/useDismiss';
+import { RenewalHistory } from './RenewalHistory';
 
 interface SubscriptionModalProps {
   isOpen: boolean;
@@ -37,6 +38,8 @@ interface SubscriptionModalProps {
   onSave: (sub: Partial<SubscriptionItem>) => void;
   onDelete?: (id: string) => void;
   usdToCnyRate?: number;
+  preferredCurrency?: 'CNY' | 'USD';
+  onUndoRenewal?: (id: string) => void;
   initialData?: SubscriptionItem | null;
   onSaveToken?: (token: Partial<TokenItem>) => void;
 }
@@ -58,6 +61,8 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
   onSave,
   onDelete,
   usdToCnyRate,
+  preferredCurrency = 'CNY',
+  onUndoRenewal,
   initialData,
   onSaveToken,
 }) => {
@@ -813,6 +818,22 @@ SuperGrok 印度区 700 INR/月
               )}
             </div>
           </div>
+
+          {initialData && initialData.cycle !== 'lifetime' && (
+            <RenewalHistory
+              history={initialData.history || []}
+              preferredCurrency={preferredCurrency}
+              usdToCnyRate={usdToCnyRate ?? 7.25}
+              onUndoLatest={() => {
+                const latest = initialData.history?.[0];
+                if (!latest?.previousBillingDate) return;
+                if (confirm(`撤销最近一次续费？下期扣费日将恢复为 ${latest.previousBillingDate}。`)) {
+                  onUndoRenewal?.(initialData.id);
+                  onClose(); // the open form still holds the old date; saving it would overwrite the undo
+                }
+              }}
+            />
+          )}
 
           {/* Action Footer */}
           <div className="flex items-center justify-between pt-4 border-t border-line">

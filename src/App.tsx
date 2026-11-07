@@ -127,7 +127,7 @@ export function App() {
     update((prev) => ({
       ...prev,
       subscriptions: prev.subscriptions.map((sub) => {
-        if (sub.id !== subId) return sub;
+        if (sub.id !== subId || sub.cycle === 'lifetime') return sub;
         const nextDate = advanceBillingDate(sub.nextBillingDate, sub.cycle);
         const newHistoryItem = {
           id: newId('h'),
@@ -135,6 +135,7 @@ export function App() {
           amount: sub.price,
           currency: sub.currency,
           note: `自动顺延续费至 ${nextDate}`,
+          previousBillingDate: sub.nextBillingDate,
         };
         return {
           ...sub,
@@ -145,6 +146,18 @@ export function App() {
       }),
     }));
     return true;
+  };
+
+  // Undo the latest renewal: restores the date and removes that history entry
+  const handleUndoRenewal = (subId: string) => {
+    update((prev) => ({
+      ...prev,
+      subscriptions: prev.subscriptions.map((sub) => {
+        const [latest, ...rest] = sub.history || [];
+        if (sub.id !== subId || !latest?.previousBillingDate) return sub;
+        return { ...sub, nextBillingDate: latest.previousBillingDate, history: rest, updatedAt: todayStr() };
+      }),
+    }));
   };
 
   // Open Apple Web Redeem Modal (Method 1)
@@ -443,6 +456,8 @@ export function App() {
           onDelete={handleDeleteSubscription}
           initialData={editingSub}
           usdToCnyRate={appData.settings.usdToCnyRate}
+          preferredCurrency={appData.settings.preferredCurrency}
+          onUndoRenewal={handleUndoRenewal}
           onSaveToken={handleSaveToken}
         />
       )}

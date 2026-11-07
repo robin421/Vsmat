@@ -11,6 +11,8 @@ export interface BillingHistoryRecord {
   currency: string;
   note?: string;
   voucherCodeUsed?: string;
+  /** Billing date before this renewal; lets the latest renewal be undone. */
+  previousBillingDate?: string;
 }
 
 export interface TokenItem {
