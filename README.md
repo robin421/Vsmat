@@ -88,7 +88,8 @@ pnpm install
 pnpm dev          # http://localhost:5173
 pnpm typecheck    # tsc --noEmit
 pnpm lint         # ESLint
-pnpm test         # Vitest（加密、存储迁移、日期、券码识别、解析器）
+pnpm test         # Vitest（加密、存储迁移、改密码、日期、币种、券码识别、解析器）
+pnpm test:e2e     # Playwright 端到端（Chromium + WebKit，需先 pnpm build）
 pnpm build        # 类型检查 + 生产构建（同时生成 Service Worker 预缓存清单）
 ```
 
@@ -141,7 +142,7 @@ Vsmat/
 │       ├── analytics/                    # 支出分类分析
 │       ├── auth/                         # 主密码加密与锁屏
 │       └── settings/                     # 设置与修改主密码
-├── tests/                       # Vitest 用例（CI 中运行）
+├── tests/                       # Vitest 单元测试与 e2e/ 端到端测试（CI 中运行）
 └── public/
     ├── sw.js                    # Service Worker（构建时注入预缓存清单）
     ├── _headers                 # CSP 等安全响应头（Cloudflare Pages）

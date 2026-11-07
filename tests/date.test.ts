@@ -13,6 +13,10 @@ describe('date helpers', () => {
     expect(advanceBillingDate('2026-03-15', 'semi-annually')).toBe('2026-09-15');
   });
 
+  it('leaves lifetime purchases alone', () => {
+    expect(advanceBillingDate('2026-01-31', 'lifetime')).toBe('2026-01-31');
+  });
+
   it('crosses year boundaries', () => {
     expect(advanceBillingDate('2026-12-15', 'monthly')).toBe('2027-01-15');
   });

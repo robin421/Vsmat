@@ -131,11 +131,14 @@ export function useVault() {
 
   const setRemember = useCallback(
     (remember: boolean) => {
-      update((prev) => ({ ...prev, settings: { ...prev.settings, rememberUnlocked: remember } }));
-      setRememberUnlocked(remember).catch((err) => {
-        console.error('Could not update remembered key:', err);
-        setSaveError(err instanceof Error ? err.message : '保存失败');
-      });
+      // The key store changes first: the switch must not claim "off" while the key still exists
+      setRememberUnlocked(remember).then(
+        () => update((prev) => ({ ...prev, settings: { ...prev.settings, rememberUnlocked: remember } })),
+        (err) => {
+          console.error('Could not update remembered key:', err);
+          setSaveError(err instanceof Error ? err.message : '保存失败');
+        }
+      );
     },
     [update]
   );

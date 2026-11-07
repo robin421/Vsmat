@@ -10,7 +10,8 @@
     "deploy:cf": "pnpm build && npx wrangler pages deploy dist",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@fontsource-variable/figtree": "^5.3.0",
@@ -26,6 +27,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.65.0",
     "@types/canvas-confetti": "^1.9.0",
     "@types/node": "^22.13.10",
     "@types/react": "^19.0.10",

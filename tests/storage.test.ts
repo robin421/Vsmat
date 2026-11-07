@@ -129,6 +129,72 @@ describe('vault lifecycle', () => {
   });
 });
 
+describe('changing the master password', () => {
+  it('rejects a wrong current password and changes nothing', async () => {
+    const s = await load();
+    await s.setupVault(sample(s, 'Keep'), PW, false);
+    const before = localStorage.getItem(KEY);
+    await expect(s.changeMasterPassword(sample(s, 'Keep'), 'not the password', 'a brand new passphrase')).rejects.toMatchObject({ name: 'WrongPasswordError' });
+    expect(localStorage.getItem(KEY)).toBe(before);
+  });
+
+  it('re-encrypts with a fresh salt: old password fails, new one opens the data', async () => {
+    const s = await load();
+    await s.setupVault(sample(s, 'Moved'), PW, false);
+    const oldSalt = JSON.parse(localStorage.getItem(KEY)!).salt;
+    await s.changeMasterPassword(sample(s, 'Moved'), PW, 'a brand new passphrase');
+    expect(JSON.parse(localStorage.getItem(KEY)!).salt).not.toBe(oldSalt);
+
+    const s2 = await load();
+    await expect(s2.unlockVault(PW, false)).rejects.toMatchObject({ name: 'WrongPasswordError' });
+    expect((await s2.unlockVault('a brand new passphrase', false)).subscriptions[0].name).toBe('Moved');
+  });
+
+  it('keeps saving under the new key and keeps "remember" working', async () => {
+    const s = await load();
+    const d = sample(s, 'First');
+    await s.setupVault(d, PW, true);
+    const saved = { ...d, settings: { ...d.settings, rememberUnlocked: true } };
+    await s.changeMasterPassword(saved, PW, 'a brand new passphrase');
+    await s.persistVault(sample(s, 'Second'));
+    const st = await (await load()).readVaultState();
+    expect(st.kind).toBe('unlocked');
+    if (st.kind === 'unlocked') expect(st.data.subscriptions[0].name).toBe('Second');
+  });
+
+  it('old backups still open with the password they were made with', async () => {
+    const s1 = await load();
+    await s1.setupVault(sample(s1, 'Backed'), PW, false);
+    let text = '';
+    const origBlob = globalThis.Blob;
+    globalThis.Blob = class extends origBlob { constructor(parts: BlobPart[], o?: BlobPropertyBag) { super(parts, o); text = String(parts[0]); } } as typeof Blob;
+    URL.createObjectURL = () => 'blob:x'; URL.revokeObjectURL = () => undefined;
+    HTMLAnchorElement.prototype.click = () => undefined;
+    await s1.exportBackup(sample(s1, 'Backed'));
+    globalThis.Blob = origBlob;
+
+    await s1.changeMasterPassword(sample(s1, 'Backed'), PW, 'a brand new passphrase');
+    expect(s1.probeBackup(text)).toEqual({ kind: 'encrypted', needsPassword: true });
+    expect((await s1.parseBackup(text, PW)).subscriptions[0].name).toBe('Backed');
+  });
+});
+
+describe('remember unlock toggle', () => {
+  it('turning it off stops the vault resuming after a reload, and back on restores it', async () => {
+    const s = await load();
+    await s.setupVault(sample(s), PW, true);
+    await s.setRememberUnlocked(false);
+    expect((await (await load()).readVaultState()).kind).toBe('locked');
+    await s.setRememberUnlocked(true);
+    expect((await (await load()).readVaultState()).kind).toBe('unlocked');
+  });
+
+  it('refuses while locked', async () => {
+    const s = await load();
+    await expect(s.setRememberUnlocked(true)).rejects.toThrow();
+  });
+});
+
 describe('normalizeAppData', () => {
   it('fills defaults and strips legacy settings fields', async () => {
     const s = await load();
