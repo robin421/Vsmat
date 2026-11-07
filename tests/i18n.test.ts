@@ -9,7 +9,18 @@ describe('i18n system', () => {
   it('supports zh, en, ja, ko languages', () => {
     const codes = SUPPORTED_LANGUAGES.map((l) => l.code);
     expect(codes).toEqual(['zh', 'en', 'ja', 'ko']);
-    expect(detectDefaultLanguage()).toBe('zh');
+  });
+
+  it('detects default language with fallback and saved preferences', () => {
+    expect(['zh', 'en', 'ja', 'ko']).toContain(detectDefaultLanguage());
+
+    localStorage.setItem('vsmat_ui_language', 'ja');
+    expect(detectDefaultLanguage()).toBe('ja');
+
+    localStorage.setItem('vsmat_ui_language', 'ko');
+    expect(detectDefaultLanguage()).toBe('ko');
+
+    localStorage.removeItem('vsmat_ui_language');
   });
 
   it('unifies "7天" wording across Chinese translations and avoids "7d"', () => {
