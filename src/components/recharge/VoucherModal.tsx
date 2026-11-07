@@ -5,6 +5,7 @@ import { PRESET_SERVICES, getPresetByKey } from '../../types/presets';
 import { detectVoucherService } from '../../lib/rechargeEngines';
 import { SUPPORTED_CURRENCIES } from '../../lib/currencies';
 import { useDismiss } from '../../hooks/useDismiss';
+import { useI18n } from '../../i18n';
 
 interface VoucherModalProps {
   isOpen: boolean;
@@ -20,6 +21,8 @@ export const VoucherModal: React.FC<VoucherModalProps> = ({
   initialData,
 }) => {
   useDismiss(isOpen, onClose);
+  const { t } = useI18n();
+
   const [code, setCode] = useState('');
   const [serviceKey, setServiceKey] = useState('apple');
   const [serviceName, setServiceName] = useState('');
@@ -38,7 +41,7 @@ export const VoucherModal: React.FC<VoucherModalProps> = ({
     } else {
       setCode('');
       setServiceKey('apple');
-      setServiceName('Apple App Store 礼品卡');
+      setServiceName('Apple App Store');
       setAmount('');
       setCurrency('USD');
       setNotes('');
@@ -72,7 +75,7 @@ export const VoucherModal: React.FC<VoucherModalProps> = ({
       id: initialData?.id,
       code: code.trim().toUpperCase(),
       serviceKey,
-      serviceName: serviceName.trim() || '通用礼品卡券',
+      serviceName: serviceName.trim() || 'Gift Card',
       amount: amount ? parseFloat(amount) : undefined,
       currency,
       status: initialData?.status || 'unredeemed',
@@ -91,15 +94,16 @@ export const VoucherModal: React.FC<VoucherModalProps> = ({
             </div>
             <div>
               <h3 className="text-base font-semibold text-ink">
-                {initialData ? '编辑礼品卡券' : '存入新礼品卡券'}
+                {initialData ? t.vouchers.modalTitleEdit : t.vouchers.modalTitleNew}
               </h3>
               <p className="text-xs text-muted">
-                加密存放充值卡密，支持一键直达充值
+                {t.tokens.modalDesc}
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
+            aria-label={t.common.close}
             className="w-8 h-8 rounded-full border border-line-strong hover:border-ink text-muted hover:text-ink hover:bg-inset flex items-center justify-center transition"
           >
             <X className="w-4 h-4" />
@@ -109,23 +113,23 @@ export const VoucherModal: React.FC<VoucherModalProps> = ({
         <form onSubmit={handleSubmit} className="mt-4 space-y-4 text-sm">
           {/* Voucher Code */}
           <div>
-            <label className="block text-xs font-medium text-ink font-semibold mb-1.5">
-              卡券密文 / 代码 <span className="text-rose-500">*</span>
+            <label className="block text-xs font-semibold text-ink mb-1.5">
+              {t.vouchers.fieldCode} <span className="text-rose-500">*</span>
             </label>
             <input
               type="text"
               required
               value={code}
               onChange={(e) => handleCodeChange(e.target.value)}
-              placeholder="例如: X89A-24B8-90CD-EF12"
+              placeholder="e.g. X89A-24B8-90CD-EF12"
               className="w-full h-10 bg-inset border border-line-strong rounded-lg px-3 font-mono text-sm text-ink outline-none focus:border-ink"
             />
           </div>
 
           {/* Service Selector */}
           <div>
-            <label className="block text-xs font-medium text-ink font-semibold mb-1.5">
-              目标服务渠道
+            <label className="block text-xs font-semibold text-ink mb-1.5">
+              {t.tokens.fieldService}
             </label>
             <select
               value={serviceKey}
@@ -137,20 +141,20 @@ export const VoucherModal: React.FC<VoucherModalProps> = ({
                   {p.name}
                 </option>
               ))}
-              <option value="custom">其他通用自定义服务</option>
+              <option value="custom">{t.subModal.customService}</option>
             </select>
           </div>
 
           {/* Service Name */}
           <div>
-            <label className="block text-xs font-medium text-ink font-semibold mb-1.5">
-              卡券显示名称
+            <label className="block text-xs font-semibold text-ink mb-1.5">
+              {t.tokens.fieldName}
             </label>
             <input
               type="text"
               value={serviceName}
               onChange={(e) => setServiceName(e.target.value)}
-              placeholder="例如: 美区 Apple App Store 充值卡"
+              placeholder="e.g. Apple App Store Card"
               className="w-full h-10 bg-inset border border-line-strong rounded-lg px-3 text-sm text-ink outline-none focus:border-ink"
             />
           </div>
@@ -158,8 +162,8 @@ export const VoucherModal: React.FC<VoucherModalProps> = ({
           {/* Amount & Currency */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-medium text-ink font-semibold mb-1.5">
-                面值金额
+              <label className="block text-xs font-semibold text-ink mb-1.5">
+                {t.vouchers.fieldAmount}
               </label>
               <input
                 type="number"
@@ -171,42 +175,33 @@ export const VoucherModal: React.FC<VoucherModalProps> = ({
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-ink font-semibold mb-1.5">
-                币种
+              <label className="block text-xs font-semibold text-ink mb-1.5">
+                {t.subModal.fieldCurrency}
               </label>
               <select
                 value={currency}
                 onChange={(e) => setCurrency(e.target.value)}
                 className="w-full h-10 bg-inset border border-line-strong rounded-lg px-2 text-sm text-ink outline-none focus:border-ink font-medium"
               >
-                <optgroup label="🔥 热门低价与跨区充值 (aisubdeal 榜单)">
-                  {SUPPORTED_CURRENCIES.filter(c => c.popularRank < 20).map(c => (
-                    <option key={c.code} value={c.code}>
-                      {c.flag} {c.code} ({c.symbol} {c.nameZh})
-                    </option>
-                  ))}
-                </optgroup>
-                <optgroup label="🌐 全球主流货币">
-                  {SUPPORTED_CURRENCIES.filter(c => c.popularRank >= 20).map(c => (
-                    <option key={c.code} value={c.code}>
-                      {c.flag} {c.code} ({c.symbol} {c.nameZh})
-                    </option>
-                  ))}
-                </optgroup>
+                {SUPPORTED_CURRENCIES.map(c => (
+                  <option key={c.code} value={c.code}>
+                    {c.flag} {c.code} ({c.symbol})
+                  </option>
+                ))}
               </select>
             </div>
           </div>
 
           {/* Notes */}
           <div>
-            <label className="block text-xs font-medium text-ink font-semibold mb-1.5">
-              备注备忘
+            <label className="block text-xs font-semibold text-ink mb-1.5">
+              {t.subModal.fieldNotes}
             </label>
             <input
               type="text"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="例如: 淘宝购买美区卡、打折券..."
+              placeholder="e.g. Purchased online, regional balance..."
               className="w-full h-10 bg-inset border border-line-strong rounded-lg px-3 text-sm text-ink outline-none focus:border-ink"
             />
           </div>
@@ -218,13 +213,13 @@ export const VoucherModal: React.FC<VoucherModalProps> = ({
               onClick={onClose}
               className="px-5 py-2.5 rounded-xl bg-white hover:bg-inset text-ink border border-line-strong hover:border-ink text-xs font-semibold transition"
             >
-              取消
+              {t.common.cancel}
             </button>
             <button
               type="submit"
               className="h-10 px-5 rounded-lg bg-brand-700 hover:bg-brand-800 text-white font-semibold text-xs flex items-center gap-1.5 transition active:scale-95"
             >
-              <span>{initialData ? '保存修改' : '存入券包'}</span>
+              <span>{initialData ? t.common.save : t.vouchers.addNew}</span>
             </button>
           </div>
         </form>

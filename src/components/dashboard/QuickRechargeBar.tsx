@@ -3,6 +3,7 @@ import { Zap, ExternalLink, Sparkles, Copy, Check, ArrowRight } from 'lucide-rea
 import confetti from 'canvas-confetti';
 import { PRESET_SERVICES, getPresetByKey } from '../../types/presets';
 import { execute1ClickRecharge, detectVoucherService } from '../../lib/rechargeEngines';
+import { useI18n } from '../../i18n';
 
 interface QuickRechargeBarProps {
   /** True when the code matches a voucher stored in the wallet. */
@@ -16,6 +17,7 @@ export const QuickRechargeBar: React.FC<QuickRechargeBarProps> = ({
   onConfirmRedeemed,
   onOpenAppleWebRedeem,
 }) => {
+  const { t } = useI18n();
   const [code, setCode] = useState('');
   const [selectedService, setSelectedService] = useState('auto');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -76,14 +78,14 @@ export const QuickRechargeBar: React.FC<QuickRechargeBarProps> = ({
           <div>
             <div className="flex items-center gap-2">
               <h2 className="text-lg font-bold text-ink tracking-tight whitespace-nowrap">
-                粘贴礼品券一键充值
+                {t.vouchers.quickTitle}
               </h2>
               <span className="text-xs px-2 h-5 inline-flex items-center rounded-full bg-brand-50 text-brand-700 font-semibold whitespace-nowrap">
-                极速直达
+                {t.vouchers.quickBadge}
               </span>
             </div>
             <p className="text-sm text-muted mt-1 text-pretty">
-              粘贴 Apple 礼品卡直接唤出【网页端免退号兑换】，粘贴 AI 服务兑换码自动复制并秒开充值台
+              {t.vouchers.quickDesc}
             </p>
           </div>
         </div>
@@ -95,131 +97,119 @@ export const QuickRechargeBar: React.FC<QuickRechargeBarProps> = ({
           className="self-start md:self-auto h-9 text-[13px] px-3 rounded-lg bg-inset hover:bg-line text-ink-soft transition-colors flex items-center gap-1.5 font-semibold whitespace-nowrap shrink-0 active:scale-[0.985]"
         >
           <Copy className="w-3.5 h-3.5 text-muted" />
-          <span>从剪贴板粘贴</span>
+          <span>{t.vouchers.pasteBtn}</span>
         </button>
       </div>
 
-      <form onSubmit={handleRecharge} className="space-y-3.5">
-        <div className="flex flex-col md:flex-row items-stretch gap-1.5 p-1.5 rounded-2xl bg-inset">
-          {/* Service selector */}
-          <div className="md:w-52 shrink-0">
+      <form onSubmit={handleRecharge} className="space-y-3">
+        <div className="flex flex-col sm:flex-row gap-2.5">
+          <div className="sm:w-48 shrink-0">
             <select
+              aria-label="选择目标服务"
               value={selectedService}
               onChange={(e) => setSelectedService(e.target.value)}
-              className="w-full h-11 rounded-xl bg-white px-3 text-sm font-medium text-ink outline-none"
+              className="field w-full h-11 rounded-xl px-3 text-sm text-ink outline-none font-medium"
             >
               <option value="auto">
-                {detectedService ? `识别为: ${detectedService.name}` : '⚡ 自动智能识别服务'}
+                ⚡ {t.vouchers.autoDetect} {detectedService ? `(${detectedService.name})` : ''}
               </option>
-              {PRESET_SERVICES.filter(p => p.key !== 'custom').map((p) => (
-                <option key={p.key} value={p.key}>
-                  {p.name}
+              {PRESET_SERVICES.map((s) => (
+                <option key={s.key} value={s.key}>
+                  {s.name}
                 </option>
               ))}
-              <option value="custom">其他自定义服务</option>
             </select>
           </div>
 
-          {/* Voucher input */}
-          <div className="relative flex-1">
+          <div className="flex-1 relative">
             <input
               type="text"
               value={code}
               onChange={(e) => setCode(e.target.value)}
-              placeholder="在此粘贴礼品卡号、兑换码或卡密 (如 X89A-24B8... 或 AAAAA-BBBBB-CCCCC)"
-              className="w-full h-11 rounded-xl bg-white pl-3.5 pr-9 text-sm font-mono text-ink placeholder:text-muted placeholder:font-sans outline-none"
+              placeholder={t.vouchers.inputPlaceholder}
+              className="field w-full h-11 px-3.5 rounded-xl text-sm font-mono text-ink placeholder:font-sans placeholder:text-muted outline-none"
             />
             {code && (
               <button
                 type="button"
                 onClick={() => setCode('')}
-                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs text-muted hover:text-ink"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-ink text-xs w-5 h-5 flex items-center justify-center rounded-md hover:bg-line"
               >
                 ✕
               </button>
             )}
           </div>
 
-          {/* Execute Recharge Button */}
           <button
             type="submit"
             disabled={!code.trim()}
-            className="h-11 px-5 rounded-xl font-semibold text-sm btn-primary disabled:bg-brand-200 disabled:text-white disabled:cursor-not-allowed flex items-center justify-center gap-1.5 shrink-0 whitespace-nowrap"
+            className="h-11 px-5 rounded-xl btn-primary disabled:bg-brand-200 disabled:cursor-not-allowed font-semibold text-sm flex items-center justify-center gap-2 whitespace-nowrap shrink-0 transition-colors"
           >
-            {isCopied ? (
-              <>
-                <Check className="w-4 h-4 text-white stroke-[2.5]" />
-                <span>已复制并打开!</span>
-              </>
-            ) : (
-              <>
-                <span>一键充值跳转</span>
-                <ArrowRight className="w-4 h-4" />
-              </>
-            )}
+            <span>{t.vouchers.rechargeBtn}</span>
+            <ExternalLink className="w-4 h-4" />
           </button>
         </div>
 
-        {/* Channel Helper Tag */}
-        <div className="flex flex-wrap items-center gap-2 text-sm text-muted pt-1">
-          <span>目标通道:</span>
-          {effectiveService ? (
-            <>
-              <span className="px-2 h-6 inline-flex items-center rounded-md font-semibold text-xs bg-brand-50 text-brand-700">
-                {effectiveService.name}
-              </span>
-              {effectiveService.key === 'apple' ? (
-                <span className="text-emerald-700 font-medium flex items-center gap-1">
-                  ✓ 专享【网页端免退号】独立兑换通道
-                </span>
-              ) : effectiveService.directRedeemUrlPattern ? (
-                <span className="text-emerald-700 font-medium flex items-center gap-1">
-                  ✓ 支持带码直达自动兑换
-                </span>
+        {/* Dynamic feedback helper */}
+        {code.trim() && (
+          <div className="text-xs flex items-center justify-between gap-2 px-1 animate-fadeIn text-muted">
+            <div className="flex items-center gap-1.5 truncate">
+              {effectiveService ? (
+                <>
+                  <span className="px-2 h-6 inline-flex items-center rounded-md font-semibold text-xs bg-brand-50 text-brand-700">
+                    {effectiveService.name}
+                  </span>
+                  {effectiveService.key === 'apple' ? (
+                    <span className="text-emerald-700 font-medium flex items-center gap-1">
+                      <Sparkles className="w-3.5 h-3.5" />
+                      支持免换号网页兑换
+                    </span>
+                  ) : (
+                    <span className="text-emerald-700 font-medium flex items-center gap-1">
+                      <Check className="w-3.5 h-3.5" />
+                      点击后自动复制卡密并打开官方充值台
+                    </span>
+                  )}
+                </>
               ) : (
-                <span className="text-muted flex items-center gap-1">
-                  ✓ 自动复制券码并打开官方后台
-                </span>
+                <span className="text-amber-700 font-medium">{t.vouchers.autoDetect}</span>
               )}
-            </>
-          ) : code.trim() ? (
-            <span className="text-amber-700 font-medium">未识别，请在左侧手动选择服务</span>
-          ) : (
-            <span>粘贴券码后自动识别</span>
-          )}
-        </div>
-      </form>
+            </div>
+            {isCopied && (
+              <span className="text-emerald-700 font-semibold flex items-center gap-1 shrink-0">
+                <Check className="w-3.5 h-3.5" />
+                {t.common.copied}
+              </span>
+            )}
+          </div>
+        )}
 
-      {/* Feedback alert toast */}
-      {toastMessage && (
-        <div className="mt-4 p-3.5 rounded-xl bg-inset border border-line text-sm text-ink flex items-start gap-2.5 animate-fadeIn">
-          <ExternalLink className="w-4 h-4 text-ink shrink-0 mt-0.5" />
-          <div className="flex-1 leading-relaxed">{toastMessage}</div>
-          {pendingCode && (
+        {/* Confirmation prompt when the redeemed code belongs to a stored voucher */}
+        {pendingCode && onConfirmRedeemed && (
+          <div
+            role="status"
+            className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-900 flex items-center justify-between gap-3 animate-fadeIn"
+          >
+            <span>{t.vouchers.confirmRedeemedToast}</span>
             <button
               type="button"
               onClick={() => {
                 confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
-                onConfirmRedeemed?.(pendingCode);
+                onConfirmRedeemed(pendingCode);
                 setPendingCode(null);
-                setToastMessage(null);
+                setCode('');
               }}
               className="h-7 px-2.5 rounded-md btn-primary text-xs font-semibold whitespace-nowrap shrink-0"
             >
-              已兑换，核销此券
+              {t.vouchers.confirmRedeemedAction}
             </button>
-          )}
-          <button
-            onClick={() => {
-              setToastMessage(null);
-              setPendingCode(null);
-            }}
-            className="text-muted hover:text-ink ml-2"
-          >
-            ✕
-          </button>
-        </div>
-      )}
+          </div>
+        )}
+
+        {toastMessage && !pendingCode && (
+          <div className="text-xs text-muted px-1">{toastMessage}</div>
+        )}
+      </form>
     </div>
   );
 };

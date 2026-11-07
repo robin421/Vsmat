@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { Plus, Key, ShieldCheck, Search } from 'lucide-react';
 import { TokenItem } from '../../types';
 import { TokenCard } from './TokenCard';
+import { useI18n } from '../../i18n';
 
 interface TokenListProps {
   tokens: TokenItem[];
@@ -20,6 +21,8 @@ export const TokenList: React.FC<TokenListProps> = ({
   searchTerm = '',
   onSearchChange,
 }) => {
+  const { t, format } = useI18n();
+
   const filteredTokens = useMemo(() => {
     return tokens.filter(t => {
       if (!searchTerm) return true;
@@ -38,7 +41,7 @@ export const TokenList: React.FC<TokenListProps> = ({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center gap-2.5 text-sm text-muted">
           <ShieldCheck className="w-4 h-4 text-emerald-600" />
-          <span>共收录 <strong className="text-ink">{tokens.length}</strong> 个 API 密钥凭证 · 硬件级 AES-256 本地加密</span>
+          <span>{format(t.tokens.headerTotal, { count: tokens.length })}</span>
         </div>
 
         <button
@@ -46,7 +49,7 @@ export const TokenList: React.FC<TokenListProps> = ({
           className="h-10 px-4 rounded-xl btn-primary font-semibold text-sm flex items-center justify-center gap-1.5 shrink-0 whitespace-nowrap"
         >
           <Plus className="w-4 h-4 text-white stroke-[2.5]" />
-          <span>收藏新密钥</span>
+          <span>{t.tokens.addNew}</span>
         </button>
       </div>
 
@@ -58,8 +61,8 @@ export const TokenList: React.FC<TokenListProps> = ({
             type="text"
             value={searchTerm}
             onChange={(e) => onSearchChange(e.target.value)}
-            placeholder="搜索名称或账号..."
-            aria-label="搜索密钥"
+            placeholder={t.tokens.searchPlaceholder}
+            aria-label={t.tokens.searchPlaceholder}
             className="w-full min-w-0 text-sm text-ink placeholder:text-muted outline-none bg-transparent"
           />
         </div>
@@ -83,17 +86,17 @@ export const TokenList: React.FC<TokenListProps> = ({
             <Key className="w-6 h-6" />
           </div>
           <h4 className="text-base font-semibold text-ink mb-1">
-            {searchTerm ? '未找到匹配的 API Token' : '暂无 API 密钥'}
+            {searchTerm ? t.tokens.emptyTitleFiltered : t.tokens.emptyTitle}
           </h4>
           <p className="text-sm text-muted max-w-sm mx-auto mb-5">
-            集中管理 OpenAI、Claude、DeepSeek、GitHub 等服务的开发调用密钥与 Endpoint。
+            {t.tokens.emptyDesc}
           </p>
           <button
             onClick={onAddNew}
             className="h-10 px-5 rounded-lg btn-primary font-semibold text-sm inline-flex items-center gap-1.5"
           >
             <Plus className="w-4 h-4" />
-            <span>收藏第一个密钥</span>
+            <span>{t.tokens.emptyCta}</span>
           </button>
         </div>
       )}

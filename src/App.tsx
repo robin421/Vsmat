@@ -1,5 +1,5 @@
 import React, { Suspense, lazy, useState, useEffect, useRef } from 'react';
-import { AppData, SubscriptionItem, TokenItem, VoucherItem } from './types';
+import { SubscriptionItem, TokenItem, VoucherItem } from './types';
 import {
   advanceBillingDate,
   exportBackup,
@@ -14,6 +14,7 @@ import { UrgentReminderBanner } from './components/dashboard/UrgentReminderBanne
 import { SubscriptionList } from './components/subscriptions/SubscriptionList';
 import { MasterPasswordModal } from './components/auth/MasterPasswordModal';
 import { ShieldCheck, AlertCircle, X } from 'lucide-react';
+import { I18nProvider, useI18n, SupportedLanguage } from './i18n';
 
 // Code-split: tabs/modals the user hasn't opened yet are fetched on demand.
 const TokenList = lazy(() => import('./components/tokens/TokenList').then((m) => ({ default: m.TokenList })));
@@ -29,17 +30,15 @@ const SettingsModal = lazy(() => import('./components/settings/SettingsModal').t
 const DataSecurityModal = lazy(() => import('./components/common/DataSecurityModal').then((m) => ({ default: m.DataSecurityModal })));
 
 const RENEW_GUARD_MS = 800;
-
-const TAB_TITLES = {
-  subscriptions: '我的订阅',
-  tokens: 'Token 密钥',
-  vouchers: '礼品券直充',
-  analytics: '支出统计',
-} as const;
-
 const newId = (prefix: string) => `${prefix}-${crypto.randomUUID()}`;
 
-export function App() {
+interface AppContentProps {
+  vault: ReturnType<typeof useVault>;
+}
+
+function AppContent({ vault }: AppContentProps) {
+  const { t, setLanguage } = useI18n();
+
   const {
     data: appData,
     status,
@@ -57,7 +56,8 @@ export function App() {
     lock,
     changePassword,
     setRemember,
-  } = useVault();
+  } = vault;
+
   const isLocked = status === 'locked';
   const isPasswordModalOpen = status === 'setup' || status === 'locked';
   const isInitialSetup = status === 'setup';
@@ -81,6 +81,13 @@ export function App() {
   const [isAppleModalOpen, setIsAppleModalOpen] = useState(false);
   const [appleVoucherCode, setAppleVoucherCode] = useState('');
   const [appleActiveSub, setAppleActiveSub] = useState<SubscriptionItem | null>(null);
+
+  const tabTitles = {
+    subscriptions: t.common.navSubscriptions,
+    tokens: t.common.navTokens,
+    vouchers: t.common.navVouchers,
+    analytics: t.common.navAnalytics,
+  };
 
   // Renewal notifications: once per unlock, only after real data is available
   const notifiedRef = useRef(false);
@@ -134,9 +141,6 @@ export function App() {
     }
   };
 
-  // Mark a subscription as renewed
-  // The list re-sorts as soon as a date moves, so the second click of a double
-  // click can land on a different row. Guard globally, not per subscription.
   const lastRenewAtRef = useRef(0);
   const handleMarkRenewed = (subId: string): boolean => {
     const now = Date.now();
@@ -167,7 +171,6 @@ export function App() {
     return true;
   };
 
-  // Undo the latest renewal: restores the date and removes that history entry
   const handleUndoRenewal = (subId: string) => {
     update((prev) => ({
       ...prev,
@@ -179,7 +182,6 @@ export function App() {
     }));
   };
 
-  // Open Apple Web Redeem Modal (Method 1)
   const handleOpenAppleWebRedeem = (code?: string, sub?: SubscriptionItem) => {
     const effectiveSub = sub || appData.subscriptions.find(s => s.serviceKey === 'openai' || s.paymentMethod?.includes('Apple')) || appData.subscriptions[0];
     const appleVoucher = appData.vouchers.find(v => v.serviceKey === 'apple' && v.status === 'unredeemed');
@@ -189,7 +191,6 @@ export function App() {
     setIsAppleModalOpen(true);
   };
 
-  // Token Handlers
   const handleSaveToken = (tokenData: Partial<TokenItem>) => {
     update((prev) => {
       if (tokenData.id) {
@@ -212,7 +213,6 @@ export function App() {
     update((prev) => ({ ...prev, tokens: prev.tokens.filter(t => t.id !== id) }));
   };
 
-  // Subscription Handlers
   const handleSaveSubscription = (subData: Partial<SubscriptionItem>) => {
     update((prev) => {
       if (subData.id) {
@@ -236,7 +236,6 @@ export function App() {
     update((prev) => ({ ...prev, subscriptions: prev.subscriptions.filter(s => s.id !== id) }));
   };
 
-  // Voucher Handlers
   const handleSaveVoucher = (vData: Partial<VoucherItem>) => {
     update((prev) => {
       if (vData.id) {
@@ -261,11 +260,18 @@ export function App() {
   const findVoucherByCode = (code: string) =>
     appData.vouchers.find(item => item.code.replace(/\s+/g, '') === code.replace(/\s+/g, ''));
 
-  // Toggle preferred currency
   const handleToggleCurrency = () => {
     update((prev) => ({
       ...prev,
       settings: { ...prev.settings, preferredCurrency: prev.settings.preferredCurrency === 'CNY' ? 'USD' : 'CNY' },
+    }));
+  };
+
+  const handleLanguageChange = (lang: SupportedLanguage) => {
+    setLanguage(lang);
+    update((prev) => ({
+      ...prev,
+      settings: { ...prev.settings, language: lang },
     }));
   };
 
@@ -301,24 +307,25 @@ export function App() {
         onSearchChange={setSearchQuery}
         onOpenSecurityModal={() => setIsSecurityModalOpen(true)}
         onOpenSettings={() => setIsSettingsOpen(true)}
+        onLanguageChange={handleLanguageChange}
       />
 
       {saveError && (
         <div role="alert" className="bg-rose-50 border-b border-rose-200 text-rose-700 text-xs font-semibold px-4 py-2 flex items-center justify-center gap-2">
           <AlertCircle className="w-4 h-4 shrink-0" />
-          <span>保存失败，最近的修改可能未写入本地：{saveError}</span>
-          <button onClick={dismissSaveError} aria-label="关闭" className="ml-2"><X className="w-3.5 h-3.5" /></button>
+          <span>{t.common.saveFailed} {saveError}</span>
+          <button onClick={dismissSaveError} aria-label={t.common.close} className="ml-2"><X className="w-3.5 h-3.5" /></button>
         </div>
       )}
 
       <Suspense fallback={<div className="flex-1" aria-busy="true" />}>
       <main className="flex-1 max-w-[1240px] w-full mx-auto px-4 sm:px-6 lg:px-10 py-6 lg:py-9 space-y-6">
-        <h1 className="text-2xl lg:text-[28px] font-bold tracking-tight text-ink leading-tight">{TAB_TITLES[activeTab]}</h1>
+        <h1 className="text-2xl lg:text-[28px] font-bold tracking-tight text-ink leading-tight">{tabTitles[activeTab]}</h1>
 
         {/* Tab 1: Subscriptions (Clean & Spacious) */}
         {activeTab === 'subscriptions' && (
           <div className="animate-fadeIn space-y-6">
-            {/* Urgent Warning Banner (Minimal & focused) */}
+            {/* Urgent Warning Banner */}
             <UrgentReminderBanner
               subscriptions={appData.subscriptions}
               onMarkRenewed={handleMarkRenewed}
@@ -425,23 +432,23 @@ export function App() {
       </main>
       </Suspense>
 
-      {/* Executive Clean Footer with Security & Privacy Guarantee */}
+      {/* Clean Footer with Security & Privacy Guarantee */}
       <footer className="mt-auto px-4 sm:px-6 lg:px-10 py-5 text-xs text-muted">
         <div className="max-w-[1160px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
           <div className="flex items-center gap-2 whitespace-nowrap">
             <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
-            <span className="font-semibold text-ink-soft">Vsmat 本地加密金库</span>
-            <span className="hidden md:inline">· 100% 纯前端离线架构 · 无后端服务器 · 零云端数据库</span>
+            <span className="font-semibold text-ink-soft">{t.common.footerTitle}</span>
+            <span className="hidden md:inline">· {t.common.footerSubtitle}</span>
           </div>
           <div className="flex items-center gap-3 whitespace-nowrap">
             <button
               onClick={() => setIsSecurityModalOpen(true)}
               className="text-brand-700 hover:text-brand-800 font-medium transition-colors"
             >
-              数据安全与隐私白皮书
+              {t.common.footerWhitepaper}
             </button>
             <span>·</span>
-            <span>AES-256-GCM 本地加密</span>
+            <span>{t.common.footerEncryption}</span>
           </div>
         </div>
       </footer>
@@ -539,5 +546,22 @@ export function App() {
         onBiometricUnlock={unlockBiometrics}
       />
     </div>
+  );
+}
+
+export function App() {
+  const vault = useVault();
+  return (
+    <I18nProvider
+      language={vault.data.settings.language}
+      onLanguageChange={(lang) => {
+        vault.update((prev) => ({
+          ...prev,
+          settings: { ...prev.settings, language: lang },
+        }));
+      }}
+    >
+      <AppContent vault={vault} />
+    </I18nProvider>
   );
 }

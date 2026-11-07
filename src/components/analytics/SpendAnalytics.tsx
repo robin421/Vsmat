@@ -2,6 +2,7 @@ import React from 'react';
 import { PieChart } from 'lucide-react';
 import { SubscriptionItem, ServiceCategory } from '../../types';
 import { monthlyAmountUSD } from '../../lib/currencies';
+import { useI18n } from '../../i18n';
 
 interface SpendAnalyticsProps {
   subscriptions: SubscriptionItem[];
@@ -14,15 +15,15 @@ export const SpendAnalytics: React.FC<SpendAnalyticsProps> = ({
   preferredCurrency,
   usdToCnyRate,
 }) => {
-  // Executive Business Palette: Obsidian Black primary + Babu Teal + warm neutrals
+  const { t } = useI18n();
+
   const categoryNames: Record<ServiceCategory, { label: string; color: string; dot: string }> = {
-    // Categorical hues are kept clear of the status colours (green/amber/red) reserved for meaning.
-    ai: { label: 'AI 大模型与服务', color: 'bg-brand-700', dot: 'bg-brand-700' },
-    developer: { label: '开发者工具与平台', color: 'bg-[#16A3B8]', dot: 'bg-[#16A3B8]' },
-    server: { label: '服务器 / VPS / 域名', color: 'bg-[#8E93A6]', dot: 'bg-[#8E93A6]' },
-    productivity: { label: '生产力办公工具', color: 'bg-[#8A5CF0]', dot: 'bg-[#8A5CF0]' },
-    entertainment: { label: '流媒体影音娱乐', color: 'bg-[#EC6FA8]', dot: 'bg-[#EC6FA8]' },
-    other: { label: '其他杂项', color: 'bg-[#D3D6E2]', dot: 'bg-[#D3D6E2]' },
+    ai: { label: t.subscriptions.catAiLabel, color: 'bg-brand-700', dot: 'bg-brand-700' },
+    developer: { label: t.subscriptions.catDevLabel, color: 'bg-[#16A3B8]', dot: 'bg-[#16A3B8]' },
+    server: { label: t.subscriptions.catServerLabel, color: 'bg-[#8E93A6]', dot: 'bg-[#8E93A6]' },
+    productivity: { label: t.subscriptions.catProdLabel, color: 'bg-[#8A5CF0]', dot: 'bg-[#8A5CF0]' },
+    entertainment: { label: t.subscriptions.catEntLabel, color: 'bg-[#EC6FA8]', dot: 'bg-[#EC6FA8]' },
+    other: { label: t.subscriptions.catOtherLabel, color: 'bg-[#D3D6E2]', dot: 'bg-[#D3D6E2]' },
   };
 
   const totalsByCategory: Record<ServiceCategory, number> = {
@@ -54,12 +55,16 @@ export const SpendAnalytics: React.FC<SpendAnalyticsProps> = ({
               <PieChart className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-ink tracking-tight whitespace-nowrap">按业务类别支出分布</h3>
-              <p className="text-sm text-muted mt-0.5">各模块均摊月度支出占比与财务汇总</p>
+              <h3 className="text-lg font-bold text-ink tracking-tight whitespace-nowrap">
+                {t.analytics.distributionTitle}
+              </h3>
+              <p className="text-sm text-muted mt-0.5">
+                {t.analytics.distributionDesc}
+              </p>
             </div>
           </div>
           <div className="sm:text-right">
-            <div className="text-sm text-muted whitespace-nowrap">总月均支出</div>
+            <div className="text-sm text-muted whitespace-nowrap">{t.analytics.totalMonthlySpend}</div>
             <div className="text-2xl font-bold text-ink tracking-tight whitespace-nowrap">
               {symbol} {grandTotal.toFixed(1)}
             </div>
@@ -83,30 +88,32 @@ export const SpendAnalytics: React.FC<SpendAnalyticsProps> = ({
           })}
         </div>
 
-        {/* Breakdown grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10">
+        {/* Category list items */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {(Object.keys(totalsByCategory) as ServiceCategory[]).map(cat => {
             const amountUSD = totalsByCategory[cat];
             const amount = preferredCurrency === 'CNY' ? amountUSD * usdToCnyRate : amountUSD;
             const pct = grandTotalUSD > 0 ? (amountUSD / grandTotalUSD) * 100 : 0;
+            const count = subscriptions.filter(s => s.category === cat).length;
 
             return (
-              <div
-                key={cat}
-                className="py-3 border-b border-line flex items-center justify-between gap-3"
-              >
-                <div className="flex items-center gap-3">
-                  <div className={`w-2.5 h-2.5 rounded-full ${categoryNames[cat].dot}`} />
-                  <div>
-                    <div className="text-sm font-medium text-ink whitespace-nowrap">{categoryNames[cat].label}</div>
-                    <div className="text-xs text-muted">{pct.toFixed(1)}%</div>
+              <div key={cat} className="p-3.5 rounded-2xl bg-inset/50 border border-line flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div className={`w-3 h-3 rounded-full ${categoryNames[cat].dot} shrink-0`} />
+                  <div className="min-w-0">
+                    <div className="text-sm font-semibold text-ink truncate">
+                      {categoryNames[cat].label}
+                    </div>
+                    <div className="text-xs text-muted">
+                      {count} 个服务 · {pct.toFixed(0)}%
+                    </div>
                   </div>
                 </div>
-                <div className="flex items-baseline gap-0.5 whitespace-nowrap">
-                  <div className="text-sm font-semibold text-ink">
+                <div className="text-right shrink-0">
+                  <div className="text-sm font-bold text-ink">
                     {symbol} {amount.toFixed(1)}
                   </div>
-                  <div className="text-xs text-muted font-sans">/月</div>
+                  <div className="text-[11px] text-muted">/月</div>
                 </div>
               </div>
             );

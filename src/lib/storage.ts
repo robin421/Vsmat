@@ -32,6 +32,7 @@ export const EMPTY_DATA: AppData = {
     usdToCnyRate: 7.25,
     autoLockMinutes: 30,
     biometricsEnabled: false,
+    language: 'zh',
   },
   tokens: [],
   subscriptions: [],
@@ -125,6 +126,9 @@ export function normalizeAppData(input: unknown): AppData {
         ? s.autoLockMinutes
         : base.autoLockMinutes,
     biometricsEnabled: typeof s.biometricsEnabled === 'boolean' ? s.biometricsEnabled : base.biometricsEnabled,
+    language: s.language === 'en' || s.language === 'ja' || s.language === 'ko' || s.language === 'zh'
+      ? s.language
+      : base.language,
   };
 
   return {

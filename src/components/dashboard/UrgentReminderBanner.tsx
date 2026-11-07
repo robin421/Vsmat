@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import {
   Bell,
   Calendar,
-  CheckCircle2,
   RefreshCw,
   ArrowUpRight,
   ShieldCheck
@@ -12,6 +11,7 @@ import { getDaysUntil, requestNotificationPermission, checkAndSendRenewalNotific
 import { downloadICalendarFile } from '../../lib/calendar';
 import { BrandBadge } from '../common/BrandBadge';
 import confetti from 'canvas-confetti';
+import { useI18n } from '../../i18n';
 
 interface UrgentReminderBannerProps {
   subscriptions: SubscriptionItem[];
@@ -24,6 +24,7 @@ export const UrgentReminderBanner: React.FC<UrgentReminderBannerProps> = ({
   onMarkRenewed,
   onOpenRechargeWithService,
 }) => {
+  const { t, format } = useI18n();
   const [notificationStatus, setNotificationStatus] = useState<string | null>(null);
 
   const urgentSubs = subscriptions
@@ -39,15 +40,17 @@ export const UrgentReminderBanner: React.FC<UrgentReminderBannerProps> = ({
           <div className="w-9 h-9 rounded-lg bg-emerald-50 flex items-center justify-center shrink-0">
             <ShieldCheck className="w-5 h-5 text-emerald-600" />
           </div>
-          <span className="text-sm font-medium text-ink">AirCover 智能守护中：未来 7 天内无临期待续费项目，所有服务运转良好。</span>
+          <span className="text-sm font-medium text-ink">
+            {t.reminder.airCoverClean}
+          </span>
         </div>
         <button
           onClick={() => downloadICalendarFile(subscriptions)}
           className="h-9 px-3 rounded-lg bg-inset hover:bg-line text-ink-soft transition-colors flex items-center justify-center gap-1.5 font-semibold text-[13px] whitespace-nowrap shrink-0"
-          title="一键将全部订阅生成系统日历事件，导入 Mac / iPhone 闹钟"
+          title="导出日历事件"
         >
           <Calendar className="w-3.5 h-3.5" />
-          <span>导出到系统日历 (.ics)</span>
+          <span>{t.reminder.exportCalendar}</span>
         </button>
       </div>
     );
@@ -56,11 +59,11 @@ export const UrgentReminderBanner: React.FC<UrgentReminderBannerProps> = ({
   const handleEnableNotification = async () => {
     const granted = await requestNotificationPermission();
     if (granted) {
-      setNotificationStatus('已开启系统桌面通知权限！');
+      setNotificationStatus(t.reminder.notificationGranted);
       checkAndSendRenewalNotifications(subscriptions);
       setTimeout(() => setNotificationStatus(null), 4000);
     } else {
-      setNotificationStatus('请在浏览器地址栏允许通知权限');
+      setNotificationStatus(t.reminder.notificationDenied);
       setTimeout(() => setNotificationStatus(null), 4000);
     }
   };
@@ -81,13 +84,15 @@ export const UrgentReminderBanner: React.FC<UrgentReminderBannerProps> = ({
       <div className="flex flex-col row:flex-row row:items-center justify-between gap-x-4 gap-y-2 mb-3">
         <div className="min-w-0">
           <div className="flex items-center gap-2">
-            <h3 className="text-base font-semibold text-ink tracking-tight whitespace-nowrap">充值与续费提醒</h3>
+            <h3 className="text-base font-semibold text-ink tracking-tight whitespace-nowrap">
+              {t.reminder.title}
+            </h3>
             <span className="text-xs px-1.5 h-5 inline-flex items-center rounded-md bg-amber-100 text-amber-800 font-semibold whitespace-nowrap">
-              {urgentSubs.length} 项待处理
+              {format(t.reminder.pendingCount, { count: urgentSubs.length })}
             </span>
           </div>
           <p className="text-[13px] text-muted mt-0.5 text-pretty">
-            及时充值确保 API 与服务正常运转。支持导出至系统日历设置 Mac / iPhone 强力响铃提醒。
+            {t.reminder.description}
           </p>
         </div>
 
@@ -95,14 +100,14 @@ export const UrgentReminderBanner: React.FC<UrgentReminderBannerProps> = ({
           <button
             onClick={() => downloadICalendarFile(subscriptions)}
             className={quietButton}
-            title="把所有续费日程导入 Mac / iPhone 日历，提前1天和3天响铃提醒"
+            title={t.reminder.syncCalendar}
           >
             <Calendar className="w-3.5 h-3.5" />
-            <span>一键同步日历 (.ics)</span>
+            <span>{t.reminder.syncCalendar}</span>
           </button>
-          <button onClick={handleEnableNotification} className={quietButton} title="开启网页桌面系统通知">
+          <button onClick={handleEnableNotification} className={quietButton} title={t.reminder.notifications}>
             <Bell className="w-3.5 h-3.5" />
-            <span>桌面通知</span>
+            <span>{t.reminder.notifications}</span>
           </button>
         </div>
       </div>
@@ -137,7 +142,11 @@ export const UrgentReminderBanner: React.FC<UrgentReminderBannerProps> = ({
                       : 'bg-amber-50 text-amber-700'
                   }`}
                 >
-                  {isOverdue ? `已逾期 ${Math.abs(days)}d` : isToday ? '今日到期' : `还剩 ${days}d`}
+                  {isOverdue
+                    ? format(t.reminder.overdueDays, { days: Math.abs(days) })
+                    : isToday
+                    ? t.reminder.dueToday
+                    : format(t.reminder.daysLeft, { days })}
                 </span>
               </div>
 
@@ -148,16 +157,16 @@ export const UrgentReminderBanner: React.FC<UrgentReminderBannerProps> = ({
                   className="h-8 rounded-lg bg-brand-50 hover:bg-brand-100 text-brand-700 text-[13px] font-semibold transition-colors flex items-center justify-center gap-1 whitespace-nowrap active:scale-95"
                 >
                   <ArrowUpRight className="w-3.5 h-3.5" />
-                  <span>去充值</span>
+                  <span>{t.reminder.topUp}</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => handleRenewClick(sub.id)}
                   className="h-8 rounded-lg bg-inset hover:bg-line text-ink-soft text-[13px] font-semibold transition-colors flex items-center justify-center gap-1 whitespace-nowrap active:scale-95"
-                  title="顺延续费一个周期"
+                  title={t.reminder.renewedTooltip}
                 >
                   <RefreshCw className="w-3 h-3" />
-                  <span>已续费</span>
+                  <span>{t.reminder.renewed}</span>
                 </button>
               </div>
             </div>

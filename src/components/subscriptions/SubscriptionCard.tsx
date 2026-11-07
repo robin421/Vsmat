@@ -22,6 +22,7 @@ import { getDaysUntil } from '../../lib/notifications';
 import { convertToUSD } from '../../lib/currencies';
 import { BrandBadge } from '../common/BrandBadge';
 import { safeHttpUrl } from '../../lib/url';
+import { useI18n } from '../../i18n';
 
 interface SubscriptionCardProps {
   subscription: SubscriptionItem;
@@ -40,6 +41,7 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
   onQuickRecharge,
   usdToCnyRate,
 }) => {
+  const { t, format } = useI18n();
   const [showPassword, setShowPassword] = useState(false);
   const [copiedEmail, setCopiedEmail] = useState(false);
   const [copiedPassword, setCopiedPassword] = useState(false);
@@ -82,21 +84,21 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
   };
 
   const cycleTextMap: Record<string, string> = {
-    monthly: '月',
-    quarterly: '季',
-    'semi-annually': '半年',
-    annually: '年',
-    prepaid: '按量',
-    lifetime: '终身',
+    monthly: t.subscriptions.perMonth,
+    quarterly: t.subscriptions.perQuarter,
+    'semi-annually': t.subscriptions.perSemiAnnual,
+    annually: t.subscriptions.perYear,
+    prepaid: t.subscriptions.perUsage,
+    lifetime: t.subscriptions.lifetime,
   };
 
   const categoryLabelMap: Record<string, string> = {
-    ai: 'AI 智能应用',
-    developer: '开发工具平台',
-    server: '服务器与网络',
-    productivity: '生产力办公',
-    entertainment: '流媒体娱乐',
-    other: '订阅服务',
+    ai: t.subscriptions.catAiLabel,
+    developer: t.subscriptions.catDevLabel,
+    server: t.subscriptions.catServerLabel,
+    productivity: t.subscriptions.catProdLabel,
+    entertainment: t.subscriptions.catEntLabel,
+    other: t.subscriptions.catOtherLabel,
   };
 
   const isUrgent = isOverdue || isToday || isExpiringSoon;
@@ -127,15 +129,15 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
               }`}
             >
               {isLifetime
-                ? '买断'
+                ? t.subscriptions.lifetime
                 : isOverdue
-                ? `已逾期 ${Math.abs(days)} 天`
+                ? format(t.reminder.overdueDays, { days: Math.abs(days) })
                 : isToday
-                ? '今日到期'
-                : `还剩 ${days} 天`}
+                ? t.reminder.dueToday
+                : format(t.reminder.daysLeft, { days })}
             </span>
             <span className="text-xs text-muted truncate">
-              {categoryLabelMap[subscription.category] || '订阅服务'}
+              {categoryLabelMap[subscription.category] || t.subscriptions.catOtherLabel}
             </span>
           </div>
         </div>
@@ -146,19 +148,21 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
         <div className="flex items-center justify-between gap-2 min-h-7">
           <span className="flex items-center gap-2 min-w-0">
             <Mail className="w-3.5 h-3.5 text-subtle shrink-0" />
-            <span className="break-all select-all" title={subscription.accountEmail || '未录入账号'}>
+            <span className="break-all select-all" title={subscription.accountEmail || t.subscriptions.noAccount}>
               {subscription.accountEmail || (
                 <span className="text-muted text-xs inline-flex items-center gap-1">
                   <AlertCircle className="w-3 h-3 text-amber-500 shrink-0" />
-                  <span>未绑定账号（点击卡片可补充）</span>
+                  <span>{t.subscriptions.noAccount}</span>
                 </span>
               )}
             </span>
           </span>
           {subscription.accountEmail && (
-            <button type="button" onClick={handleCopyEmail} className={copyButton} title="一键复制完整账号" aria-label="一键复制完整账号">
+            <button type="button" onClick={handleCopyEmail} className={copyButton} title={t.subscriptions.copyAccount} aria-label={t.subscriptions.copyAccount}>
               {copiedEmail ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
-              <span className={`row:hidden ${copiedEmail ? 'text-emerald-700 font-semibold' : ''}`}>{copiedEmail ? '已复制' : '复制'}</span>
+              <span className={`row:hidden ${copiedEmail ? 'text-emerald-700 font-semibold' : ''}`}>
+                {copiedEmail ? t.common.copied : t.common.copy}
+              </span>
             </button>
           )}
         </div>
@@ -174,14 +178,16 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 className="w-7 h-7 rounded-md text-muted hover:text-ink hover:bg-inset flex items-center justify-center transition-colors"
-                title={showPassword ? '隐藏密码' : '显示密码'}
-                aria-label={showPassword ? '隐藏密码' : '显示密码'}
+                title={showPassword ? t.subscriptions.hidePassword : t.subscriptions.showPassword}
+                aria-label={showPassword ? t.subscriptions.hidePassword : t.subscriptions.showPassword}
               >
                 {showPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
               </button>
-              <button type="button" onClick={handleCopyPassword} className={copyButton} title="复制" aria-label="复制密码">
+              <button type="button" onClick={handleCopyPassword} className={copyButton} title={t.common.copy} aria-label={t.subscriptions.copyPassword}>
                 {copiedPassword ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
-                <span className={`row:hidden ${copiedPassword ? 'text-emerald-700 font-semibold' : ''}`}>{copiedPassword ? '已复制' : '复制'}</span>
+                <span className={`row:hidden ${copiedPassword ? 'text-emerald-700 font-semibold' : ''}`}>
+                  {copiedPassword ? t.common.copied : t.common.copy}
+                </span>
               </button>
             </span>
           </div>
@@ -193,8 +199,8 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
         <div className="min-w-0 text-[13px]">
           <div className="flex items-center gap-1.5 whitespace-nowrap text-muted">
             <Calendar className="w-3.5 h-3.5 text-subtle shrink-0" />
-            <span>下期:</span>
-            <span className="font-medium text-ink">{isLifetime ? '无需续费' : subscription.nextBillingDate}</span>
+            <span>{t.subscriptions.nextBilling}</span>
+            <span className="font-medium text-ink">{isLifetime ? t.subscriptions.noRenewalNeeded : subscription.nextBillingDate}</span>
           </div>
           {(subscription.paymentMethod || subscription.notes) && (
             <div className="flex items-center gap-1.5 mt-1 text-xs text-muted min-w-0">
@@ -216,10 +222,10 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
             <span className="text-[17px] font-bold text-ink tracking-tight leading-none">
               {subscription.currency} {subscription.price}
             </span>
-            <span className="text-xs text-muted">/{cycleTextMap[subscription.cycle] || '期'}</span>
+            <span className="text-xs text-muted">/{cycleTextMap[subscription.cycle] || t.subscriptions.perCycle}</span>
           </div>
           {subscription.currency !== 'USD' && (
-            <div className="text-xs text-muted mt-1 whitespace-nowrap" title="按全局汇率折算">
+            <div className="text-xs text-muted mt-1 whitespace-nowrap" title={t.subscriptions.convertedNote}>
               ≈ ${convertToUSD(subscription.price, subscription.currency, usdToCnyRate).toFixed(2)} USD
             </div>
           )}
@@ -236,7 +242,7 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
           }`}
         >
           <ArrowUpRight className="w-4 h-4" />
-          <span>去充值</span>
+          <span>{t.reminder.topUp}</span>
         </button>
 
         {!isLifetime && (
@@ -246,7 +252,7 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
             className="h-9 px-3 rounded-lg bg-inset hover:bg-line text-ink-soft font-semibold text-[13px] transition-colors flex items-center justify-center gap-1 whitespace-nowrap active:scale-[0.985]"
           >
             <RefreshCw className="w-3.5 h-3.5" />
-            <span>我已续费</span>
+            <span>{t.subscriptions.markRenewedBtn}</span>
           </button>
         )}
 
@@ -255,8 +261,8 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
             type="button"
             onClick={() => onEdit(subscription)}
             className="w-8 h-8 rounded-lg text-muted hover:text-ink hover:bg-inset flex items-center justify-center transition-colors"
-            title="编辑订阅"
-            aria-label="编辑订阅"
+            title={t.common.edit}
+            aria-label={t.common.edit}
           >
             <Edit2 className="w-3.5 h-3.5" />
           </button>
@@ -266,8 +272,8 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
               type="button"
               onClick={() => setShowMenu(!showMenu)}
               className="w-8 h-8 rounded-lg text-muted hover:text-ink hover:bg-inset flex items-center justify-center transition-colors"
-              title="更多操作"
-              aria-label="更多操作"
+              title="More"
+              aria-label="More"
               aria-expanded={showMenu}
             >
               <MoreHorizontal className="w-4 h-4" />
@@ -286,7 +292,7 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
                   className="w-full text-left px-3 py-2 rounded-lg hover:bg-inset text-ink font-medium flex items-center gap-2"
                 >
                   <Edit2 className="w-3.5 h-3.5 text-muted" />
-                  <span>编辑详情</span>
+                  <span>{t.common.edit}</span>
                 </button>
 
                 {subscription.portalUrl && (
@@ -297,13 +303,13 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
                     className="w-full text-left px-3 py-2 rounded-lg hover:bg-inset text-ink font-medium flex items-center gap-2"
                   >
                     <ExternalLink className="w-3.5 h-3.5 text-muted" />
-                    <span>官方后台</span>
+                    <span>{t.subscriptions.portal}</span>
                   </a>
                 )}
 
                 <button
                   onClick={() => {
-                    if (confirm(`确定要删除订阅「${subscription.name}」吗？`)) {
+                    if (confirm(format(t.subscriptions.deleteConfirm, { name: subscription.name }))) {
                       onDelete(subscription.id);
                     }
                     setShowMenu(false);
@@ -311,7 +317,7 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
                   className="w-full text-left px-3 py-2 rounded-lg hover:bg-rose-50 text-rose-700 font-medium flex items-center gap-2"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
-                  <span>删除订阅</span>
+                  <span>{t.common.delete}</span>
                 </button>
               </div>
             )}

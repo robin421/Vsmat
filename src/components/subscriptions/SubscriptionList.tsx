@@ -1,9 +1,10 @@
 import React, { useState, useMemo } from 'react';
-import { Plus, Sparkles, CreditCard, Search, ArrowUpDown, X } from 'lucide-react';
+import { Plus, CreditCard, Search, X } from 'lucide-react';
 import { SubscriptionItem } from '../../types';
 import { SubscriptionCard } from './SubscriptionCard';
 import { getDaysUntil } from '../../lib/notifications';
 import { monthlyAmountUSD } from '../../lib/currencies';
+import { useI18n } from '../../i18n';
 
 interface SubscriptionListProps {
   subscriptions: SubscriptionItem[];
@@ -26,6 +27,7 @@ export const SubscriptionList: React.FC<SubscriptionListProps> = ({
   searchTerm = '',
   usdToCnyRate,
 }) => {
+  const { t } = useI18n();
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [filterUrgentOnly, setFilterUrgentOnly] = useState(false);
   const [localSearch, setLocalSearch] = useState('');
@@ -70,9 +72,9 @@ export const SubscriptionList: React.FC<SubscriptionListProps> = ({
 
   return (
     <div className="space-y-4">
-      {/* Airbnb Style Category Pills & Search Toolbar */}
+      {/* Category Pills & Search Toolbar */}
       <div className="flex flex-col row:flex-row row:items-center justify-between gap-3.5 pb-1">
-        {/* Left: Category Switcher (Airbnb Experiences Bar) */}
+        {/* Left: Category Switcher */}
         <div className="flex flex-wrap items-center gap-2">
           <div className="flex items-center p-1 rounded-xl bg-inset text-sm max-w-full overflow-x-auto">
             <button
@@ -83,7 +85,7 @@ export const SubscriptionList: React.FC<SubscriptionListProps> = ({
                   : 'text-muted hover:text-ink'
               }`}
             >
-              全部 ({subscriptions.length})
+              {t.subscriptions.categoryAll} ({subscriptions.length})
             </button>
             <button
               onClick={() => setSelectedCategory('ai')}
@@ -93,7 +95,7 @@ export const SubscriptionList: React.FC<SubscriptionListProps> = ({
                   : 'text-muted hover:text-ink'
               }`}
             >
-              AI 智能
+              {t.subscriptions.categoryAi}
             </button>
             <button
               onClick={() => setSelectedCategory('developer')}
@@ -103,7 +105,7 @@ export const SubscriptionList: React.FC<SubscriptionListProps> = ({
                   : 'text-muted hover:text-ink'
               }`}
             >
-              开发与工具
+              {t.subscriptions.categoryDev}
             </button>
             <button
               onClick={() => setSelectedCategory('server')}
@@ -113,7 +115,7 @@ export const SubscriptionList: React.FC<SubscriptionListProps> = ({
                   : 'text-muted hover:text-ink'
               }`}
             >
-              服务器网络
+              {t.subscriptions.categoryServer}
             </button>
           </div>
 
@@ -126,22 +128,23 @@ export const SubscriptionList: React.FC<SubscriptionListProps> = ({
                 : 'bg-white text-ink-soft hover:bg-inset border-line'
             }`}
           >
-            仅待续费 (≤7天)
+            {t.subscriptions.filterUrgent}
           </button>
         </div>
 
-        {/* Right: Search & Action Buttons (Executive Monochrome Style) */}
+        {/* Right: Search & Action Buttons */}
         <div className="flex items-center gap-2.5 flex-wrap sm:flex-nowrap">
           <select
-            aria-label="排序方式"
+            aria-label="Sort"
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
             className="field h-10 rounded-xl px-2.5 text-sm text-ink-soft outline-none shrink-0"
           >
-            <option value="date">按到期日</option>
-            <option value="price">按月均金额</option>
-            <option value="name">按名称</option>
+            <option value="date">{t.subscriptions.sortDue}</option>
+            <option value="price">{t.subscriptions.sortPrice}</option>
+            <option value="name">{t.subscriptions.sortName}</option>
           </select>
+
           {/* Quick Search Input */}
           <div className="relative flex-1 sm:w-60">
             <Search className="w-3.5 h-3.5 text-muted absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
@@ -149,7 +152,7 @@ export const SubscriptionList: React.FC<SubscriptionListProps> = ({
               type="text"
               value={localSearch}
               onChange={(e) => setLocalSearch(e.target.value)}
-              placeholder="搜索订阅名称或账号..."
+              placeholder={t.subscriptions.searchPlaceholder}
               className="field w-full h-10 pl-9 pr-8 rounded-xl text-sm text-ink placeholder:text-muted outline-none"
             />
             {localSearch && (
@@ -162,14 +165,14 @@ export const SubscriptionList: React.FC<SubscriptionListProps> = ({
             )}
           </div>
 
-          {/* Add New Subscription (Executive Primary CTA) */}
+          {/* Add New Subscription */}
           <button
             onClick={onAddNew}
             className="h-10 px-4 rounded-xl bg-brand-50 hover:bg-brand-100 text-brand-700 transition-colors font-semibold text-sm flex items-center justify-center gap-1.5 shrink-0 whitespace-nowrap"
-            title="新建订阅（支持截图智能识别与手动录入）"
+            title={t.common.newSubscription}
           >
             <Plus className="w-4 h-4 stroke-[2.5]" />
-            <span>新建订阅</span>
+            <span>{t.common.newSubscription}</span>
           </button>
         </div>
       </div>
@@ -195,10 +198,10 @@ export const SubscriptionList: React.FC<SubscriptionListProps> = ({
             <CreditCard className="w-6 h-6" />
           </div>
           <h4 className="text-base font-semibold text-ink mb-1">
-            {effectiveSearch || filterUrgentOnly ? '没有符合条件的订阅记录' : '暂无订阅记录'}
+            {effectiveSearch || filterUrgentOnly ? t.subscriptions.emptyTitleFiltered : t.subscriptions.emptyTitle}
           </h4>
           <p className="text-sm text-muted max-w-sm mx-auto mb-5">
-            点击下方“新建订阅”录入你的第一个服务，支持账单截图智能识别或手动填表。
+            {t.subscriptions.emptyDesc}
           </p>
           <div className="flex items-center justify-center gap-3">
             <button
@@ -206,7 +209,7 @@ export const SubscriptionList: React.FC<SubscriptionListProps> = ({
               className="h-10 px-5 rounded-lg btn-primary font-semibold text-sm inline-flex items-center gap-1.5"
             >
               <Plus className="w-4 h-4" />
-              <span>新建订阅</span>
+              <span>{t.subscriptions.emptyCta}</span>
             </button>
           </div>
         </div>

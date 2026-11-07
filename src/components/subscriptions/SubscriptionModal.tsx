@@ -31,6 +31,7 @@ import { recognizeSubscriptionScreenshot } from '../../lib/ocrEngine';
 import { todayLocal } from '../../lib/date';
 import { useDismiss } from '../../hooks/useDismiss';
 import { RenewalHistory } from './RenewalHistory';
+import { useI18n } from '../../i18n';
 
 interface SubscriptionModalProps {
   isOpen: boolean;
@@ -67,6 +68,7 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
   onSaveToken,
 }) => {
   useDismiss(isOpen, onClose);
+  const { t, format } = useI18n();
   // Mode selection: smart scanner or manual form
   const [entryMode, setEntryMode] = useState<'smart' | 'manual'>('smart');
   const [smartTab, setSmartTab] = useState<'image' | 'text'>('image');
@@ -332,10 +334,10 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
             </div>
             <div>
               <h3 className="text-base font-semibold text-ink">
-                {initialData ? '编辑订阅详情' : '新建订阅'}
+                {initialData ? t.subModal.titleEdit : t.subModal.titleNew}
               </h3>
               <p className="text-xs text-muted">
-                {initialData ? '修改账号、金额、到期时间与登录备忘' : '选择智能识别提取或手动填表录入'}
+                {initialData ? t.subModal.descEdit : t.subModal.descNew}
               </p>
             </div>
           </div>
@@ -360,7 +362,7 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
               }`}
             >
               <Sparkles className="hidden sm:block w-3.5 h-3.5 text-ink" />
-              <span>智能识别 (截图/发货单)</span>
+              <span>{t.subModal.tabSmart}</span>
             </button>
             <button
               type="button"
@@ -372,7 +374,7 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
               }`}
             >
               <Edit3 className="w-3.5 h-3.5 text-ink" />
-              <span>手动填写表单</span>
+              <span>{t.subModal.tabManual}</span>
             </button>
           </div>
         )}
@@ -632,12 +634,12 @@ SuperGrok 印度区 700 INR/月
                     onChange={(e) => setCycle(e.target.value as BillingCycle)}
                     className="w-full h-10 bg-white border border-line-strong focus:border-ink rounded-lg px-2 text-sm text-ink outline-none font-medium"
                   >
-                    <option value="monthly">/月</option>
-                    <option value="quarterly">/季</option>
-                    <option value="semi-annually">/半年</option>
-                    <option value="annually">/年</option>
-                    <option value="prepaid">/按量</option>
-                    <option value="lifetime">/买断</option>
+                    <option value="monthly">/{t.subModal.cycleMonthly}</option>
+                    <option value="quarterly">/{t.subModal.cycleQuarterly}</option>
+                    <option value="semi-annually">/{t.subModal.cycleSemiAnnually}</option>
+                    <option value="annually">/{t.subModal.cycleAnnually}</option>
+                    <option value="prepaid">/{t.subModal.cyclePrepaid}</option>
+                    <option value="lifetime">/{t.subModal.cycleLifetime}</option>
                   </select>
                 </div>
               </div>
@@ -660,7 +662,7 @@ SuperGrok 印度区 700 INR/月
                         : 'bg-inset text-ink border border-line-strong'
                     }`}
                   >
-                    {daysUntil <= 0 ? '今日或已逾期' : `还剩 ${daysUntil} 天`}
+                    {daysUntil <= 0 ? t.subModal.urgentBadgeToday : format(t.subModal.urgentBadgeDays, { days: daysUntil })}
                   </span>
                 )}
               </div>
@@ -841,7 +843,7 @@ SuperGrok 印度区 700 INR/月
               <button
                 type="button"
                 onClick={() => {
-                  if (confirm(`确定要删除订阅「${name || initialData.name}」吗？`)) {
+                  if (confirm(format(t.subscriptions.deleteConfirm, { name: name || initialData.name }))) {
                     onDelete(initialData.id);
                     onClose();
                   }
@@ -849,12 +851,12 @@ SuperGrok 印度区 700 INR/月
                 className="px-3.5 py-2 rounded-xl text-rose-700 hover:bg-rose-50 text-xs font-semibold flex items-center gap-1.5 transition active:scale-95"
               >
                 <Trash2 className="w-3.5 h-3.5" />
-                <span>删除订阅</span>
+                <span>{t.common.delete}</span>
               </button>
             ) : (
               <div className="text-xs text-muted flex items-center gap-1">
                 <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-                <span>端到端 AES-256 本地加密存储</span>
+                <span>AES-256</span>
               </div>
             )}
 
@@ -864,14 +866,14 @@ SuperGrok 印度区 700 INR/月
                 onClick={onClose}
                 className="px-5 py-2.5 rounded-xl bg-white hover:bg-inset text-ink border border-line-strong text-xs font-semibold transition"
               >
-                取消
+                {t.common.cancel}
               </button>
               <button
                 type="submit"
                 disabled={ocrLoading || !name.trim()}
                 className="h-10 px-5 rounded-lg bg-brand-700 hover:bg-brand-800 disabled:opacity-40 disabled:cursor-not-allowed text-white font-semibold text-xs flex items-center gap-1.5 transition active:scale-95"
               >
-                <span>{initialData ? '保存修改' : '确认并录入订阅'}</span>
+                <span>{initialData ? t.common.save : t.common.confirm}</span>
                 <ArrowRight className="w-3.5 h-3.5 text-white" />
               </button>
             </div>

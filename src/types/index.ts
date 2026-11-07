@@ -78,6 +78,7 @@ export interface AppSettings {
   usdToCnyRate: number;
   autoLockMinutes: number;
   biometricsEnabled?: boolean;
+  language?: 'zh' | 'en' | 'ja' | 'ko';
 }
 
 export interface AppData {

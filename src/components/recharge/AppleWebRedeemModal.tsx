@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { X, ShieldCheck, Copy, Check, ExternalLink, Globe, Lock, Eye, EyeOff, Sparkles, CheckCircle2 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useDismiss, closeOnBackdrop } from '../../hooks/useDismiss';
+import { useI18n } from '../../i18n';
 
 interface AppleWebRedeemModalProps {
   isOpen: boolean;
@@ -21,6 +22,8 @@ export const AppleWebRedeemModal: React.FC<AppleWebRedeemModalProps> = ({
   onConfirmRecharged,
 }) => {
   useDismiss(isOpen, onClose);
+  const { t } = useI18n();
+
   const [showPassword, setShowPassword] = useState(false);
   const [copiedEmail, setCopiedEmail] = useState(false);
   const [copiedPassword, setCopiedPassword] = useState(false);
@@ -99,153 +102,119 @@ export const AppleWebRedeemModal: React.FC<AppleWebRedeemModalProps> = ({
         {/* Header */}
         <div className="flex items-start justify-between pb-4 border-b border-line">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-brand-700 border border-ink/10 flex items-center justify-center text-white">
-              <ShieldCheck className="w-6 h-6" />
+            <div className="w-10 h-10 rounded-2xl bg-[#0071E3] text-white flex items-center justify-center font-bold text-lg">
+              
             </div>
             <div>
               <div className="flex items-center gap-2">
                 <h3 className="text-base font-semibold text-ink">
-                  Apple 礼品卡网页充值助手
+                  {t.vouchers.appleWebModalTitle}
                 </h3>
-                <span className="text-xs px-2.5 py-0.5 rounded-full bg-inset text-ink font-semibold border border-line-strong">
-                  免退系统号
-                </span>
               </div>
               <p className="text-xs text-muted mt-0.5">
-                在浏览器中直接登录目标 Apple ID 兑换，无需退出电脑系统账号
+                {t.vouchers.appleWebModalDesc}
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
+            aria-label={t.common.close}
             className="w-8 h-8 rounded-full border border-line-strong hover:border-ink text-muted hover:text-ink hover:bg-inset flex items-center justify-center transition"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
-        {/* Informative Security Banner */}
-        <div className="mt-4 p-3.5 rounded-xl bg-inset/70 border border-line text-xs text-ink leading-relaxed flex items-start gap-2.5">
-          <Globe className="w-4 h-4 text-ink-soft shrink-0 mt-0.5" />
-          <div>
-            <strong>无需退出当前 Mac 的日常 iCloud 账号：</strong>
-            系统将在浏览器中打开 Apple 官方 Web 兑换通道。在网页中输入下方为您准备好的目标美区账号即可兑换，绝不混淆或充错！
-          </div>
-        </div>
-
-        {/* Credentials Card (1Password Style) */}
-        <div className="mt-4 rounded-xl border border-line/80 bg-inset/60 p-4 space-y-3">
-          {/* Target Apple ID Email */}
-          <div className="flex items-center justify-between text-xs">
-            <span className="text-muted font-medium">目标 Apple ID 账号:</span>
-            <div className="flex items-center gap-2">
-              <span className="font-mono font-semibold text-ink bg-white px-2.5 py-1 rounded-lg border border-line">
-                {accountEmail} <span className="text-ink-soft font-normal">🇺🇸 美区</span>
+        {/* Step Guide List */}
+        <div className="mt-4 space-y-3">
+          {/* Step 1: Voucher Code Copy */}
+          <div className="p-3.5 rounded-2xl bg-inset border border-line space-y-2">
+            <div className="flex items-center justify-between text-xs">
+              <span className="font-semibold text-ink flex items-center gap-1.5">
+                <span className="w-4 h-4 rounded-full bg-brand-700 text-white flex items-center justify-center text-[10px]">1</span>
+                <span>{t.vouchers.appleStep1}</span>
               </span>
+              <span className="text-muted font-mono">{cleanCode.length} chars</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="flex-1 font-mono text-xs sm:text-sm tracking-wider font-bold text-ink bg-white px-3 py-2 rounded-xl border border-line-strong select-all truncate">
+                {cleanCode || 'NO-CODE-PROVIDED'}
+              </div>
               <button
                 type="button"
-                onClick={handleCopyEmail}
-                className="px-2.5 py-1 rounded-lg bg-white hover:bg-inset border border-line text-ink-soft text-xs font-medium transition flex items-center gap-1"
-                title="一键复制账号"
+                onClick={handleCopyCode}
+                className="h-9 px-3 rounded-xl bg-brand-700 hover:bg-brand-800 text-white text-xs font-semibold flex items-center gap-1 transition shrink-0"
               >
-                {copiedEmail ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
-                <span>{copiedEmail ? '已复制' : '复制账号'}</span>
+                {copiedCode ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                <span>{copiedCode ? t.common.copied : t.vouchers.appleCopyCode}</span>
               </button>
             </div>
           </div>
 
-          {/* Password */}
-          {passwordNote && (
-            <div className="flex items-center justify-between text-xs pt-2.5 border-t border-line/60">
-              <span className="text-muted font-medium">目标账号密码:</span>
-              <div className="flex items-center gap-2">
-                <span className="font-mono text-ink bg-white px-2.5 py-1 rounded-lg border border-line">
-                  {showPassword ? passwordNote : '••••••••••••'}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="p-1 rounded text-subtle hover:text-muted hover:bg-white"
-                  title={showPassword ? '隐藏' : '显示'}
-                >
-                  {showPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
-                </button>
-                <button
-                  type="button"
-                  onClick={handleCopyPassword}
-                  className="px-2.5 py-1 rounded-lg bg-white hover:bg-inset border border-line text-ink-soft text-xs font-medium transition flex items-center gap-1"
-                  title="一键复制密码"
-                >
-                  {copiedPassword ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
-                  <span>{copiedPassword ? '已复制' : '复制密码'}</span>
-                </button>
+          {/* Credentials info if account available */}
+          {accountEmail && (
+            <div className="p-3.5 rounded-2xl bg-white border border-line space-y-2">
+              <div className="text-xs font-semibold text-ink flex items-center gap-1.5">
+                <Globe className="w-3.5 h-3.5 text-brand-700" />
+                <span>目标订阅账号凭证（方便网页登录时对照）</span>
+              </div>
+              <div className="space-y-1.5 text-xs">
+                <div className="flex items-center justify-between gap-2 p-2 rounded-lg bg-inset font-medium">
+                  <span className="text-muted truncate select-all">{accountEmail}</span>
+                  <button onClick={handleCopyEmail} className="text-brand-700 hover:text-brand-800 font-semibold flex items-center gap-1 shrink-0">
+                    {copiedEmail ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
+                    <span>{copiedEmail ? t.common.copied : t.common.copy}</span>
+                  </button>
+                </div>
+                {passwordNote && (
+                  <div className="flex items-center justify-between gap-2 p-2 rounded-lg bg-inset font-medium">
+                    <span className="text-muted truncate select-all">
+                      {showPassword ? passwordNote : '••••••••••••'}
+                    </span>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <button onClick={() => setShowPassword(!showPassword)} className="text-muted hover:text-ink">
+                        {showPassword ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
+                      </button>
+                      <button onClick={handleCopyPassword} className="text-brand-700 hover:text-brand-800 font-semibold flex items-center gap-1">
+                        {copiedPassword ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
+                        <span>{copiedPassword ? t.common.copied : t.common.copy}</span>
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           )}
 
-          {/* Gift Card Code */}
-          <div className="flex items-center justify-between text-xs pt-2.5 border-t border-line/60">
-            <span className="text-muted font-medium">礼品卡兑换码:</span>
-            <div className="flex items-center gap-2">
-              <span className="font-mono font-semibold text-ink bg-white px-2.5 py-1 rounded-lg border border-line tracking-wider">
-                {cleanCode}
-              </span>
-              <button
-                type="button"
-                onClick={handleCopyCode}
-                className="px-2.5 py-1 rounded-lg bg-white hover:bg-inset border border-line text-ink-soft text-xs font-medium transition flex items-center gap-1"
-              >
-                {copiedCode ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
-                <span>{copiedCode ? '已复制' : '复制券码'}</span>
-              </button>
-            </div>
+          {/* Action Step 2 & Step 3 */}
+          <div className="pt-2 space-y-2.5">
+            <button
+              type="button"
+              onClick={handleOpenWebRedeem}
+              className="w-full h-11 rounded-xl bg-[#0071E3] hover:bg-[#0077ED] text-white font-semibold text-sm flex items-center justify-center gap-2 transition active:scale-95 shadow-sm"
+            >
+              <span>{t.vouchers.appleOpenPage}</span>
+              <ExternalLink className="w-4 h-4" />
+            </button>
+
+            <button
+              type="button"
+              onClick={handleCopyIncognitoLink}
+              className="w-full h-9 rounded-xl border border-line text-xs font-semibold text-muted hover:text-ink hover:bg-inset transition flex items-center justify-center gap-1.5"
+            >
+              <Copy className="w-3.5 h-3.5" />
+              <span>{copiedUrl ? '链接已复制，请粘贴到无痕窗口打开' : '复制直达链接（建议在浏览器无痕/隐私窗口打开）'}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={handleComplete}
+              className="w-full h-10 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-semibold text-xs flex items-center justify-center gap-1.5 transition active:scale-95 border border-emerald-200 mt-2"
+            >
+              <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+              <span>{t.vouchers.appleConfirmDone}</span>
+            </button>
           </div>
-        </div>
-
-        {/* Primary Action Buttons */}
-        <div className="mt-5 space-y-2.5">
-          {/* Main CTA */}
-          <button
-            type="button"
-            onClick={handleOpenWebRedeem}
-            className="w-full h-11 rounded-lg btn-rausch text-white font-semibold text-sm transition flex items-center justify-center gap-2 active:scale-95"
-          >
-            <ExternalLink className="w-4 h-4 text-white" />
-            <span>在新标签页打开 Apple 官方兑换页</span>
-          </button>
-
-          {/* Incognito Helper */}
-          <button
-            type="button"
-            onClick={handleCopyIncognitoLink}
-            className="w-full py-2.5 px-3 rounded-xl bg-white hover:bg-inset text-ink font-semibold text-xs border border-line-strong hover:border-ink transition flex items-center justify-center gap-1.5"
-            title="复制带码链接，可在浏览器的无痕/隐私窗口粘贴打开"
-          >
-            {copiedUrl ? (
-              <>
-                <Check className="w-3.5 h-3.5 text-emerald-600" />
-                <span className="text-emerald-700 font-semibold">直达链接已复制！去浏览器按 Cmd+Shift+N 打开无痕窗口即可粘贴！</span>
-              </>
-            ) : (
-              <>
-                <Copy className="w-3.5 h-3.5 text-muted" />
-                <span>复制链接并在浏览器【无痕/隐私窗口】打开 (推荐，账号完全隔离)</span>
-              </>
-            )}
-          </button>
-        </div>
-
-        {/* Finish / Auto-Advance renewal */}
-        <div className="mt-4 pt-3.5 border-t border-line flex items-center justify-between text-xs">
-          <span className="text-muted">已在网页完成兑换充值？</span>
-          <button
-            type="button"
-            onClick={handleComplete}
-            className="h-9 px-3.5 rounded-lg bg-brand-700 hover:bg-brand-800 text-white font-semibold transition flex items-center gap-1.5 active:scale-95"
-          >
-            <CheckCircle2 className="w-3.5 h-3.5 text-white" />
-            <span>我已完成充值 (自动顺延下期续费)</span>
-          </button>
         </div>
       </div>
     </div>

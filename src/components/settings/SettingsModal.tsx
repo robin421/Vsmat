@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { AlertCircle, Check, Fingerprint, KeyRound, Settings, X } from 'lucide-react';
+import { AlertCircle, Check, Fingerprint, KeyRound, Settings, X, Globe } from 'lucide-react';
 import { AppSettings } from '../../types';
 import { useDismiss } from '../../hooks/useDismiss';
 import { MIN_PASSWORD_LENGTH, STRENGTH_LABELS, passwordStrength } from '../../lib/password';
 import { requestNotificationPermission } from '../../lib/notifications';
 import { BiometricInfo } from '../../lib/biometrics';
+import { useI18n, SUPPORTED_LANGUAGES, SupportedLanguage } from '../../i18n';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -19,14 +20,6 @@ interface SettingsModalProps {
   biometricsInfo?: BiometricInfo;
   onToggleBiometrics?: (enable: boolean) => Promise<boolean>;
 }
-
-const AUTO_LOCK_OPTIONS = [
-  { value: 0, label: '从不' },
-  { value: 5, label: '5 分钟' },
-  { value: 15, label: '15 分钟' },
-  { value: 30, label: '30 分钟' },
-  { value: 60, label: '60 分钟' },
-];
 
 const inputClass = 'field w-full h-10 rounded-lg px-3 text-sm outline-none';
 const rowClass = 'flex items-center justify-between gap-4 py-3';
@@ -57,6 +50,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   onToggleBiometrics,
 }) => {
   useDismiss(isOpen, onClose);
+  const { t, format, language, setLanguage } = useI18n();
 
   const [rate, setRate] = useState(String(settings.usdToCnyRate));
   const [notifyHint, setNotifyHint] = useState<string | null>(null);
@@ -71,15 +65,28 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
   if (!isOpen) return null;
 
+  const autoLockOptions = [
+    { value: 0, label: t.settings.lockNever },
+    { value: 5, label: t.settings.lock5m },
+    { value: 15, label: t.settings.lock15m },
+    { value: 30, label: t.settings.lock30m },
+    { value: 60, label: t.settings.lock60m },
+  ];
+
+  const handleLanguageChange = (code: SupportedLanguage) => {
+    setLanguage(code);
+    onChangeSettings({ language: code });
+  };
+
   const handleToggleBio = async (on: boolean) => {
     if (!onToggleBiometrics) return;
     setBioHint(null);
     try {
-      if (on) setBioHint('请轻触触控 ID 完成录入...');
+      if (on) setBioHint(t.auth.bioBtn);
       await onToggleBiometrics(on);
-      setBioHint(on ? '触控 ID 解锁已成功开启' : '触控 ID 解锁已关闭');
+      setBioHint(on ? t.settings.biometricsDesc : t.settings.biometricsTitle);
     } catch (err) {
-      setBioHint(err instanceof Error ? err.message : '触控 ID 设置取消');
+      setBioHint(err instanceof Error ? err.message : t.auth.bioFailed);
     }
   };
 
@@ -92,7 +99,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   const handleNotifications = async (on: boolean) => {
     setNotifyHint(null);
     if (on && !(await requestNotificationPermission())) {
-      setNotifyHint('浏览器未授予通知权限，请在地址栏的网站设置中允许');
+      setNotifyHint(t.reminder.notificationDenied);
       return;
     }
     onChangeSettings({ enableBrowserNotifications: on });
@@ -102,9 +109,11 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
     e.preventDefault();
     setPwError(null);
     setPwDone(false);
-    if (next.length < MIN_PASSWORD_LENGTH) return setPwError(`新主密码至少需要 ${MIN_PASSWORD_LENGTH} 位`);
-    if (next !== confirmNext) return setPwError('两次输入的新主密码不一致');
-    if (next === current) return setPwError('新主密码不能与当前主密码相同');
+    if (next.length < MIN_PASSWORD_LENGTH) {
+      return setPwError(format(t.settings.errMinLength, { min: MIN_PASSWORD_LENGTH }));
+    }
+    if (next !== confirmNext) return setPwError(t.settings.errMismatch);
+    if (next === current) return setPwError(t.settings.errSame);
 
     setSaving(true);
     try {
@@ -114,29 +123,29 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
         setConfirmNext('');
         setPwDone(true);
       } else {
-        setPwError('当前主密码不正确');
+        setPwError(t.settings.errCurrentWrong);
       }
     } catch (err) {
-      setPwError(err instanceof Error ? err.message : '修改失败');
+      setPwError(err instanceof Error ? err.message : t.auth.pwWrong);
     } finally {
       setSaving(false);
     }
   };
 
   return (
-    <div role="dialog" aria-modal="true" aria-label="设置" className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-brand-950/40 backdrop-blur-sm animate-fadeIn">
+    <div role="dialog" aria-modal="true" aria-label={t.settings.title} className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-brand-950/40 backdrop-blur-sm animate-fadeIn">
       <div className="w-full max-w-lg rounded-3xl surface-pop p-5 sm:p-7 max-h-[92vh] overflow-y-auto text-ink">
         <div className="flex items-center justify-between pb-4 border-b border-line">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-brand-50 text-brand-700 flex items-center justify-center">
               <Settings className="w-5 h-5" />
             </div>
-            <h2 className="text-lg font-bold tracking-tight">设置</h2>
+            <h2 className="text-lg font-bold tracking-tight">{t.settings.title}</h2>
           </div>
           <button
             type="button"
             onClick={onClose}
-            aria-label="关闭"
+            aria-label={t.common.close}
             className="w-8 h-8 rounded-full border border-line-strong hover:border-ink text-muted hover:text-ink flex items-center justify-center transition-colors"
           >
             <X className="w-4 h-4" />
@@ -144,21 +153,44 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
         </div>
 
         <div className="divide-y divide-line">
+          {/* Display Language */}
           <div className={rowClass}>
             <div className="min-w-0">
-              <div className="text-sm font-medium">自动锁定</div>
-              <div className="text-xs text-muted mt-0.5">一段时间没有操作后锁定保险箱</div>
+              <div className="text-sm font-medium flex items-center gap-1.5">
+                <Globe className="w-4 h-4 text-brand-700" />
+                <span>{t.settings.languageTitle}</span>
+              </div>
+              <div className="text-xs text-muted mt-0.5">{t.settings.languageDesc}</div>
             </div>
             <select
-              aria-label="自动锁定"
+              aria-label={t.settings.languageTitle}
+              value={language}
+              onChange={(e) => handleLanguageChange(e.target.value as SupportedLanguage)}
+              className="field h-9 rounded-lg px-2 text-sm outline-none shrink-0 font-medium"
+            >
+              {SUPPORTED_LANGUAGES.map((lang) => (
+                <option key={lang.code} value={lang.code}>
+                  {lang.flag} {lang.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className={rowClass}>
+            <div className="min-w-0">
+              <div className="text-sm font-medium">{t.settings.autoLockTitle}</div>
+              <div className="text-xs text-muted mt-0.5">{t.settings.autoLockDesc}</div>
+            </div>
+            <select
+              aria-label={t.settings.autoLockTitle}
               value={settings.autoLockMinutes}
               onChange={(e) => onChangeSettings({ autoLockMinutes: Number(e.target.value) })}
               className="field h-9 rounded-lg px-2 text-sm outline-none shrink-0"
             >
-              {!AUTO_LOCK_OPTIONS.some((o) => o.value === settings.autoLockMinutes) && (
-                <option value={settings.autoLockMinutes}>{settings.autoLockMinutes} 分钟</option>
+              {!autoLockOptions.some((o) => o.value === settings.autoLockMinutes) && (
+                <option value={settings.autoLockMinutes}>{settings.autoLockMinutes} min</option>
               )}
-              {AUTO_LOCK_OPTIONS.map((o) => (
+              {autoLockOptions.map((o) => (
                 <option key={o.value} value={o.value}>{o.label}</option>
               ))}
             </select>
@@ -166,10 +198,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
           <div className={rowClass}>
             <div className="min-w-0">
-              <div className="text-sm font-medium">记住解锁状态</div>
-              <div className="text-xs text-muted mt-0.5">刷新页面后无需重新输入主密码</div>
+              <div className="text-sm font-medium">{t.settings.rememberTitle}</div>
+              <div className="text-xs text-muted mt-0.5">{t.settings.rememberDesc}</div>
             </div>
-            <Toggle label="记住解锁状态" checked={settings.rememberUnlocked} onChange={onChangeRemember} />
+            <Toggle label={t.settings.rememberTitle} checked={settings.rememberUnlocked} onChange={onChangeRemember} />
           </div>
 
           {isBiometricsSupported && onToggleBiometrics && (
@@ -177,14 +209,14 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               <div className="min-w-0">
                 <div className="text-sm font-medium flex items-center gap-1.5">
                   <Fingerprint className="w-4 h-4 text-brand-700" />
-                  <span>{biometricsInfo?.name || '触控 ID (Touch ID) 解锁'}</span>
+                  <span>{biometricsInfo?.name || t.settings.biometricsTitle}</span>
                 </div>
                 <div className="text-xs text-muted mt-0.5">
-                  {bioHint || biometricsInfo?.description || '轻触触控 ID 即可秒速解锁保险箱'}
+                  {bioHint || biometricsInfo?.description || t.settings.biometricsDesc}
                 </div>
               </div>
               <Toggle
-                label={biometricsInfo?.short || '触控 ID 解锁'}
+                label={biometricsInfo?.short || t.settings.biometricsTitle}
                 checked={isBiometricsEnrolled || !!settings.biometricsEnabled}
                 onChange={(v) => void handleToggleBio(v)}
               />
@@ -193,22 +225,22 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
           <div className={rowClass}>
             <div className="min-w-0">
-              <div className="text-sm font-medium">续费桌面通知</div>
-              <div className="text-xs text-muted mt-0.5">{notifyHint || '解锁时提醒 3 天内到期的订阅'}</div>
+              <div className="text-sm font-medium">{t.settings.notificationsTitle}</div>
+              <div className="text-xs text-muted mt-0.5">{notifyHint || t.settings.notificationsDesc}</div>
             </div>
-            <Toggle label="续费桌面通知" checked={settings.enableBrowserNotifications} onChange={(v) => void handleNotifications(v)} />
+            <Toggle label={t.settings.notificationsTitle} checked={settings.enableBrowserNotifications} onChange={(v) => void handleNotifications(v)} />
           </div>
 
           <div className={rowClass}>
             <div className="min-w-0">
-              <div className="text-sm font-medium">美元兑人民币汇率</div>
-              <div className="text-xs text-muted mt-0.5">其它币种使用内置参考汇率</div>
+              <div className="text-sm font-medium">{t.settings.exchangeRateTitle}</div>
+              <div className="text-xs text-muted mt-0.5">{t.settings.exchangeRateDesc}</div>
             </div>
             <input
               type="number"
               step="0.01"
               min="0.01"
-              aria-label="美元兑人民币汇率"
+              aria-label={t.settings.exchangeRateTitle}
               value={rate}
               onChange={(e) => setRate(e.target.value)}
               onBlur={commitRate}
@@ -219,17 +251,44 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
         <form onSubmit={handlePassword} className="pt-4 border-t border-line space-y-2.5">
           <div>
-            <div className="text-sm font-medium">修改主密码</div>
-            <div className="text-xs text-muted mt-0.5">已导出的备份不受影响，仍需用当时的主密码打开。</div>
+            <div className="text-sm font-medium">{t.settings.passwordSection}</div>
+            <div className="text-xs text-muted mt-0.5">{t.settings.passwordSectionDesc}</div>
           </div>
-          <input type="password" autoComplete="current-password" aria-label="当前主密码" placeholder="当前主密码" value={current} onChange={(e) => setCurrent(e.target.value)} className={inputClass} />
-          <input type="password" autoComplete="new-password" aria-label="新主密码" placeholder="新主密码" value={next} onChange={(e) => setNext(e.target.value)} className={inputClass} />
+          <input
+            type="password"
+            autoComplete="current-password"
+            aria-label={t.settings.currentPwPlaceholder}
+            placeholder={t.settings.currentPwPlaceholder}
+            value={current}
+            onChange={(e) => setCurrent(e.target.value)}
+            className={inputClass}
+          />
+          <input
+            type="password"
+            autoComplete="new-password"
+            aria-label={t.settings.newPwPlaceholder}
+            placeholder={t.settings.newPwPlaceholder}
+            value={next}
+            onChange={(e) => setNext(e.target.value)}
+            className={inputClass}
+          />
           {next && (
             <p className="text-xs text-muted" aria-live="polite">
-              强度：{STRENGTH_LABELS[passwordStrength(next)]}（至少 {MIN_PASSWORD_LENGTH} 位）。忘记主密码将无法恢复数据。
+              {format(t.settings.pwStrength, {
+                strength: STRENGTH_LABELS[passwordStrength(next)],
+                min: MIN_PASSWORD_LENGTH,
+              })}
             </p>
           )}
-          <input type="password" autoComplete="new-password" aria-label="确认新主密码" placeholder="再次输入新主密码" value={confirmNext} onChange={(e) => setConfirmNext(e.target.value)} className={inputClass} />
+          <input
+            type="password"
+            autoComplete="new-password"
+            aria-label={t.settings.confirmPwPlaceholder}
+            placeholder={t.settings.confirmPwPlaceholder}
+            value={confirmNext}
+            onChange={(e) => setConfirmNext(e.target.value)}
+            className={inputClass}
+          />
 
           {pwError && (
             <div role="alert" className="p-2.5 rounded-lg bg-rose-50 text-xs text-rose-700 font-medium flex items-center gap-2">
@@ -240,7 +299,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           {pwDone && (
             <div role="status" className="p-2.5 rounded-lg bg-emerald-50 text-xs text-emerald-800 font-medium flex items-center gap-2">
               <Check className="w-4 h-4 shrink-0" />
-              <span>主密码已修改，下次解锁请使用新主密码</span>
+              <span>{t.settings.pwSuccess}</span>
             </div>
           )}
 
@@ -250,7 +309,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             className="w-full h-10 rounded-lg btn-primary disabled:bg-brand-200 disabled:cursor-not-allowed font-semibold text-sm flex items-center justify-center gap-1.5"
           >
             <KeyRound className="w-4 h-4" />
-            <span>{saving ? '处理中...' : '修改主密码'}</span>
+            <span>{saving ? t.settings.pwProcessing : t.settings.pwSubmit}</span>
           </button>
         </form>
       </div>
