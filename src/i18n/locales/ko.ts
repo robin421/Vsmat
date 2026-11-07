@@ -366,5 +366,7 @@ export const ko: TranslationDictionary = {
     migrateBtn: '이전 도메인에서 원클릭 데이터 동기화',
     successToast: '🎉 이전 도메인의 데이터를 성공적으로 가져왔습니다! 마스터 비밀번호로 잠금을 해제하세요.',
     noDataFound: '이전 도메인에서 기존 데이터를 찾을 수 없습니다.',
+    settingsSectionTitle: '도메인 간 데이터 동기화',
+    settingsSectionDesc: '이전 vsmat.pages.dev에서 데이터를 등록하셨다면 클릭하여 현재 도메인으로 자동 동기화할 수 있습니다.',
   },
 };

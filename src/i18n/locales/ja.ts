@@ -366,5 +366,7 @@ export const ja: TranslationDictionary = {
     migrateBtn: '旧ドメインからワンクリックでデータを同期',
     successToast: '🎉 旧ドメインからのデータ移行が完了しました！マスターパスワードでロック解除してください。',
     noDataFound: '旧ドメインに既存のデータは見つかりませんでした。',
+    settingsSectionTitle: 'クロスドメインデータ同期',
+    settingsSectionDesc: '以前 vsmat.pages.dev でデータを登録していた場合、クリックするとこのドメインに自動で同期します。',
   },
 };

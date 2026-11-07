@@ -393,5 +393,7 @@ export interface TranslationDictionary {
     migrateBtn: string;
     successToast: string;
     noDataFound: string;
+    settingsSectionTitle: string;
+    settingsSectionDesc: string;
   };
 }

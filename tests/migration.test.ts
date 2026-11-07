@@ -103,7 +103,6 @@ describe('startMigrationToNewDomain', () => {
     localStorage.setItem(STORAGE_KEY, rawVault);
     localStorage.setItem(STORAGE_LANG_KEY, 'ko');
 
-    const deleteLocation = vi.fn();
     delete (window as unknown as { location?: unknown }).location;
     window.location = { href: '', origin: LEGACY_ORIGIN } as unknown as Location;
 

@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { AlertCircle, Check, Fingerprint, KeyRound, Settings, X, Globe } from 'lucide-react';
+import { AlertCircle, Check, Fingerprint, KeyRound, Settings, X, Globe, ArrowLeftRight } from 'lucide-react';
 import { AppSettings } from '../../types';
 import { useDismiss } from '../../hooks/useDismiss';
 import { MIN_PASSWORD_LENGTH, STRENGTH_LABELS, passwordStrength } from '../../lib/password';
 import { requestNotificationPermission } from '../../lib/notifications';
 import { BiometricInfo } from '../../lib/biometrics';
 import { useI18n, SUPPORTED_LANGUAGES, SupportedLanguage } from '../../i18n';
+import { isLegacyDomain, requestMigrationFromOldDomain } from '../../lib/migration';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -312,6 +313,28 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             <span>{saving ? t.settings.pwProcessing : t.settings.pwSubmit}</span>
           </button>
         </form>
+
+        {!isLegacyDomain() && (
+          <div className="pt-4 border-t border-line space-y-2.5">
+            <div>
+              <div className="text-sm font-medium flex items-center gap-1.5">
+                <ArrowLeftRight className="w-4 h-4 text-amber-700" />
+                <span>{t.migration.settingsSectionTitle}</span>
+              </div>
+              <div className="text-xs text-muted mt-0.5">
+                {t.migration.settingsSectionDesc}
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => requestMigrationFromOldDomain()}
+              className="w-full h-10 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 font-semibold text-sm flex items-center justify-center gap-1.5 transition active:scale-95 cursor-pointer"
+            >
+              <ArrowLeftRight className="w-4 h-4 text-amber-700" />
+              <span>{t.migration.migrateBtn}</span>
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

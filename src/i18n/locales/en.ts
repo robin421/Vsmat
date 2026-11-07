@@ -366,5 +366,7 @@ export const en: TranslationDictionary = {
     migrateBtn: '1-Click sync data from old domain',
     successToast: '🎉 Data successfully migrated from old domain! Enter your master password to unlock.',
     noDataFound: 'No existing vault data found on the old domain.',
+    settingsSectionTitle: 'Cross-Domain Data Sync',
+    settingsSectionDesc: 'If you previously entered data on vsmat.pages.dev, click to automatically pull and sync it to this domain.',
   },
 };

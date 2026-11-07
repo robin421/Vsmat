@@ -1,10 +1,11 @@
 import React, { useState, useMemo } from 'react';
-import { Plus, CreditCard, Search, X } from 'lucide-react';
+import { Plus, CreditCard, Search, X, ArrowLeftRight } from 'lucide-react';
 import { SubscriptionItem } from '../../types';
 import { SubscriptionCard } from './SubscriptionCard';
 import { getDaysUntil } from '../../lib/notifications';
 import { monthlyAmountUSD } from '../../lib/currencies';
 import { useI18n } from '../../i18n';
+import { isLegacyDomain, requestMigrationFromOldDomain } from '../../lib/migration';
 
 interface SubscriptionListProps {
   subscriptions: SubscriptionItem[];
@@ -203,7 +204,7 @@ export const SubscriptionList: React.FC<SubscriptionListProps> = ({
           <p className="text-sm text-muted max-w-sm mx-auto mb-5">
             {t.subscriptions.emptyDesc}
           </p>
-          <div className="flex items-center justify-center gap-3">
+          <div className="flex flex-wrap items-center justify-center gap-3">
             <button
               onClick={onAddNew}
               className="h-10 px-5 rounded-lg btn-primary font-semibold text-sm inline-flex items-center gap-1.5"
@@ -211,6 +212,16 @@ export const SubscriptionList: React.FC<SubscriptionListProps> = ({
               <Plus className="w-4 h-4" />
               <span>{t.subscriptions.emptyCta}</span>
             </button>
+            {!isLegacyDomain() && subscriptions.length === 0 && (
+              <button
+                type="button"
+                onClick={() => requestMigrationFromOldDomain()}
+                className="h-10 px-4 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 font-semibold text-sm inline-flex items-center gap-1.5 transition active:scale-95 cursor-pointer"
+              >
+                <ArrowLeftRight className="w-4 h-4 text-amber-700" />
+                <span>{t.migration.migrateBtn}</span>
+              </button>
+            )}
           </div>
         </div>
       )}

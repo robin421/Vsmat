@@ -366,5 +366,7 @@ export const zh: TranslationDictionary = {
     migrateBtn: '从旧域名一键无缝同步数据',
     successToast: '🎉 历史数据已从旧域名成功同步！请输入主密码解锁。',
     noDataFound: '未在旧域名检测到已存储的保险箱数据。',
+    settingsSectionTitle: '跨域名数据同步',
+    settingsSectionDesc: '如果之前在旧域名 vsmat.pages.dev 录入过数据，点击将自动拉取并迁移至当前新域名。',
   },
 };
