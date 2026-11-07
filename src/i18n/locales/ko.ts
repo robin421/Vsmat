@@ -318,6 +318,11 @@ export const ko: TranslationDictionary = {
     pwMinLength: '마스터 비밀번호는 최소 {min}자리 이상이어야 합니다',
     pwMismatch: '입력한 비밀번호가 일치하지 않습니다',
     pwWrong: '마스터 비밀번호가 올바르지 않아 복호화에 실패했습니다',
+    bioWaiting: 'Touch ID / 생체 인증 대기 중',
+    bioWaitingDesc: '생체 인증이 우선 호출되었습니다. 센서를 터치하여 즉시 잠금을 해제하세요.',
+    bioTouchToUnlock: 'Touch ID로 잠금 해제',
+    switchToPassword: '마스터 비밀번호로 잠금 해제',
+    switchToBio: 'Touch ID / 생체 인증으로 잠금 해제',
   },
 
   security: {
@@ -368,5 +373,9 @@ export const ko: TranslationDictionary = {
     noDataFound: '이전 도메인에서 기존 데이터를 찾을 수 없습니다.',
     settingsSectionTitle: '도메인 간 데이터 동기화',
     settingsSectionDesc: '이전 vsmat.pages.dev에서 데이터를 등록하셨다면 클릭하여 현재 도메인으로 자동 동기화할 수 있습니다.',
+    alreadyHaveDataTitle: '이전 도메인에 등록한 데이터가 있으신가요?',
+    alreadyHaveDataDesc: '현재 도메인은 공식 새 주소 vsmat.aisubdeal.com입니다. 이전 vsmat.pages.dev에 저장된 데이터가 있다면 아래 버튼을 눌러 즉시 동기화 및 복원할 수 있습니다.',
+    orStartFresh: '또는 신규 사용자로 새로 시작하기',
+    emptySearchOldDomainToast: '이전 도메인에서 저장된 데이터를 찾을 수 없습니다. 다른 브라우저나 시크릿 창에서 입력하셨다면 해당 창에서 열어주세요.',
   },
 };

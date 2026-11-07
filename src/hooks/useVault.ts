@@ -116,8 +116,18 @@ export function useVault() {
   );
 
   const setup = useCallback(
-    async (password: string, remember: boolean) => {
+    async (password: string, remember: boolean, enableBiometrics?: boolean) => {
       const saved = await setupVault(dataRef.current, password, remember);
+      if (enableBiometrics) {
+        try {
+          const enrolled = await setBiometricsEnabled(true);
+          saved.settings.biometricsEnabled = enrolled;
+          setIsBiometricsEnrolled(enrolled);
+          await persistVault(saved);
+        } catch (err) {
+          console.warn('Initial biometric setup deferred:', err);
+        }
+      }
       applyData(saved);
       applyStatus('ready');
     },
@@ -131,6 +141,24 @@ export function useVault() {
         const loaded = await unlockVault(password, remember);
         applyData(loaded);
         applyStatus('ready');
+
+        // If user previously had biometrics enabled (e.g. before migrating to new domain),
+        // but current origin lacks registered credentials, seamlessly enroll on unlock user gesture!
+        if (loaded.settings.biometricsEnabled) {
+          const [supported, enrolled] = await Promise.all([
+            checkBiometricsSupported(),
+            hasBiometricsConfigured(),
+          ]);
+          if (supported && !enrolled) {
+            try {
+              const ok = await setBiometricsEnabled(true);
+              setIsBiometricsEnrolled(ok);
+            } catch (bioErr) {
+              console.warn('Seamless biometric enrollment deferred:', bioErr);
+            }
+          }
+        }
+
         return true;
       } catch (err) {
         if (err instanceof WrongPasswordError) return false;

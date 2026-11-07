@@ -318,6 +318,11 @@ export const zh: TranslationDictionary = {
     pwMinLength: '主密码至少需要 {min} 位',
     pwMismatch: '两次输入的密码不一致',
     pwWrong: '主密码错误，解密失败',
+    bioWaiting: '正在验证触控 ID / 指纹',
+    bioWaitingDesc: '已优先调起系统生物识别，轻触传感器即可秒速解锁',
+    bioTouchToUnlock: '轻触触控 ID 解锁',
+    switchToPassword: '使用主密码解锁',
+    switchToBio: '使用触控 ID / 指纹解锁',
   },
 
   security: {
@@ -368,5 +373,9 @@ export const zh: TranslationDictionary = {
     noDataFound: '未在旧域名检测到已存储的保险箱数据。',
     settingsSectionTitle: '跨域名数据同步',
     settingsSectionDesc: '如果之前在旧域名 vsmat.pages.dev 录入过数据，点击将自动拉取并迁移至当前新域名。',
+    alreadyHaveDataTitle: '已经在旧域名录入过数据？',
+    alreadyHaveDataDesc: '当前为全新独立域名 vsmat.aisubdeal.com。若您之前在旧域名 (vsmat.pages.dev) 保存过订阅，无需重复录入，点击即可一键无损找回全部数据。',
+    orStartFresh: '或作为新用户全新开始',
+    emptySearchOldDomainToast: '未在旧域名检测到已存储的保险箱数据。如果您曾在其他浏览器或隐私窗口录入，请在该浏览器中打开。',
   },
 };

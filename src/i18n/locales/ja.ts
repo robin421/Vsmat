@@ -318,6 +318,11 @@ export const ja: TranslationDictionary = {
     pwMinLength: 'パスワードは最低 {min} 文字必要です',
     pwMismatch: '入力されたパスワードが一致しません',
     pwWrong: 'パスワードが正しくありません。復号に失敗しました。',
+    bioWaiting: 'Touch ID / 生体認証の待機中',
+    bioWaitingDesc: '生体認証を優先起動しました。センサーに触れて即座にロック解除できます。',
+    bioTouchToUnlock: 'Touch ID でロック解除',
+    switchToPassword: 'マスターパスワードで解除',
+    switchToBio: 'Touch ID / 生体認証で解除',
   },
 
   security: {
@@ -368,5 +373,9 @@ export const ja: TranslationDictionary = {
     noDataFound: '旧ドメインに既存のデータは見つかりませんでした。',
     settingsSectionTitle: 'クロスドメインデータ同期',
     settingsSectionDesc: '以前 vsmat.pages.dev でデータを登録していた場合、クリックするとこのドメインに自動で同期します。',
+    alreadyHaveDataTitle: '旧ドメインでデータを登録済みですか？',
+    alreadyHaveDataDesc: '現在は新ドメイン vsmat.aisubdeal.com です。以前 vsmat.pages.dev で登録したデータがある場合、以下をクリックするとデータを即座に同期・復元できます。',
+    orStartFresh: 'または新規ユーザーとして開始',
+    emptySearchOldDomainToast: '旧ドメインに保存されたデータが見つかりませんでした。別のブラウザやシークレットウィンドウで入力した場合は、そちらでお試しください。',
   },
 };

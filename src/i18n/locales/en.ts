@@ -318,6 +318,11 @@ export const en: TranslationDictionary = {
     pwMinLength: 'Master password must be at least {min} characters',
     pwMismatch: 'Passwords do not match',
     pwWrong: 'Incorrect master password, decryption failed',
+    bioWaiting: 'Verifying Biometrics / Touch ID',
+    bioWaitingDesc: 'Biometrics initiated. Touch your sensor to unlock instantly.',
+    bioTouchToUnlock: 'Touch Sensor to Unlock',
+    switchToPassword: 'Unlock with Master Password',
+    switchToBio: 'Unlock with Touch ID / Biometrics',
   },
 
   security: {
@@ -368,5 +373,9 @@ export const en: TranslationDictionary = {
     noDataFound: 'No existing vault data found on the old domain.',
     settingsSectionTitle: 'Cross-Domain Data Sync',
     settingsSectionDesc: 'If you previously entered data on vsmat.pages.dev, click to automatically pull and sync it to this domain.',
+    alreadyHaveDataTitle: 'Already have data on old domain?',
+    alreadyHaveDataDesc: 'This is the new official domain vsmat.aisubdeal.com. If you previously saved subscriptions on vsmat.pages.dev, click below to retrieve and restore all your data instantly.',
+    orStartFresh: 'Or start fresh as a new user',
+    emptySearchOldDomainToast: 'No existing vault data found on the old domain. If you entered data in another browser or incognito window, please open it there.',
   },
 };

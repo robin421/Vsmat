@@ -73,6 +73,7 @@ function AppContent({ vault }: AppContentProps) {
   const isInitialSetup = status === 'setup';
 
   const [showLegacyBanner, setShowLegacyBanner] = useState(false);
+  const [showEmptyMigrationToast, setShowEmptyMigrationToast] = useState(false);
   const [activeTab, setActiveTab] = useState<'subscriptions' | 'tokens' | 'vouchers' | 'analytics'>('subscriptions');
   const [searchQuery, setSearchQuery] = useState('');
   const [isSecurityModalOpen, setIsSecurityModalOpen] = useState(false);
@@ -112,6 +113,14 @@ function AppContent({ vault }: AppContentProps) {
     }
     void syncAiSubDealDataset();
     if (typeof window !== 'undefined' && window.location.search) {
+      const searchParams = new URLSearchParams(window.location.search);
+      if (searchParams.get('migration_empty') === '1') {
+        setShowEmptyMigrationToast(true);
+        searchParams.delete('migration_empty');
+        const nextSearch = searchParams.toString();
+        const nextUrl = window.location.pathname + (nextSearch ? `?${nextSearch}` : '') + window.location.hash;
+        window.history.replaceState(null, '', nextUrl);
+      }
       const imported = parseUrlImportParams(window.location.search);
       if (imported) {
         pendingImportRef.current = imported;
@@ -354,6 +363,23 @@ function AppContent({ vault }: AppContentProps) {
           <button
             type="button"
             onClick={clearJustMigrated}
+            className="text-white/80 hover:text-white ml-2 text-sm cursor-pointer"
+            aria-label="Close"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
+      {showEmptyMigrationToast && (
+        <div
+          role="status"
+          className="fixed top-5 left-1/2 -translate-x-1/2 z-50 bg-amber-600 text-white px-5 py-3 rounded-2xl shadow-pop text-xs font-semibold flex items-center gap-3 animate-fadeIn border border-amber-500 max-w-md text-center"
+        >
+          <span>{t.migration.emptySearchOldDomainToast}</span>
+          <button
+            type="button"
+            onClick={() => setShowEmptyMigrationToast(false)}
             className="text-white/80 hover:text-white ml-2 text-sm cursor-pointer"
             aria-label="Close"
           >
@@ -616,10 +642,7 @@ function AppContent({ vault }: AppContentProps) {
         isInitialSetup={isInitialSetup}
         onUnlock={handleUnlock}
         onSetup={async (pw, remember, enableBio) => {
-          await setup(pw, remember);
-          if (enableBio && isBiometricsSupported) {
-            void toggleBiometrics(true).catch((err) => console.warn('Biometrics setup skipped:', err));
-          }
+          await setup(pw, remember, enableBio);
         }}
         isBiometricsSupported={isBiometricsSupported}
         isBiometricsEnrolled={isBiometricsEnrolled}

@@ -341,6 +341,11 @@ export interface TranslationDictionary {
     pwMinLength: string;
     pwMismatch: string;
     pwWrong: string;
+    bioWaiting: string;
+    bioWaitingDesc: string;
+    bioTouchToUnlock: string;
+    switchToPassword: string;
+    switchToBio: string;
   };
 
   // Data Security Modal
@@ -395,5 +400,9 @@ export interface TranslationDictionary {
     noDataFound: string;
     settingsSectionTitle: string;
     settingsSectionDesc: string;
+    alreadyHaveDataTitle: string;
+    alreadyHaveDataDesc: string;
+    orStartFresh: string;
+    emptySearchOldDomainToast: string;
   };
 }
