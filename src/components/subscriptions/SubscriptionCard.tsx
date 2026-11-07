@@ -105,7 +105,7 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
   return (
     <div
       onClick={() => onEdit(subscription)}
-      className="group relative cursor-pointer bg-white rounded-2xl shadow-card p-4 flex flex-col gap-3 row:grid row:grid-cols-[minmax(0,1.4fr)_minmax(0,1.1fr)_minmax(0,1fr)_6.5rem_auto] row:items-center row:gap-5 row:px-5 row:py-4 row:bg-transparent row:shadow-none row:rounded-none row:first:rounded-t-2xl row:last:rounded-b-2xl row:hover:bg-canvas/70 transition-colors"
+      className="group relative cursor-pointer bg-white rounded-2xl shadow-card p-4 flex flex-col gap-3 row:grid row:grid-cols-[minmax(0,1.4fr)_minmax(0,1.1fr)_minmax(0,1fr)_6.5rem_16.5rem] row:items-center row:gap-5 row:px-5 row:py-4 row:bg-transparent row:shadow-none row:rounded-none row:first:rounded-t-2xl row:last:rounded-b-2xl row:hover:bg-canvas/70 transition-colors"
     >
       {/* Service */}
       <div className="flex items-center gap-3 min-w-0 pr-16 row:pr-0">
@@ -227,7 +227,7 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
       </div>
 
       {/* Actions */}
-      <div className="grid grid-cols-2 gap-2 row:flex row:items-center" onClick={(e) => e.stopPropagation()}>
+      <div className="grid grid-cols-2 gap-2 row:flex row:items-center row:justify-end" onClick={(e) => e.stopPropagation()}>
         <button
           type="button"
           onClick={() => onQuickRecharge(subscription.serviceKey, subscription)}

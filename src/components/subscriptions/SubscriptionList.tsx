@@ -71,7 +71,7 @@ export const SubscriptionList: React.FC<SubscriptionListProps> = ({
   return (
     <div className="space-y-4">
       {/* Airbnb Style Category Pills & Search Toolbar */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3.5 pb-1">
+      <div className="flex flex-col row:flex-row row:items-center justify-between gap-3.5 pb-1">
         {/* Left: Category Switcher (Airbnb Experiences Bar) */}
         <div className="flex flex-wrap items-center gap-2">
           <div className="flex items-center p-1 rounded-xl bg-inset text-sm max-w-full overflow-x-auto">

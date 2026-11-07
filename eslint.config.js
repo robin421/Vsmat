@@ -4,7 +4,7 @@ import tseslint from 'typescript-eslint';
 import reactHooks from 'eslint-plugin-react-hooks';
 
 export default tseslint.config(
-  { ignores: ['dist', 'node_modules', 'public', 'scripts'] },
+  { ignores: ['dist', 'node_modules', 'public', 'scripts', 'test-results', 'playwright-report'] },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
@@ -20,5 +20,5 @@ export default tseslint.config(
       'no-empty': ['error', { allowEmptyCatch: true }],
     },
   },
-  { files: ['vite.config.ts', 'vitest.config.ts', 'eslint.config.js'], languageOptions: { globals: { ...globals.node } } }
+  { files: ['vite.config.ts', 'vitest.config.ts', 'playwright.config.ts', 'eslint.config.js', 'tests/e2e/serve.mjs'], languageOptions: { globals: { ...globals.node } } }
 );
