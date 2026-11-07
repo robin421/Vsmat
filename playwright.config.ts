@@ -15,7 +15,7 @@ export default defineConfig({
   use: { baseURL: `http://127.0.0.1:${port}/`, acceptDownloads: true },
   webServer: {
     // Serves dist/ with the production headers from public/_headers, including the CSP
-    command: `node tests/e2e/serve.mjs ${process.cwd()}/dist ${port}`,
+    command: `node tests/e2e/serve.mjs dist ${port}`,
     url: `http://127.0.0.1:${port}/`,
     reuseExistingServer: !process.env.CI,
   },
