@@ -67,6 +67,11 @@ export function useVault() {
         const migration = handleIncomingMigration();
         if (migration.migrated) {
           setJustMigrated(true);
+          if (migration.plainData) {
+            applyData(migration.plainData);
+            applyStatus('setup');
+            return;
+          }
         }
         const state = await readVaultState();
         if (cancelled) return;

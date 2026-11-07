@@ -131,6 +131,9 @@ function AppContent({ vault }: AppContentProps) {
 
   useEffect(() => {
     if (status === 'ready') {
+      if (isLegacyDomain() && handleOutgoingAutoMigration(appData)) {
+        return;
+      }
       if (!notifiedRef.current) {
         notifiedRef.current = true;
         if (appData.settings.enableBrowserNotifications) {
@@ -345,7 +348,7 @@ function AppContent({ vault }: AppContentProps) {
           </div>
           <button
             type="button"
-            onClick={() => startMigrationToNewDomain()}
+            onClick={() => startMigrationToNewDomain(undefined, status === 'ready' ? appData : undefined)}
             className="bg-brand-950 hover:bg-brand-900 text-white px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm active:scale-95 cursor-pointer"
           >
             <span>{t.migration.bannerBtn}</span>

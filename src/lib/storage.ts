@@ -437,6 +437,23 @@ export async function exportBackup(data: AppData, filename?: string): Promise<vo
   URL.revokeObjectURL(url);
 }
 
+/**
+ * Export unencrypted plaintext JSON.
+ * Ideal for migrating across browsers or when user forgets master password.
+ */
+export function exportPlainBackup(data: AppData, filename?: string): void {
+  const name = filename ?? `vsmat-unencrypted-backup-${new Date().toLocaleDateString('sv-SE')}.json`;
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = name;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
 export type BackupProbe =
   | { kind: 'encrypted'; needsPassword: boolean }
   | { kind: 'plain' };

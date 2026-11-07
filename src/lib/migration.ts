@@ -1,3 +1,6 @@
+import { AppData } from '../types';
+import { normalizeAppData } from './storage';
+
 export const LEGACY_ORIGIN = 'https://vsmat.pages.dev';
 export const NEW_ORIGIN = 'https://vsmat.aisubdeal.com';
 export const STORAGE_KEY = 'vsmat_vault_storage_v1';
@@ -38,17 +41,28 @@ export function hasLocalVault(): boolean {
 
 /**
  * Initiates export from the current domain (usually legacy domain) to target domain via client-side URL hash.
+ * If unlocked decrypted data is provided, it is sent in hash so users don't need to recall forgotten passwords.
  * URL fragment hash (#) is strictly evaluated in the browser and never transmitted in HTTP headers.
  */
-export function startMigrationToNewDomain(targetOrigin?: string): void {
+export function startMigrationToNewDomain(targetOrigin?: string, unlockedData?: AppData): void {
   if (typeof window === 'undefined') return;
   const target = targetOrigin || NEW_ORIGIN;
+  const lang = localStorage.getItem(STORAGE_LANG_KEY) || 'zh';
+
+  if (unlockedData && (unlockedData.subscriptions.length > 0 || unlockedData.tokens.length > 0 || unlockedData.vouchers.length > 0)) {
+    const hash = new URLSearchParams({
+      vsmat_plain: JSON.stringify(unlockedData),
+      lang,
+    }).toString();
+    window.location.href = `${target}/#${hash}`;
+    return;
+  }
+
   const raw = localStorage.getItem(STORAGE_KEY);
   if (!raw) {
     window.location.href = `${target}/?migration_empty=1`;
     return;
   }
-  const lang = localStorage.getItem(STORAGE_LANG_KEY) || 'zh';
   const hash = new URLSearchParams({
     vsmat_migrate: raw,
     lang,
@@ -68,6 +82,7 @@ export function requestMigrationFromOldDomain(currentOrigin?: string): void {
 
 export interface IncomingMigrationResult {
   migrated: boolean;
+  plainData?: AppData;
   error?: string;
 }
 
@@ -80,12 +95,28 @@ export function handleIncomingMigration(): IncomingMigrationResult {
     ? window.location.hash.slice(1)
     : window.location.hash;
 
-  if (!hash || !hash.includes('vsmat_migrate=')) {
+  if (!hash) {
     return { migrated: false };
   }
 
   try {
     const params = new URLSearchParams(hash);
+
+    // 1. Check for decrypted plain data (user authenticated on old domain with biometrics)
+    const plainJson = params.get('vsmat_plain');
+    if (plainJson) {
+      const parsed = JSON.parse(plainJson);
+      const normalized = normalizeAppData(parsed);
+      const lang = params.get('lang');
+      if (lang && ['zh', 'en', 'ja', 'ko'].includes(lang)) {
+        localStorage.setItem(STORAGE_LANG_KEY, lang);
+      }
+      const cleanUrl = window.location.pathname + window.location.search;
+      window.history.replaceState(null, '', cleanUrl);
+      return { migrated: true, plainData: normalized };
+    }
+
+    // 2. Fallback to encrypted envelope
     const rawVault = params.get('vsmat_migrate');
     const lang = params.get('lang');
 
@@ -121,7 +152,7 @@ export function handleIncomingMigration(): IncomingMigrationResult {
 /**
  * Handles automatic redirect if current page is opened with ?action=export_migrate.
  */
-export function handleOutgoingAutoMigration(): boolean {
+export function handleOutgoingAutoMigration(unlockedData?: AppData): boolean {
   if (typeof window === 'undefined') return false;
   if (!window.location.search) return false;
 
@@ -141,6 +172,6 @@ export function handleOutgoingAutoMigration(): boolean {
     }
   }
 
-  startMigrationToNewDomain(target);
+  startMigrationToNewDomain(target, unlockedData);
   return true;
 }
