@@ -14,8 +14,10 @@ import {
   Plus,
   Settings,
   Globe,
+  ExternalLink,
 } from 'lucide-react';
 import { exportBackup } from '../../lib/storage';
+import { buildAiSubDealUrl } from '../../lib/aisubdeal';
 import { AppData } from '../../types';
 import { useI18n, SUPPORTED_LANGUAGES, SupportedLanguage } from '../../i18n';
 
@@ -125,19 +127,40 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
       </div>
 
-      {/* Local-only trust signal (sidebar foot) */}
-      <button
-        type="button"
-        onClick={onOpenSecurityModal}
-        className="hidden lg:block lg:order-5 lg:mt-auto mb-3 p-3 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-left transition-colors cursor-pointer"
-        title={t.common.viewSecurityWhitepaper}
-      >
-        <span className="flex items-center gap-2 text-sm font-semibold text-emerald-800 whitespace-nowrap">
-          <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
-          {t.common.offlineBadge}
-        </span>
-        <span className="block text-xs text-emerald-700 mt-0.5 pl-6">{t.common.offlineBadgeSub}</span>
-      </button>
+      {/* AISubDeal Ecosystem Link + Local-only trust signal (sidebar foot) */}
+      <div className="hidden lg:flex lg:flex-col lg:gap-2 lg:order-5 lg:mt-auto mb-3">
+        <a
+          href={buildAiSubDealUrl('/pricing/', language)}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="p-2.5 rounded-xl bg-brand-50/70 hover:bg-brand-100/80 border border-brand-200/60 text-left transition-colors block"
+          title={t.aisubdeal.navLink}
+        >
+          <span className="flex items-center justify-between gap-1.5 text-xs font-semibold text-brand-800 whitespace-nowrap">
+            <span className="flex items-center gap-1.5">
+              <Globe className="w-3.5 h-3.5 text-brand-700 shrink-0" />
+              <span>{t.aisubdeal.navLink}</span>
+            </span>
+            <ExternalLink className="w-3 h-3 text-brand-600 shrink-0" />
+          </span>
+          <span className="block text-[11px] text-brand-700 mt-0.5 pl-5 truncate">
+            {t.aisubdeal.navSub}
+          </span>
+        </a>
+
+        <button
+          type="button"
+          onClick={onOpenSecurityModal}
+          className="p-3 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-left transition-colors cursor-pointer"
+          title={t.common.viewSecurityWhitepaper}
+        >
+          <span className="flex items-center gap-2 text-sm font-semibold text-emerald-800 whitespace-nowrap">
+            <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+            {t.common.offlineBadge}
+          </span>
+          <span className="block text-xs text-emerald-700 mt-0.5 pl-6">{t.common.offlineBadgeSub}</span>
+        </button>
+      </div>
 
       {/* Search */}
       <div className="field hidden md:flex md:flex-1 md:max-w-xs lg:flex-none lg:max-w-none lg:order-3 items-center h-9 lg:h-10 rounded-lg px-3 gap-2 lg:mb-4">

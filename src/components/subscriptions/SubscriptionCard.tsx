@@ -14,12 +14,14 @@ import {
   MoreHorizontal,
   ArrowUpRight,
   CreditCard,
-  AlertCircle
+  AlertCircle,
+  Globe
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { SubscriptionItem } from '../../types';
 import { getDaysUntil } from '../../lib/notifications';
 import { convertToUSD } from '../../lib/currencies';
+import { evaluateSubscriptionDeal, getServicePricingUrl } from '../../lib/aisubdeal';
 import { BrandBadge } from '../common/BrandBadge';
 import { safeHttpUrl } from '../../lib/url';
 import { useI18n } from '../../i18n';
@@ -41,7 +43,7 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
   onQuickRecharge,
   usdToCnyRate,
 }) => {
-  const { t, format } = useI18n();
+  const { t, format, language } = useI18n();
   const [showPassword, setShowPassword] = useState(false);
   const [copiedEmail, setCopiedEmail] = useState(false);
   const [copiedPassword, setCopiedPassword] = useState(false);
@@ -102,6 +104,8 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
   };
 
   const isUrgent = isOverdue || isToday || isExpiringSoon;
+  const dealEval = evaluateSubscriptionDeal(subscription, usdToCnyRate);
+  const pricingUrl = getServicePricingUrl(subscription.serviceKey, language, subscription.name);
   const copyButton = 'h-7 px-1.5 rounded-md hover:bg-inset text-muted hover:text-ink text-xs font-medium flex items-center gap-1 transition-colors shrink-0';
 
   return (
@@ -229,6 +233,27 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
               ≈ ${convertToUSD(subscription.price, subscription.currency, usdToCnyRate).toFixed(2)} USD
             </div>
           )}
+          {dealEval?.isAlreadyDiscounted && (
+            <div className="mt-1 flex justify-end">
+              <span className="px-1.5 py-0.5 rounded-md bg-emerald-50 text-emerald-700 text-[11px] font-semibold whitespace-nowrap">
+                {format(t.aisubdeal.cardSavedBadge, { percent: dealEval.savedVsUsPercent })}
+              </span>
+            </div>
+          )}
+          {!dealEval?.isAlreadyDiscounted && dealEval?.canOptimizeFurther && (
+            <div className="mt-1 flex justify-end" onClick={(e) => e.stopPropagation()}>
+              <a
+                href={pricingUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-1.5 py-0.5 rounded-md bg-brand-50 hover:bg-brand-100 text-brand-700 text-[11px] font-semibold inline-flex items-center gap-0.5 whitespace-nowrap transition-colors"
+                title={t.aisubdeal.cardCompareMenu}
+              >
+                <span>💡 {format(t.aisubdeal.cardCanSaveBadge, { percent: dealEval.potentialExtraSavePercent })}</span>
+                <ArrowUpRight className="w-3 h-3" />
+              </a>
+            </div>
+          )}
         </div>
       </div>
 
@@ -306,6 +331,17 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
                     <span>{t.subscriptions.portal}</span>
                   </a>
                 )}
+
+                <a
+                  href={pricingUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setShowMenu(false)}
+                  className="w-full text-left px-3 py-2 rounded-lg hover:bg-inset text-ink font-medium flex items-center gap-2"
+                >
+                  <Globe className="w-3.5 h-3.5 text-brand-700" />
+                  <span className="truncate">{t.aisubdeal.cardCompareMenu}</span>
+                </a>
 
                 <button
                   onClick={() => {

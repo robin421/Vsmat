@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { X, ShieldCheck, Copy, Check, ExternalLink, Globe, Lock, Eye, EyeOff, Sparkles, CheckCircle2 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useDismiss, closeOnBackdrop } from '../../hooks/useDismiss';
+import { getGiftCardGuideUrl, getAddressToolUrl } from '../../lib/aisubdeal';
 import { useI18n } from '../../i18n';
 
 interface AppleWebRedeemModalProps {
@@ -22,7 +23,7 @@ export const AppleWebRedeemModal: React.FC<AppleWebRedeemModalProps> = ({
   onConfirmRecharged,
 }) => {
   useDismiss(isOpen, onClose);
-  const { t } = useI18n();
+  const { t, language } = useI18n();
 
   const [showPassword, setShowPassword] = useState(false);
   const [copiedEmail, setCopiedEmail] = useState(false);
@@ -214,6 +215,28 @@ export const AppleWebRedeemModal: React.FC<AppleWebRedeemModalProps> = ({
               <CheckCircle2 className="w-4 h-4 text-emerald-600" />
               <span>{t.vouchers.appleConfirmDone}</span>
             </button>
+
+            {/* AISubDeal Regional Gift Card & Tax-Free Address Helper Strip */}
+            <div className="pt-2.5 border-t border-line flex flex-wrap items-center justify-between gap-2 text-xs text-muted">
+              <a
+                href={getGiftCardGuideUrl(undefined, language)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-brand-700 font-medium inline-flex items-center gap-1 transition"
+              >
+                <span>🎁 {t.aisubdeal.giftCardGuideLink}</span>
+                <ExternalLink className="w-3 h-3" />
+              </a>
+              <a
+                href={getAddressToolUrl(undefined, language)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-brand-700 font-medium inline-flex items-center gap-1 transition"
+              >
+                <span>📍 {t.aisubdeal.addressToolLink}</span>
+                <ExternalLink className="w-3 h-3" />
+              </a>
+            </div>
           </div>
         </div>
       </div>

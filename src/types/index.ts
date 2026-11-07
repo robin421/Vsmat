@@ -104,4 +104,5 @@ export interface PresetService {
   defaultBaseUrl?: string;
   defaultModel?: string;
   directRedeemUrlPattern?: string; // e.g. "https://apps.apple.com/redeem?code={CODE}"
+  aisubdealSlug?: string;
 }

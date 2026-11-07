@@ -26,6 +26,12 @@ import confetti from 'canvas-confetti';
 import { SubscriptionItem, BillingCycle, ServiceCategory, CurrencyCode, TokenItem } from '../../types';
 import { PRESET_SERVICES, getPresetByKey } from '../../types/presets';
 import { SUPPORTED_CURRENCIES, convertToUSD } from '../../lib/currencies';
+import {
+  getSubscriptionBenchmark,
+  getServicePricingUrl,
+  getGiftCardGuideUrl,
+  getAddressToolUrl,
+} from '../../lib/aisubdeal';
 import { getDaysUntil } from '../../lib/notifications';
 import { parseSmartText, ParsedSmartInput } from '../../lib/parser';
 import { recognizeSubscriptionScreenshot } from '../../lib/ocrEngine';
@@ -91,7 +97,9 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
   onSaveToken,
 }) => {
   useDismiss(isOpen, onClose);
-  const { t, format } = useI18n();
+  const { t, format, language } = useI18n();
+  const isEditMode = Boolean(initialData?.id);
+  const isImportedPrefill = Boolean(initialData && !initialData.id);
 
   // Mode selection: smart scanner or manual form
   const [entryMode, setEntryMode] = useState<'smart' | 'manual'>('smart');
@@ -285,14 +293,17 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
   };
 
   const handleSelectPreset = (key: string) => {
-    setServiceKey(key);
-    if (key === 'custom') return;
+    if (key === 'custom') {
+      setServiceKey('custom');
+      return;
+    }
     const p = getPresetByKey(key);
-    if (p) {
+    setServiceKey(p.key);
+    if (p && p.key !== 'custom') {
       setName(p.name);
       setCategory(p.category);
-      if (!price && p.defaultPrice) setPrice(String(p.defaultPrice));
-      if (!currency && p.defaultCurrency) setCurrency(p.defaultCurrency);
+      if (p.defaultPrice) setPrice(String(p.defaultPrice));
+      if (p.defaultCurrency) setCurrency(p.defaultCurrency);
       if (p.defaultCycle) setCycle(p.defaultCycle);
       if (p.portalUrl) setPortalUrl(p.portalUrl);
       if (p.rechargeUrl) setRechargeUrl(p.rechargeUrl);
@@ -305,13 +316,24 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
   const numPrice = parseFloat(price) || 0;
   const usdConverted = convertToUSD(numPrice, currency, usdToCnyRate);
   const daysUntil = getDaysUntil(nextBillingDate);
+  const activeBenchmark = getSubscriptionBenchmark(serviceKey, name);
+  const pricingCompareUrl = getServicePricingUrl(serviceKey, language, name);
+  const giftCardGuideUrl = getGiftCardGuideUrl(currency, language);
+  const addressToolUrl = getAddressToolUrl(currency, language);
+
+  const handleApplyFloorPrice = () => {
+    if (!activeBenchmark) return;
+    setCurrency(activeBenchmark.cheapest.currency);
+    setPrice(String(activeBenchmark.cheapest.localPrice));
+    setPaymentMethod(activeBenchmark.cheapest.paymentMethodHint);
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) return;
 
     onSave({
-      id: initialData?.id,
+      id: initialData?.id || undefined,
       name: name.trim(),
       serviceKey: serviceKey || 'custom',
       category,
@@ -366,10 +388,10 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
             </div>
             <div>
               <h3 className="text-base font-semibold text-ink">
-                {initialData ? t.subModal.titleEdit : t.subModal.titleNew}
+                {isEditMode ? t.subModal.titleEdit : t.subModal.titleNew}
               </h3>
               <p className="text-xs text-muted">
-                {initialData ? t.subModal.descEdit : t.subModal.descNew}
+                {isEditMode ? t.subModal.descEdit : t.subModal.descNew}
               </p>
             </div>
           </div>
@@ -381,8 +403,16 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
           </button>
         </div>
 
+        {/* AISubDeal 1-Click Import Banner */}
+        {isImportedPrefill && (
+          <div className="mt-3.5 p-2.5 rounded-xl bg-brand-50 border border-brand-200 text-xs text-brand-800 font-semibold flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-brand-600 shrink-0" />
+            <span>{t.aisubdeal.importBanner}</span>
+          </div>
+        )}
+
         {/* Unified Mode Selection Tabs (智能识别 / 手动填表) */}
-        {!initialData && (
+        {!isEditMode && (
           <div className="grid grid-cols-2 gap-1.5 p-1 bg-inset border border-line rounded-2xl mt-4">
             <button
               type="button"
@@ -602,12 +632,12 @@ SuperGrok 印度区 700 INR/月
               <div className="flex flex-wrap gap-1.5 mb-2">
                 {POPULAR_PRESET_KEYS.map((k) => {
                   const p = getPresetByKey(k);
-                  const isSelected = serviceKey === k;
+                  const isSelected = serviceKey === p.key;
                   return (
                     <button
                       key={k}
                       type="button"
-                      onClick={() => handleSelectPreset(k)}
+                      onClick={() => handleSelectPreset(p.key)}
                       className={`px-2.5 py-1 rounded-lg text-xs font-medium transition ${
                         isSelected
                           ? 'bg-brand-700 text-white shadow-xs'
@@ -631,7 +661,7 @@ SuperGrok 印度区 700 INR/月
             </div>
 
             {/* 2. 续费金额、币种与周期组合 */}
-            <div className="p-3 rounded-2xl bg-inset border border-line space-y-2">
+            <div className="p-3 rounded-2xl bg-inset border border-line space-y-2.5">
               <div className="flex items-center justify-between">
                 <label className="text-xs font-semibold text-ink flex items-center gap-1">
                   <DollarSign className="w-3.5 h-3.5 text-brand-700" />
@@ -643,6 +673,48 @@ SuperGrok 印度区 700 INR/月
                   </span>
                 )}
               </div>
+
+              {/* AISubDeal Global Floor Price Hint */}
+              {activeBenchmark && (
+                <div className="p-2.5 rounded-xl bg-white border border-brand-200/80 flex flex-wrap items-center justify-between gap-2 text-xs">
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <span className="font-semibold text-brand-700">
+                      {format(t.aisubdeal.floorRegionInfo, {
+                        flag: activeBenchmark.cheapest.countryFlag,
+                        currency: activeBenchmark.cheapest.currency,
+                        price: activeBenchmark.cheapest.localPrice,
+                        usd: activeBenchmark.cheapest.usdPrice.toFixed(2),
+                      })}
+                    </span>
+                    {activeBenchmark.cheapest.savePercent > 0 && (
+                      <span className="px-1.5 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold text-[11px] whitespace-nowrap">
+                        {format(t.aisubdeal.floorHintSave, { percent: activeBenchmark.cheapest.savePercent })}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    {(currency !== activeBenchmark.cheapest.currency ||
+                      numPrice !== activeBenchmark.cheapest.localPrice) && (
+                      <button
+                        type="button"
+                        onClick={handleApplyFloorPrice}
+                        className="px-2 py-1 rounded-lg bg-brand-50 hover:bg-brand-100 text-brand-700 font-semibold text-[11px] transition"
+                      >
+                        {t.aisubdeal.applyFloorBtn}
+                      </button>
+                    )}
+                    <a
+                      href={pricingCompareUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-muted hover:text-brand-700 font-medium inline-flex items-center gap-0.5 text-[11px] transition"
+                    >
+                      <span>{t.aisubdeal.compareLink}</span>
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
+                  </div>
+                </div>
+              )}
 
               <div className="grid grid-cols-12 gap-2">
                 {/* 币种选择 */}
@@ -697,6 +769,28 @@ SuperGrok 印度区 700 INR/月
                     <option value="lifetime">/{t.subModal.cycleLifetime}</option>
                   </select>
                 </div>
+              </div>
+
+              {/* Regional Gift Card & Billing Address Quick Links */}
+              <div className="flex flex-wrap items-center justify-between gap-2 pt-0.5 text-[11px] text-muted">
+                <a
+                  href={giftCardGuideUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-brand-700 inline-flex items-center gap-1 transition"
+                >
+                  <span>🎁 {t.aisubdeal.giftCardGuideLink}</span>
+                  <ExternalLink className="w-3 h-3" />
+                </a>
+                <a
+                  href={addressToolUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-brand-700 inline-flex items-center gap-1 transition"
+                >
+                  <span>📍 {t.aisubdeal.addressToolLink}</span>
+                  <ExternalLink className="w-3 h-3" />
+                </a>
               </div>
             </div>
 
@@ -888,7 +982,7 @@ SuperGrok 印度区 700 INR/月
             </div>
           </div>
 
-          {initialData && initialData.cycle !== 'lifetime' && (
+          {isEditMode && initialData && initialData.cycle !== 'lifetime' && (
             <RenewalHistory
               history={initialData.history || []}
               preferredCurrency={preferredCurrency}
@@ -906,7 +1000,7 @@ SuperGrok 印度区 700 INR/月
 
           {/* Action Footer */}
           <div className="flex items-center justify-between pt-4 border-t border-line">
-            {initialData && onDelete ? (
+            {isEditMode && initialData && onDelete ? (
               <button
                 type="button"
                 onClick={() => {
@@ -940,7 +1034,7 @@ SuperGrok 印度区 700 INR/月
                 disabled={ocrLoading || !name.trim()}
                 className="h-10 px-5 rounded-lg bg-brand-700 hover:bg-brand-800 disabled:opacity-40 disabled:cursor-not-allowed text-white font-semibold text-xs flex items-center gap-1.5 transition active:scale-95"
               >
-                <span>{initialData ? t.subModal.saveChanges : t.subModal.confirmAndAdd}</span>
+                <span>{isEditMode ? t.subModal.saveChanges : t.subModal.confirmAndAdd}</span>
                 <ArrowRight className="w-3.5 h-3.5 text-white" />
               </button>
             </div>

@@ -9,6 +9,8 @@ import {
 import { todayLocal as todayStr } from './lib/date';
 import { useVault } from './hooks/useVault';
 import { checkAndSendRenewalNotifications } from './lib/notifications';
+import { buildAiSubDealUrl, syncAiSubDealDataset } from './lib/aisubdeal';
+import { parseUrlImportParams, clearUrlImportParams } from './lib/urlImport';
 import { Navbar } from './components/layout/Navbar';
 import { UrgentReminderBanner } from './components/dashboard/UrgentReminderBanner';
 import { SubscriptionList } from './components/subscriptions/SubscriptionList';
@@ -37,7 +39,7 @@ interface AppContentProps {
 }
 
 function AppContent({ vault }: AppContentProps) {
-  const { t, setLanguage } = useI18n();
+  const { t, language, setLanguage } = useI18n();
 
   const {
     data: appData,
@@ -91,11 +93,34 @@ function AppContent({ vault }: AppContentProps) {
 
   // Renewal notifications: once per unlock, only after real data is available
   const notifiedRef = useRef(false);
+  const pendingImportRef = useRef<Partial<SubscriptionItem> | null>(null);
+
+  // Check URL for 1-click import from aisubdeal.com & silently sync latest dataset on boot
   useEffect(() => {
-    if (status === 'ready' && !notifiedRef.current) {
-      notifiedRef.current = true;
-      if (appData.settings.enableBrowserNotifications) {
-        checkAndSendRenewalNotifications(appData.subscriptions);
+    void syncAiSubDealDataset();
+    if (typeof window !== 'undefined' && window.location.search) {
+      const imported = parseUrlImportParams(window.location.search);
+      if (imported) {
+        pendingImportRef.current = imported;
+        clearUrlImportParams();
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (status === 'ready') {
+      if (!notifiedRef.current) {
+        notifiedRef.current = true;
+        if (appData.settings.enableBrowserNotifications) {
+          checkAndSendRenewalNotifications(appData.subscriptions);
+        }
+      }
+      if (pendingImportRef.current) {
+        const prefill = pendingImportRef.current as SubscriptionItem;
+        pendingImportRef.current = null;
+        setActiveTab('subscriptions');
+        setEditingSub(prefill);
+        setIsSubModalOpen(true);
       }
     }
     if (status === 'locked') notifiedRef.current = false;
@@ -441,6 +466,15 @@ function AppContent({ vault }: AppContentProps) {
             <span className="hidden md:inline">· {t.common.footerSubtitle}</span>
           </div>
           <div className="flex items-center gap-3 whitespace-nowrap">
+            <a
+              href={buildAiSubDealUrl('/pricing/', language)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-brand-700 hover:text-brand-800 font-medium transition-colors"
+            >
+              {t.aisubdeal.navLink}
+            </a>
+            <span>·</span>
             <button
               onClick={() => setIsSecurityModalOpen(true)}
               className="text-brand-700 hover:text-brand-800 font-medium transition-colors"

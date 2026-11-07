@@ -359,4 +359,29 @@ export interface TranslationDictionary {
     exportCta: string;
     closeCta: string;
   };
+
+  // AISubDeal Integration
+  aisubdeal: {
+    navLink: string;
+    navSub: string;
+    floorHintTitle: string;
+    floorHintSave: string;
+    applyFloorBtn: string;
+    compareLink: string;
+    giftCardGuideLink: string;
+    addressToolLink: string;
+    cardSavedBadge: string;
+    cardCanSaveBadge: string;
+    cardCompareMenu: string;
+    analyticsTitle: string;
+    analyticsDesc: string;
+    savedMonthlyLabel: string;
+    savedAnnualLabel: string;
+    potentialMonthlyLabel: string;
+    potentialAnnualLabel: string;
+    allOptimizedNotice: string;
+    optimizeAction: string;
+    floorRegionInfo: string;
+    importBanner: string;
+  };
 }

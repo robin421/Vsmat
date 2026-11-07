@@ -15,6 +15,7 @@ export const PRESET_SERVICES: PresetService[] = [
     consoleUrl: 'https://platform.openai.com/api-keys',
     defaultBaseUrl: 'https://api.openai.com/v1',
     defaultModel: 'gpt-4o',
+    aisubdealSlug: 'chatgpt',
   },
   {
     key: 'claude',
@@ -30,6 +31,7 @@ export const PRESET_SERVICES: PresetService[] = [
     consoleUrl: 'https://console.anthropic.com/settings/keys',
     defaultBaseUrl: 'https://api.anthropic.com/v1',
     defaultModel: 'claude-3-7-sonnet-20250219',
+    aisubdealSlug: 'claude',
   },
   {
     key: 'deepseek',
@@ -45,6 +47,7 @@ export const PRESET_SERVICES: PresetService[] = [
     consoleUrl: 'https://platform.deepseek.com/api_keys',
     defaultBaseUrl: 'https://api.deepseek.com',
     defaultModel: 'deepseek-chat',
+    aisubdealSlug: 'deepseek',
   },
   {
     key: 'gemini',
@@ -60,6 +63,7 @@ export const PRESET_SERVICES: PresetService[] = [
     consoleUrl: 'https://aistudio.google.com/app/apikey',
     defaultBaseUrl: 'https://generativelanguage.googleapis.com',
     defaultModel: 'gemini-2.5-pro',
+    aisubdealSlug: 'gemini',
   },
   {
     key: 'cursor',
@@ -73,6 +77,7 @@ export const PRESET_SERVICES: PresetService[] = [
     portalUrl: 'https://www.cursor.com/settings',
     rechargeUrl: 'https://www.cursor.com/settings',
     consoleUrl: 'https://www.cursor.com/settings',
+    aisubdealSlug: 'cursor',
   },
   {
     key: 'github',
@@ -87,6 +92,7 @@ export const PRESET_SERVICES: PresetService[] = [
     rechargeUrl: 'https://github.com/settings/billing',
     consoleUrl: 'https://github.com/settings/tokens',
     defaultBaseUrl: 'https://api.github.com',
+    aisubdealSlug: 'copilot',
   },
   {
     key: 'midjourney',
@@ -99,6 +105,7 @@ export const PRESET_SERVICES: PresetService[] = [
     defaultCycle: 'monthly',
     portalUrl: 'https://www.midjourney.com/account',
     rechargeUrl: 'https://www.midjourney.com/account',
+    aisubdealSlug: 'midjourney',
   },
   {
     key: 'grok',
@@ -114,6 +121,7 @@ export const PRESET_SERVICES: PresetService[] = [
     consoleUrl: 'https://console.x.ai',
     defaultBaseUrl: 'https://api.x.ai/v1',
     defaultModel: 'grok-2',
+    aisubdealSlug: 'grok',
   },
   {
     key: 'perplexity',
@@ -127,6 +135,7 @@ export const PRESET_SERVICES: PresetService[] = [
     portalUrl: 'https://www.perplexity.ai/settings/account',
     rechargeUrl: 'https://www.perplexity.ai/pro',
     consoleUrl: 'https://www.perplexity.ai/settings/api',
+    aisubdealSlug: 'perplexity',
   },
   {
     key: 'windsurf',
@@ -139,6 +148,7 @@ export const PRESET_SERVICES: PresetService[] = [
     defaultCycle: 'monthly',
     portalUrl: 'https://codeium.com/profile',
     rechargeUrl: 'https://codeium.com/pricing',
+    aisubdealSlug: 'windsurf',
   },
   {
     key: 'kimi',
@@ -154,6 +164,7 @@ export const PRESET_SERVICES: PresetService[] = [
     consoleUrl: 'https://platform.moonshot.cn/console/api-keys',
     defaultBaseUrl: 'https://api.moonshot.cn/v1',
     defaultModel: 'moonshot-v1-auto',
+    aisubdealSlug: 'kimi',
   },
   {
     key: 'zhipu',
@@ -169,6 +180,7 @@ export const PRESET_SERVICES: PresetService[] = [
     consoleUrl: 'https://open.bigmodel.cn/usercenter/apikeys',
     defaultBaseUrl: 'https://open.bigmodel.cn/api/paas/v4',
     defaultModel: 'glm-4-plus',
+    aisubdealSlug: 'glm',
   },
   {
     key: 'suno',
@@ -181,6 +193,7 @@ export const PRESET_SERVICES: PresetService[] = [
     defaultCycle: 'monthly',
     portalUrl: 'https://suno.com/account',
     rechargeUrl: 'https://suno.com/pricing',
+    aisubdealSlug: 'suno',
   },
   {
     key: 'runway',
@@ -193,6 +206,7 @@ export const PRESET_SERVICES: PresetService[] = [
     defaultCycle: 'monthly',
     portalUrl: 'https://app.runwayml.com/settings/plans',
     rechargeUrl: 'https://app.runwayml.com/upgrade',
+    aisubdealSlug: 'runway',
   },
   {
     key: 'elevenlabs',
@@ -206,6 +220,7 @@ export const PRESET_SERVICES: PresetService[] = [
     portalUrl: 'https://elevenlabs.io/app/subscription',
     rechargeUrl: 'https://elevenlabs.io/pricing',
     consoleUrl: 'https://elevenlabs.io/app/speech-synthesis',
+    aisubdealSlug: 'elevenlabs',
   },
   {
     key: 'huggingface',
@@ -234,6 +249,7 @@ export const PRESET_SERVICES: PresetService[] = [
     consoleUrl: 'https://console.mistral.ai/api-keys',
     defaultBaseUrl: 'https://api.mistral.ai/v1',
     defaultModel: 'mistral-large-latest',
+    aisubdealSlug: 'le-chat',
   },
   {
     key: 'poe',
@@ -246,6 +262,7 @@ export const PRESET_SERVICES: PresetService[] = [
     defaultCycle: 'monthly',
     portalUrl: 'https://poe.com/settings',
     rechargeUrl: 'https://poe.com/subscribe',
+    aisubdealSlug: 'poe',
   },
   {
     key: 'v0',
@@ -323,6 +340,7 @@ export const PRESET_SERVICES: PresetService[] = [
     portalUrl: 'https://www.spotify.com/account/overview/',
     rechargeUrl: 'https://www.spotify.com/redeem/',
     directRedeemUrlPattern: 'https://www.spotify.com/redeem/',
+    aisubdealSlug: 'spotify',
   },
   {
     key: 'netflix',
@@ -336,6 +354,33 @@ export const PRESET_SERVICES: PresetService[] = [
     portalUrl: 'https://www.netflix.com/YourAccount',
     rechargeUrl: 'https://www.netflix.com/redeem',
     directRedeemUrlPattern: 'https://www.netflix.com/redeem',
+    aisubdealSlug: 'netflix',
+  },
+  {
+    key: 'youtube',
+    name: 'YouTube Premium',
+    category: 'entertainment',
+    brandColor: '#ff0000',
+    iconBg: 'bg-red-500/20 text-red-400 border-red-500/30',
+    defaultPrice: 13.99,
+    defaultCurrency: 'USD',
+    defaultCycle: 'monthly',
+    portalUrl: 'https://www.youtube.com/paid_memberships',
+    rechargeUrl: 'https://www.youtube.com/redeem',
+    aisubdealSlug: 'youtube',
+  },
+  {
+    key: 'capcut',
+    name: 'CapCut Pro (剪映国际版)',
+    category: 'productivity',
+    brandColor: '#0f172a',
+    iconBg: 'bg-zinc-800 text-white border-zinc-700',
+    defaultPrice: 19.99,
+    defaultCurrency: 'USD',
+    defaultCycle: 'monthly',
+    portalUrl: 'https://www.capcut.com/my-cloud',
+    rechargeUrl: 'https://www.capcut.com/',
+    aisubdealSlug: 'capcut',
   },
   {
     key: 'custom',
@@ -349,5 +394,9 @@ export const PRESET_SERVICES: PresetService[] = [
 ];
 
 export function getPresetByKey(key: string): PresetService {
-  return PRESET_SERVICES.find(p => p.key === key) || PRESET_SERVICES[PRESET_SERVICES.length - 1];
+  const clean = (key || '').trim().toLowerCase();
+  return (
+    PRESET_SERVICES.find(p => p.key === clean || p.aisubdealSlug === clean) ||
+    PRESET_SERVICES[PRESET_SERVICES.length - 1]
+  );
 }

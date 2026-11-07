@@ -3,6 +3,7 @@ import { Zap, ExternalLink, Sparkles, Copy, Check, ArrowRight } from 'lucide-rea
 import confetti from 'canvas-confetti';
 import { PRESET_SERVICES, getPresetByKey } from '../../types/presets';
 import { execute1ClickRecharge, detectVoucherService } from '../../lib/rechargeEngines';
+import { getGiftCardGuideUrl } from '../../lib/aisubdeal';
 import { useI18n } from '../../i18n';
 
 interface QuickRechargeBarProps {
@@ -17,7 +18,7 @@ export const QuickRechargeBar: React.FC<QuickRechargeBarProps> = ({
   onConfirmRedeemed,
   onOpenAppleWebRedeem,
 }) => {
-  const { t } = useI18n();
+  const { t, language } = useI18n();
   const [code, setCode] = useState('');
   const [selectedService, setSelectedService] = useState('auto');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -90,15 +91,26 @@ export const QuickRechargeBar: React.FC<QuickRechargeBarProps> = ({
           </div>
         </div>
 
-        {/* Quick paste button */}
-        <button
-          type="button"
-          onClick={handlePasteFromClipboard}
-          className="self-start md:self-auto h-9 text-[13px] px-3 rounded-lg bg-inset hover:bg-line text-ink-soft transition-colors flex items-center gap-1.5 font-semibold whitespace-nowrap shrink-0 active:scale-[0.985]"
-        >
-          <Copy className="w-3.5 h-3.5 text-muted" />
-          <span>{t.vouchers.pasteBtn}</span>
-        </button>
+        {/* Quick paste & Gift card guide buttons */}
+        <div className="flex items-center gap-2 self-start md:self-auto shrink-0">
+          <a
+            href={getGiftCardGuideUrl(undefined, language)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="h-9 text-[13px] px-3 rounded-lg bg-brand-50 hover:bg-brand-100 text-brand-700 transition-colors flex items-center gap-1.5 font-semibold whitespace-nowrap"
+          >
+            <span>🎁 {t.aisubdeal.giftCardGuideLink}</span>
+            <ExternalLink className="w-3.5 h-3.5" />
+          </a>
+          <button
+            type="button"
+            onClick={handlePasteFromClipboard}
+            className="h-9 text-[13px] px-3 rounded-lg bg-inset hover:bg-line text-ink-soft transition-colors flex items-center gap-1.5 font-semibold whitespace-nowrap active:scale-[0.985]"
+          >
+            <Copy className="w-3.5 h-3.5 text-muted" />
+            <span>{t.vouchers.pasteBtn}</span>
+          </button>
+        </div>
       </div>
 
       <form onSubmit={handleRecharge} className="space-y-3">
