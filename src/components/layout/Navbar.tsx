@@ -215,17 +215,18 @@ export const Navbar: React.FC<NavbarProps> = ({
       </nav>
 
       {/* Actions */}
-      <div className="flex items-center gap-2 shrink-0 lg:contents">
+      <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 lg:contents">
         {/* Mobile AISubDeal Deals Link */}
         <a
           href={buildAiSubDealUrl('/pricing/', language, { utm_medium: 'mobile_nav' })}
           target="_blank"
           rel="noopener noreferrer"
-          className="lg:hidden h-9 px-2 rounded-lg bg-brand-50 hover:bg-brand-100 text-brand-700 border border-brand-200/60 font-semibold text-xs flex items-center gap-1 shrink-0 whitespace-nowrap transition-colors"
+          className="lg:hidden h-9 w-9 sm:w-auto sm:px-2 rounded-lg bg-brand-50 hover:bg-brand-100 text-brand-700 border border-brand-200/60 font-semibold text-xs flex items-center justify-center gap-1 shrink-0 transition-colors"
           title={t.aisubdeal.navLink}
+          aria-label={t.aisubdeal.navLink}
         >
-          <Globe className="w-3.5 h-3.5 text-brand-700" />
-          <span>{t.aisubdeal.navShort}</span>
+          <Globe className="w-4 h-4 text-brand-700" />
+          <span className="hidden sm:inline">{t.aisubdeal.navShort}</span>
         </a>
 
         <button
