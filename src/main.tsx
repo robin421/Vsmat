@@ -1,11 +1,18 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { App } from './App';
+import { initGA, trackPageView } from './lib/analytics';
 import '@fontsource-variable/figtree/wght.css';
 import '@fontsource/ibm-plex-mono/latin-400.css';
 import '@fontsource/ibm-plex-mono/latin-500.css';
 import '@fontsource/ibm-plex-mono/latin-600.css';
 import './index.css';
+
+// Initialize GA4 in production
+if (import.meta.env.PROD) {
+  initGA();
+  trackPageView(window.location.pathname);
+}
 
 // Register Service Worker for PWA offline capabilities
 if ('serviceWorker' in navigator && import.meta.env.PROD) {
