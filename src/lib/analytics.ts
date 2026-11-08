@@ -24,6 +24,17 @@ export function initGA(measurementId: string = DEFAULT_GA_ID): void {
     return;
   }
 
+  // Never load GA in local development, 127.0.0.1, or automated test runners
+  const hostname = window.location.hostname;
+  if (
+    hostname === 'localhost' ||
+    hostname === '127.0.0.1' ||
+    hostname === '' ||
+    hostname.endsWith('.local')
+  ) {
+    return;
+  }
+
   try {
     // 1. Setup dataLayer and gtag stub
     window.dataLayer = window.dataLayer || [];

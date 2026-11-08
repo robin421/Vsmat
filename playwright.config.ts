@@ -5,6 +5,7 @@ const chromiumPath = process.env.PW_CHROMIUM_PATH; // use a system browser where
 
 export default defineConfig({
   testDir: './tests/e2e',
+  testIgnore: ['**/._*'],
   timeout: 60_000,
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
