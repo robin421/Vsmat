@@ -23,6 +23,16 @@ import { SubscriptionList } from './components/subscriptions/SubscriptionList';
 import { MasterPasswordModal } from './components/auth/MasterPasswordModal';
 import { ShieldCheck, AlertCircle, X } from 'lucide-react';
 import { I18nProvider, useI18n, SupportedLanguage } from './i18n';
+import {
+  trackAppActivated,
+  trackVaultUnlocked,
+  trackBackupRestored,
+  trackSubscriptionAdded,
+  trackTokenAdded,
+  trackVoucherAdded,
+  trackVoucherRedeemed,
+  trackCurrencySwitched,
+} from './lib/analytics';
 
 // Code-split: tabs/modals the user hasn't opened yet are fetched on demand.
 const TokenList = lazy(() => import('./components/tokens/TokenList').then((m) => ({ default: m.TokenList })));
@@ -167,7 +177,10 @@ function AppContent({ vault }: AppContentProps) {
     setAppleActiveSub(null);
   }, [status]);
 
-  const handleUnlock = (password: string, remember: boolean) => unlock(password, remember);
+  const handleUnlock = (password: string, remember: boolean) => {
+    trackVaultUnlocked('password', remember);
+    return unlock(password, remember);
+  };
   const handleLockVault = () => void lock();
 
   // Replace the vault contents with a backup file, after validation + confirmation
@@ -185,6 +198,7 @@ function AppContent({ vault }: AppContentProps) {
       if (!window.confirm(`备份包含 ${summary}。\n导入将【覆盖】当前保险箱内容，确定继续吗？\n（覆盖前会先自动下载一份当前数据的加密备份）`)) return;
       await exportBackup(appData, `vsmat-before-import-${todayStr()}.vsmat.json`);
       update({ ...imported, settings: { ...imported.settings, isConfigured: true } });
+      trackBackupRestored(`${imported.subscriptions.length} subs, ${imported.tokens.length} tokens`);
       window.alert('数据备份已成功导入！');
     } catch (err) {
       window.alert(err instanceof Error ? err.message : '导入备份失败');
@@ -249,6 +263,7 @@ function AppContent({ vault }: AppContentProps) {
           tokens: prev.tokens.map(t => (t.id === tokenData.id ? ({ ...t, ...tokenData } as TokenItem) : t)),
         };
       }
+      trackTokenAdded(tokenData.serviceKey || 'custom', prev.tokens.length + 1);
       const newToken = {
         ...tokenData,
         id: newId('token'),
@@ -271,6 +286,12 @@ function AppContent({ vault }: AppContentProps) {
           subscriptions: prev.subscriptions.map(s => (s.id === subData.id ? ({ ...s, ...subData } as SubscriptionItem) : s)),
         };
       }
+      trackSubscriptionAdded(
+        subData.category || 'general',
+        subData.currency || 'USD',
+        subData.cycle === 'lifetime',
+        prev.subscriptions.length + 1
+      );
       const newSub = {
         ...subData,
         id: newId('sub'),
@@ -302,12 +323,17 @@ function AppContent({ vault }: AppContentProps) {
           vouchers: prev.vouchers.map(v => (v.id === vData.id ? ({ ...v, ...vData } as VoucherItem) : v)),
         };
       }
+      trackVoucherAdded(vData.serviceKey || 'custom', prev.vouchers.length + 1);
       const newV = { ...vData, id: newId('voucher'), createdAt: todayStr() } as VoucherItem;
       return { ...prev, vouchers: [newV, ...prev.vouchers] };
     });
   };
 
   const handleUpdateVoucherStatus = (id: string, status: 'unredeemed' | 'redeemed') => {
+    if (status === 'redeemed') {
+      const target = appData.vouchers.find(v => v.id === id);
+      trackVoucherRedeemed(target?.serviceKey || 'custom', 'manual');
+    }
     update((prev) => ({ ...prev, vouchers: prev.vouchers.map(v => (v.id === id ? { ...v, status } : v)) }));
   };
 
@@ -319,9 +345,11 @@ function AppContent({ vault }: AppContentProps) {
     appData.vouchers.find(item => item.code.replace(/\s+/g, '') === code.replace(/\s+/g, ''));
 
   const handleToggleCurrency = () => {
+    const nextCurrency = appData.settings.preferredCurrency === 'CNY' ? 'USD' : 'CNY';
+    trackCurrencySwitched(nextCurrency);
     update((prev) => ({
       ...prev,
-      settings: { ...prev.settings, preferredCurrency: prev.settings.preferredCurrency === 'CNY' ? 'USD' : 'CNY' },
+      settings: { ...prev.settings, preferredCurrency: nextCurrency },
     }));
   };
 
@@ -656,11 +684,15 @@ function AppContent({ vault }: AppContentProps) {
         onUnlock={handleUnlock}
         onSetup={async (pw, remember, enableBio) => {
           await setup(pw, remember, enableBio);
+          trackAppActivated(enableBio ? 'webauthn' : 'password', appData.settings.language || 'zh-CN');
         }}
         isBiometricsSupported={isBiometricsSupported}
         isBiometricsEnrolled={isBiometricsEnrolled}
         biometricsLabel={biometricsInfo.short}
-        onBiometricUnlock={unlockBiometrics}
+        onBiometricUnlock={async () => {
+          trackVaultUnlocked('biometrics', false);
+          return unlockBiometrics();
+        }}
       />
     </div>
   );

@@ -35,6 +35,7 @@ import {
 import { getDaysUntil } from '../../lib/notifications';
 import { parseSmartText, ParsedSmartInput } from '../../lib/parser';
 import { recognizeSubscriptionScreenshot } from '../../lib/ocrEngine';
+import { trackOcrScanCompleted } from '../../lib/analytics';
 import { todayLocal } from '../../lib/date';
 import { useDismiss } from '../../hooks/useDismiss';
 import { RenewalHistory } from './RenewalHistory';
@@ -266,9 +267,11 @@ export const SubscriptionModal: React.FC<SubscriptionModalProps> = ({
 
       const parsed = parseSmartText(text);
       populateFromParsed(parsed);
+      trackOcrScanCompleted(true, parsed.currency || 'detected');
       setOcrLoading(false);
     } catch (err: any) {
       console.error('Image OCR error:', err);
+      trackOcrScanCompleted(false);
       setOcrLoading(false);
       alert('图片识别失败，请确保截图清晰后重试');
     }

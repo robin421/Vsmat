@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { exportBackup } from '../../lib/storage';
 import { buildAiSubDealUrl } from '../../lib/aisubdeal';
+import { trackExportBackup, trackSubdealOutboundClick } from '../../lib/analytics';
 import { AppData } from '../../types';
 import { useI18n, SUPPORTED_LANGUAGES, SupportedLanguage } from '../../i18n';
 
@@ -59,7 +60,9 @@ export const Navbar: React.FC<NavbarProps> = ({
   const [showLangMenu, setShowLangMenu] = useState(false);
 
   const handleExport = () => {
-    exportBackup(appData).catch((err) => window.alert(err instanceof Error ? err.message : '导出失败'));
+    exportBackup(appData)
+      .then(() => trackExportBackup())
+      .catch((err) => window.alert(err instanceof Error ? err.message : '导出失败'));
     setShowBackupMenu(false);
   };
 
@@ -133,6 +136,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           href={buildAiSubDealUrl('/pricing/', language, { utm_medium: 'sidebar_nav' })}
           target="_blank"
           rel="noopener noreferrer"
+          onClick={() => trackSubdealOutboundClick('sidebar_nav')}
           className="p-2.5 rounded-xl bg-brand-50/70 hover:bg-brand-100/80 border border-brand-200/60 text-left transition-colors block"
           title={t.aisubdeal.navLink}
         >
@@ -221,6 +225,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           href={buildAiSubDealUrl('/pricing/', language, { utm_medium: 'mobile_nav' })}
           target="_blank"
           rel="noopener noreferrer"
+          onClick={() => trackSubdealOutboundClick('mobile_nav')}
           className="lg:hidden h-9 w-9 sm:w-auto sm:px-2 rounded-lg bg-brand-50 hover:bg-brand-100 text-brand-700 border border-brand-200/60 font-semibold text-xs flex items-center justify-center gap-1 shrink-0 transition-colors"
           title={t.aisubdeal.navLink}
           aria-label={t.aisubdeal.navLink}

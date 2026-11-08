@@ -7,6 +7,7 @@ import { monthlyAmountUSD } from '../../lib/currencies';
 import { useI18n } from '../../i18n';
 import { isLegacyDomain, requestMigrationFromOldDomain } from '../../lib/migration';
 import { AISUBDEAL_BENCHMARKS, buildAiSubDealUrl, getServicePricingUrl } from '../../lib/aisubdeal';
+import { trackSubdealOutboundClick } from '../../lib/analytics';
 
 interface SubscriptionListProps {
   subscriptions: SubscriptionItem[];
@@ -186,6 +187,7 @@ export const SubscriptionList: React.FC<SubscriptionListProps> = ({
             href={buildAiSubDealUrl('/pricing/', language, { utm_medium: 'sub_toolbar' })}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() => trackSubdealOutboundClick('sub_toolbar')}
             className="h-10 px-3 rounded-xl bg-brand-50 hover:bg-brand-100 text-brand-700 transition-colors font-semibold text-xs inline-flex items-center gap-1.5 shrink-0 whitespace-nowrap"
             title={t.aisubdeal.toolbarCompareBtn}
           >
@@ -258,6 +260,7 @@ export const SubscriptionList: React.FC<SubscriptionListProps> = ({
                   href={buildAiSubDealUrl('/pricing/', language, { utm_medium: 'empty_showcase_header' })}
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={() => trackSubdealOutboundClick('empty_showcase_header')}
                   className="text-xs font-semibold text-brand-700 hover:text-brand-800 inline-flex items-center gap-1 self-start sm:self-auto shrink-0 transition-colors"
                 >
                   <span>{t.aisubdeal.exploreAllDealsBtn}</span>
