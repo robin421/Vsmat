@@ -29,6 +29,11 @@ describe('Analytics (GA4 Zero-Knowledge Telemetry)', () => {
     expect(document.querySelector('script[src*="googletagmanager"]')).toBeNull();
   });
 
+  it('tracks generic events safely', () => {
+    trackEvent('custom_action', { category: 'test' });
+    expect(window.gtag).toHaveBeenCalledWith('event', 'custom_action', { category: 'test' });
+  });
+
   it('tracks page views safely', () => {
     trackPageView('/pricing', 'Pricing Page');
     expect(window.gtag).toHaveBeenCalledWith('event', 'page_view', {

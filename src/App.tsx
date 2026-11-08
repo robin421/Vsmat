@@ -111,6 +111,19 @@ function AppContent({ vault }: AppContentProps) {
     analytics: t.common.navAnalytics,
   };
 
+  // International SEO: synchronize document.documentElement.lang and document.title with the active language
+  useEffect(() => {
+    if (typeof document === 'undefined') return;
+    const langMap: Record<SupportedLanguage, string> = {
+      zh: 'zh-CN',
+      en: 'en',
+      ja: 'ja',
+      ko: 'ko',
+    };
+    document.documentElement.lang = langMap[language] || 'zh-CN';
+    document.title = `${t.common.appName} - ${t.common.tagline} | AISubDeal`;
+  }, [language, t]);
+
   // Renewal notifications: once per unlock, only after real data is available
   const notifiedRef = useRef(false);
   const pendingImportRef = useRef<Partial<SubscriptionItem> | null>(null);

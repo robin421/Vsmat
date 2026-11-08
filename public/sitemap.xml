@@ -1,14 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml"
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://vsmat.aisubdeal.com/</loc>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://vsmat.aisubdeal.com/"/>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://vsmat.aisubdeal.com/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://vsmat.aisubdeal.com/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://vsmat.aisubdeal.com/"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://vsmat.aisubdeal.com/"/>
     <lastmod>2026-11-08</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
     <image:image>
-      <image:loc>https://vsmat.aisubdeal.com/icon-512.png</image:loc>
+      <image:loc>https://vsmat.aisubdeal.com/og-image.png</image:loc>
       <image:title>Vsmat - 密钥保险箱与智能订阅充值管理中心</image:title>
+      <image:caption>Vsmat 官方社交预览与功能架构图</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://vsmat.aisubdeal.com/icon-512.png</image:loc>
+      <image:title>Vsmat Official Shield Icon</image:title>
       <image:caption>Vsmat 官方黑底盾牌图标</image:caption>
     </image:image>
   </url>
