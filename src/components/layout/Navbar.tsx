@@ -111,10 +111,8 @@ export const Navbar: React.FC<NavbarProps> = ({
         className="flex items-center gap-2.5 min-w-0 cursor-pointer select-none lg:order-1 lg:px-2 lg:mb-5"
         title={t.common.viewSecurityWhitepaper}
       >
-        <div className="w-9 h-9 rounded-xl bg-black flex items-center justify-center text-white shrink-0 shadow-sm border border-zinc-800">
-          <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <path d="M12 4.5 C12.2 4.5 12.4 4.6 12.5 4.8 L20.5 17 C20.8 17.5 20.4 18.2 19.8 18.2 L16.4 18.2 C16 18.2 15.6 18 15.4 17.6 L12 12.8 L8.6 17.6 C8.4 18 8 18.2 7.6 18.2 L4.2 18.2 C3.6 18.2 3.2 17.5 3.5 17 L11.5 4.8 C11.6 4.6 11.8 4.5 12 4.5 Z" />
-          </svg>
+        <div className="w-9 h-9 rounded-xl overflow-hidden bg-black flex items-center justify-center shrink-0 shadow-sm border border-zinc-800">
+          <img src="/favicon.png" alt="Vsmat" className="w-full h-full object-cover select-none" />
         </div>
         <div className="min-w-0">
           <div className="flex items-center gap-1.5">

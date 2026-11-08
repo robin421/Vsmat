@@ -15,7 +15,7 @@ declare global {
 }
 
 // Default GA4 measurement ID for vsmat.aisubdeal.com
-export const DEFAULT_GA_ID = 'G-P3J8N22B86'; // Will be replaced/set by dynamic config
+export const DEFAULT_GA_ID = 'G-NH7S05CJCG';
 
 let isInitialized = false;
 
