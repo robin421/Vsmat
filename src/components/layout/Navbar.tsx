@@ -21,6 +21,7 @@ import { buildAiSubDealUrl } from '../../lib/aisubdeal';
 import { trackExportBackup, trackSubdealOutboundClick } from '../../lib/analytics';
 import { AppData } from '../../types';
 import { useI18n, SUPPORTED_LANGUAGES, SupportedLanguage } from '../../i18n';
+import brandLogo from '../../assets/logo.png';
 
 interface NavbarProps {
   activeTab: 'subscriptions' | 'tokens' | 'vouchers' | 'analytics';
@@ -115,7 +116,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         title={t.common.viewSecurityWhitepaper}
       >
         <div className="w-9 h-9 rounded-xl overflow-hidden bg-black flex items-center justify-center shrink-0 shadow-sm border border-zinc-800">
-          <img src="/favicon.png" alt="Vsmat" className="w-full h-full object-cover select-none" />
+          <img src={brandLogo} alt="Vsmat" className="w-full h-full object-cover select-none" />
         </div>
         <div className="min-w-0">
           <div className="flex items-center gap-1.5">

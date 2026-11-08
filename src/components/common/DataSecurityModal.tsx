@@ -2,6 +2,7 @@ import React from 'react';
 import { ShieldCheck, Lock, HardDrive, Cpu, EyeOff, CheckCircle2, X, Terminal, ExternalLink, Download } from 'lucide-react';
 import { useDismiss, closeOnBackdrop } from '../../hooks/useDismiss';
 import { useI18n } from '../../i18n';
+import brandLogo from '../../assets/logo.png';
 
 interface DataSecurityModalProps {
   isOpen: boolean;
@@ -26,8 +27,8 @@ export const DataSecurityModal: React.FC<DataSecurityModalProps> = ({
         {/* Header */}
         <div className="flex items-start justify-between pb-5 border-b border-line">
           <div className="flex items-center gap-3.5">
-            <div className="w-12 h-12 rounded-2xl bg-brand-700 text-white flex items-center justify-center shrink-0">
-              <ShieldCheck className="w-6 h-6 stroke-[2.2]" />
+            <div className="w-12 h-12 rounded-2xl overflow-hidden bg-black flex items-center justify-center shrink-0 border border-zinc-800 shadow-sm">
+              <img src={brandLogo} alt="Vsmat" className="w-full h-full object-cover select-none" />
             </div>
             <div>
               <div className="flex items-center gap-2">
