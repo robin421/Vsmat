@@ -8,30 +8,40 @@
     <link rel="manifest" href="/manifest.webmanifest" />
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#090a0f" />
+    <meta name="theme-color" content="#000000" />
     <title>Vsmat - 本地加密密钥保险箱与智能订阅充值管理中心 | AISubDeal 生态</title>
-    <meta name="description" content="Vsmat 是专为 AI 订阅与开发者打造的端到端零知识本地加密保险箱。100% 离线计算，采用 WebCrypto AES-256-GCM 算法保护 API Key，精准追踪续费周期、智能折算多币种汇率与礼品卡充值通道。" />
-    <meta name="keywords" content="Vsmat, AISubDeal, 订阅管理, 密钥保险箱, API Key Vault, AES-256 加密, 礼品卡充值, 汇率换算, 续费提醒, 离线安全, 端到端加密" />
+    <meta name="description" content="Vsmat 是专为开发者与 AI 用户打造的端到端零知识本地加密保险箱。100% 离线计算，采用 WebCrypto AES-256-GCM 加密保护 API Key，精准追踪续费周期、智能折算多币种汇率，并提供安全礼品卡充值兑换通道。" />
+    <meta name="keywords" content="Vsmat, AISubDeal, AI订阅管理, 密钥保险箱, API Key Vault, AES-256加密, ChatGPT续费提醒, Claude订阅折算, 礼品卡充值, 汇率换算, 离线安全, 端到端加密, 隐私记账" />
     <meta name="author" content="AISubDeal & Vsmat Team" />
-    <meta name="robots" content="index, follow" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
 
-    <!-- Canonical URL -->
+    <!-- Canonical URL & Multilingual Hreflang -->
     <link rel="canonical" href="https://vsmat.aisubdeal.com/" />
+    <link rel="alternate" hreflang="x-default" href="https://vsmat.aisubdeal.com/" />
+    <link rel="alternate" hreflang="zh-CN" href="https://vsmat.aisubdeal.com/" />
+    <link rel="alternate" hreflang="en" href="https://vsmat.aisubdeal.com/" />
+    <link rel="alternate" hreflang="ja" href="https://vsmat.aisubdeal.com/" />
+    <link rel="alternate" hreflang="ko" href="https://vsmat.aisubdeal.com/" />
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://vsmat.aisubdeal.com/" />
     <meta property="og:site_name" content="Vsmat" />
     <meta property="og:title" content="Vsmat - 本地加密密钥保险箱与智能订阅充值管理中心" />
-    <meta property="og:description" content="100% 本地离线加密、零知识凭据保护、多币种智能换算与礼品卡充值闭环。" />
+    <meta property="og:description" content="100% 本地离线加密、零知识凭据保护、多币种智能换算与礼品卡安全充值闭环。" />
     <meta property="og:image" content="https://vsmat.aisubdeal.com/icon-512.png" />
+    <meta property="og:image:width" content="512" />
+    <meta property="og:image:height" content="512" />
+    <meta property="og:image:alt" content="Vsmat 官方黑底盾牌图标" />
+    <meta property="og:locale" content="zh_CN" />
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:url" content="https://vsmat.aisubdeal.com/" />
     <meta name="twitter:title" content="Vsmat - 本地加密密钥保险箱与智能订阅充值管理中心" />
-    <meta name="twitter:description" content="100% 本地离线加密、零知识凭据保护、多币种智能换算与礼品卡充值闭环。" />
+    <meta name="twitter:description" content="100% 本地离线加密、零知识凭据保护、多币种智能换算与礼品卡安全充值闭环。" />
     <meta name="twitter:image" content="https://vsmat.aisubdeal.com/icon-512.png" />
+    <meta name="twitter:image:alt" content="Vsmat 官方黑底盾牌图标" />
 
     <!-- Apple Web App Meta -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -39,16 +49,16 @@
     <meta name="apple-mobile-web-app-title" content="Vsmat" />
     <meta name="mobile-web-app-capable" content="yes" />
 
-    <!-- Structured Data (JSON-LD) -->
+    <!-- Structured Data 1: WebApplication Schema -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "WebApplication",
       "name": "Vsmat",
       "url": "https://vsmat.aisubdeal.com/",
-      "description": "端到端本地加密密钥保险箱与智能订阅充值管理中心",
-      "applicationCategory": "UtilitiesApplication",
-      "operatingSystem": "All",
+      "applicationCategory": "SecurityApplication",
+      "operatingSystem": "All (Web, macOS, iOS, Windows, Android, Linux)",
+      "description": "专为 AI 订阅与开发者打造的端到端零知识本地加密保险箱，100% 离线计算管理 API Key 与续费周期。",
       "offers": {
         "@type": "Offer",
         "price": "0",
@@ -58,13 +68,117 @@
         "WebCrypto AES-256-GCM 端到端本地加密",
         "零知识架构，敏感数据绝不上传服务器",
         "多币种实时汇率折算与智能续费周期追踪",
-        "AI 订阅直通与礼品卡安全充值兑换通道"
+        "AI 订阅直通与礼品卡安全充值兑换通道",
+        "纯离线截图 OCR 账单智能识别提取"
+      ],
+      "author": {
+        "@type": "Organization",
+        "name": "AISubDeal",
+        "url": "https://aisubdeal.com"
+      }
+    }
+    </script>
+
+    <!-- Structured Data 2: FAQPage Schema (Rich Snippets for Google Search) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Vsmat 是如何保障我的 API 密钥和账号密码安全的？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Vsmat 采用纯本地零知识架构（Zero-Knowledge Architecture）。所有敏感凭据（包括 API Key、账号密码、礼品卡兑换码等）均使用浏览器原生 WebCrypto API 的 AES-256-GCM 算法在您的本地设备上进行加密。即使断网也能完全正常使用，没有任何明文凭据会被上传到外部服务器。"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Vsmat 如何帮助我管理 ChatGPT Plus、Claude Pro 等多币种 AI 订阅？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Vsmat 支持 USD、CNY 等多币种实时折算，自动追踪并计算次月续费日与年度总开销。同时支持从账单截图通过本地离线 OCR 引擎智能提取订阅名称、金额与续费周期，无需手动繁琐填表。"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "使用礼品卡充值海外 AI 服务时，Vsmat 能提供哪些便利？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Vsmat 专门内置了礼品卡直充管理中心。针对 Mac 电脑与移动设备，Vsmat 提供了直连官方账号管理中心纯网页兑换通道，有效避免触发客户端跨区 Universal Link 唤起导致国区 Apple ID 报错的问题。"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "我的数据如何备份和跨设备迁移？",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "您可以随时在 Vsmat 中一键导出高强度 AES 加密备份文件（.vsmat.json）。在另一台电脑或手机浏览器中，只需导入该备份并输入您的主密码，即可瞬间无缝还原全部订阅与密钥数据。"
+          }
+        }
       ]
     }
     </script>
   </head>
-  <body class="min-h-screen antialiased">
-    <div id="root"></div>
+  <body class="min-h-screen antialiased bg-slate-50 text-slate-900">
+    <!-- Static Crawlable Semantic SEO Content for Search Engines & Robots -->
+    <div id="root">
+      <main class="max-w-4xl mx-auto px-4 py-12">
+        <header class="text-center mb-10">
+          <h1 class="text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
+            Vsmat - 本地端到端加密智能订阅管理与 API Key 保险箱
+          </h1>
+          <p class="mt-4 text-lg text-slate-600">
+            专为 AI 订阅与开发者打造的 100% 离线优先安全管理中心。采用 WebCrypto AES-256-GCM 零知识加密，智能管理 ChatGPT Plus、Claude Pro、Gemini 等续费开销与 API 凭据。
+          </p>
+        </header>
+
+        <section class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+          <article class="p-6 bg-white rounded-2xl border border-slate-200 shadow-sm">
+            <h2 class="text-xl font-bold text-slate-900 mb-2">零知识端到端本地加密</h2>
+            <p class="text-slate-600 text-sm leading-relaxed">
+              您的主密码经过 PBKDF2 高强度盐化衍生，所有数据仅在您当前设备的内存与 IndexedDB 中保持密文存储。零网络上传，任何第三方乃至服务器都无法解密您的凭据。
+            </p>
+          </article>
+
+          <article class="p-6 bg-white rounded-2xl border border-slate-200 shadow-sm">
+            <h2 class="text-xl font-bold text-slate-900 mb-2">多币种 AI 订阅智能记账</h2>
+            <p class="text-slate-600 text-sm leading-relaxed">
+              精准追踪跨币种开销（美元、人民币实时换算），自动提醒到期续费日，支持账单截图本地离线 OCR 极速录入，助您清晰掌控每月 AI 生产力成本。
+            </p>
+          </article>
+
+          <article class="p-6 bg-white rounded-2xl border border-slate-200 shadow-sm">
+            <h2 class="text-xl font-bold text-slate-900 mb-2">安全礼品券充值兑换管理</h2>
+            <p class="text-slate-600 text-sm leading-relaxed">
+              集中归档待充值 Apple、Google Play 礼品卡，独创防唤起纯网页免跳兑换流程，避免跨区账号被锁，让 AI 会员充值续费井井有条。
+            </p>
+          </article>
+
+          <article class="p-6 bg-white rounded-2xl border border-slate-200 shadow-sm">
+            <h2 class="text-xl font-bold text-slate-900 mb-2">AISubDeal 比价生态联动</h2>
+            <p class="text-slate-600 text-sm leading-relaxed">
+              一键对比全球主流 AI 模型的官方价格与底价折扣，随时发现 ChatGPT、Claude、Perplexity 等热门工具的高性价比续费方案。
+            </p>
+          </article>
+        </section>
+
+        <section class="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm">
+          <h2 class="text-2xl font-bold text-slate-900 mb-6">常见问题解答 (FAQ)</h2>
+          <div class="space-y-4">
+            <div>
+              <h3 class="text-base font-semibold text-slate-900">Vsmat 是如何保障数据安全的？</h3>
+              <p class="text-slate-600 text-sm mt-1">采用银行级 WebCrypto AES-256-GCM 算法，在您的本地浏览器端完成全部加解密。敏感数据绝不上传服务器，真正做到零知识架构。</p>
+            </div>
+            <div>
+              <h3 class="text-base font-semibold text-slate-900">如何进行数据迁移和备份？</h3>
+              <p class="text-slate-600 text-sm mt-1">支持随时导出带有完整密码保护的密文备份包（.vsmat.json），可在任意设备或浏览器中导入恢复。</p>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
