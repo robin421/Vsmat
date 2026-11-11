@@ -1,6 +1,7 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import {
   initGA,
+  _resetGAForTesting,
   trackPageView,
   trackEvent,
   trackAppActivated,
@@ -19,14 +20,43 @@ import {
 describe('Analytics (GA4 Zero-Knowledge Telemetry)', () => {
   beforeEach(() => {
     vi.restoreAllMocks();
+    _resetGAForTesting();
     window.dataLayer = [];
     window.gtag = vi.fn();
+  });
+
+  afterEach(() => {
+    _resetGAForTesting();
+    document.querySelectorAll('script[src*="googletagmanager"]').forEach((s) => s.remove());
   });
 
   it('silences GA initialization on localhost/127.0.0.1 without throwing', () => {
     // Current test environment is localhost / 127.0.0.1
     initGA('G-NH7S05CJCG');
     expect(document.querySelector('script[src*="googletagmanager"]')).toBeNull();
+  });
+
+  it('pushes arguments object (not array) to dataLayer when initialized on production hostname', () => {
+    const originalLocation = window.location;
+    try {
+      delete (window as unknown as { location: unknown }).location;
+      window.location = new URL('https://vsmat.aisubdeal.com/') as unknown as Location;
+
+      window.dataLayer = [];
+      initGA('G-NH7S05CJCG');
+
+      expect(document.querySelector('script[src*="googletagmanager"]')).not.toBeNull();
+      expect(typeof window.gtag).toBe('function');
+
+      // Call window.gtag and verify the item pushed to dataLayer is [object Arguments]
+      window.gtag!('event', 'test_event', { foo: 'bar' });
+
+      expect(window.dataLayer.length).toBeGreaterThan(0);
+      const lastItem = window.dataLayer[window.dataLayer.length - 1];
+      expect(Object.prototype.toString.call(lastItem)).toBe('[object Arguments]');
+    } finally {
+      (window as unknown as { location: unknown }).location = originalLocation;
+    }
   });
 
   it('tracks generic events safely', () => {

@@ -19,6 +19,10 @@ export const DEFAULT_GA_ID = 'G-NH7S05CJCG';
 
 let isInitialized = false;
 
+export function _resetGAForTesting(): void {
+  isInitialized = false;
+}
+
 export function initGA(measurementId: string = DEFAULT_GA_ID): void {
   if (typeof window === 'undefined' || isInitialized || !measurementId || !measurementId.startsWith('G-')) {
     return;
@@ -37,8 +41,9 @@ export function initGA(measurementId: string = DEFAULT_GA_ID): void {
 
   try {
     window.dataLayer = window.dataLayer || [];
-    window.gtag = function gtag(...args: unknown[]) {
-      window.dataLayer?.push(args);
+    window.gtag = function gtag() {
+      // eslint-disable-next-line prefer-rest-params
+      window.dataLayer?.push(arguments);
     };
 
     window.gtag('js', new Date());
